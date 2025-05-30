@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 01:10:10 by dopereir          #+#    #+#             */
-/*   Updated: 2025/05/29 21:13:51 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/05/30 19:35:57 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,8 @@ typedef struct s_parsephase_data
 {
 	t_command	*root_command;
 }			t_parse_data;
+
+
 
 static volatile	int	keepRunning = 1;
 
