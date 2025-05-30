@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 23:08:53 by dopereir          #+#    #+#             */
-/*   Updated: 2025/05/30 17:25:52 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/05/30 20:19:42 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,14 +25,15 @@ typedef struct s_redirect
 {
 	t_token_type	type;
 	char			*filename;
+	int				fd;	// File descriptor for the redirection	
 }			t_redirect;
 
 typedef struct s_simple_cmd
 {
-	char		**argv;
-	//t_redirect	*redirects;		// Array of redirections
-	int			redirect_count;
-	bool		background;		// True if & was specified
+	char		**argv; //test.txt 
+	t_redirect	*redirects;		// Array of redirections
+	//int			redirect_count;
+	//bool		background;		// True if & was specified
 }			t_simple_cmd;
 
 typedef struct s_cmd_sequence
@@ -48,14 +49,16 @@ typedef struct s_pipeline
 	int					count;
 }			t_pipeline;
 
-typedef struct s_command
+typedef struct s_command //mkdir test argv[0]
 {
 	t_command_type	type;
 	union {
 		t_simple_cmd	simple;
-		t_cmd_sequence	sequence;
+		//t_cmd_sequence	sequence;
 		t_pipeline		pipeline;
+		
 	} data;
 }			t_command;
+
 
 #endif
