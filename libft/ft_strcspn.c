@@ -1,27 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strncpy.c                                       :+:      :+:    :+:   */
+/*   ft_strcspn.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/29 19:45:53 by dopereir          #+#    #+#             */
-/*   Updated: 2025/06/04 22:29:05 by dopereir         ###   ########.fr       */
+/*   Created: 2025/06/04 21:35:08 by dopereir          #+#    #+#             */
+/*   Updated: 2025/06/04 21:51:34 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char	*ft_strncpy(char *dest, char *src, unsigned int n)
+size_t	ft_strcspn(char *s1, char *s2)
 {
-	unsigned int	i;
+	char	*sc1;
+	char	*sc2;
 
-	i = 0;
-	while (src[i] != '\0' && (i < n))
+	sc1 = s1;
+	while (*sc1 != '\0')
 	{
-		dest[i] = src[i];
-		i++;
+		sc2 = s2;
+		while (*sc2 != '\0')
+		{
+			if (*sc1 == *sc2)
+				return (sc1 - s1);
+			++sc2;
+		}
+		++sc1;
 	}
-	dest[i] = '\0';
-	return (dest);
+	return (sc1 - s1);
 }

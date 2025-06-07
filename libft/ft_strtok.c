@@ -6,36 +6,41 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/29 19:34:28 by dopereir          #+#    #+#             */
-/*   Updated: 2025/05/29 19:34:29 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/06/04 22:51:09 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char	*ft_strtok(char *str, const char sepa)
+static void	helper(char **base, char **cursor, char *str)
 {
-	static char	*stock = NULL;
-	char		*ptr;
-	int			i;
+	if (*base)
+		free(*base);
+	*base = ft_strdup(str);
+	*cursor = *base;
+}
 
-	i = 0;
-	ptr = NULL;
+char	*ft_strtok(char *str, char *sep)
+{
+	static char	*base = NULL;
+	static char	*cursor = NULL;
+	char		*token;
+
 	if (str != NULL)
-		stock = ft_strdup(str);
-	while (*stock != '\0')
+		helper(&base, &cursor, str);
+	if (cursor == NULL)
+		return (NULL);
+	cursor += ft_strspn(cursor, sep);
+	if (*cursor == '\0')
 	{
-		if (i == 0 && *stock != sepa)
-		{
-			i = 1;
-			ptr = stock;
-		}
-		else if (i == 1 && *stock == sepa)
-		{
-			*stock = '\0';
-			stock += 1;
-			break ;
-		}
-		stock++;
+		free(base);
+		base = NULL;
+		cursor = NULL;
+		return (NULL);
 	}
-	return (ptr);
+	token = cursor;
+	cursor = cursor + ft_strcspn(cursor, sep);
+	if (*cursor != '\0')
+		*(cursor++) = '\0';
+	return (token);
 }
