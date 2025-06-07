@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: nayara <nayara@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 22:57:27 by dopereir          #+#    #+#             */
-/*   Updated: 2025/05/29 21:43:25 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/06/07 16:49:58 by nayara           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,8 @@ typedef enum e_token_type
 	T_REDIR_OUT,	// 3 >
 	T_REDIR_APPEND,	// 4 >>
 	T_REDIR_HEREDOC,	// 5 << for here documents
-	T_AND,			// 6 &&
+	T_AND,	// &&
+	T_VAR,	// $
 	T_WILDCARD,		// 7 *.c for wildcards
 	T_EOL			// 8 END OF LINE
 }			t_token_type;
