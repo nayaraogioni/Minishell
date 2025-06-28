@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nayara <nayara@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:28:33 by dopereir          #+#    #+#             */
-/*   Updated: 2025/06/07 14:34:12 by nayara           ###   ########.fr       */
+/*   Updated: 2025/06/25 22:59:50 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ int token_counter(char *str, char delim)
 	char	*s;
 	int	token_count_res;
 	char	quote_char;
-	
+
 	s = str;
 	token_count_res = 0;
 	while (*s) // loop dentro da string de input
@@ -91,7 +91,7 @@ int token_counter(char *str, char delim)
 			if (*s == quote_char) // itera sobre a quote de fechamento
 				s++;
 		}
-		else if ((*s && *(s + 1)) && ((*s == '>' && *(s + 1) == '>') || 
+		else if ((*s && *(s + 1)) && ((*s == '>' && *(s + 1) == '>') ||
 			(*s == '<' && *(s + 1) == '<') || (*s == '&' && *(s + 1) == '&'))) // verifica se é token duplo >> << &&
 			s += 2;
 		else if (*s == '|' || *s == '>' || *s == '<') // verifica se é token unico
@@ -136,7 +136,7 @@ void	remove_quotes_from_token(t_token *token)
 
 	text = token->text;
 	len = ft_strlen(text);
-	if (len >= 2 && ((text[0] == '"' && text[len - 1] == '"') || 
+	if (len >= 2 && ((text[0] == '"' && text[len - 1] == '"') ||
 		(text[0] == '\'' && text[len - 1] == '\'')))
 	{
 		new_text = malloc(sizeof(char) * (len - 1));
@@ -157,7 +157,7 @@ int	add_token(t_token **tokens, int index, char *start, int len)
 		for (int j = 0; j < index; j++)
 				free((*tokens)[j].text);
 			free(*tokens);
-			*tokens = NULL; 
+			*tokens = NULL;
 			return (-1);
 	}
 	ft_strncpy((*tokens)[index].text, start, len);
@@ -207,7 +207,7 @@ t_token	*split_tokens(char *str, char delim, t_lexer *lexer)
 				s++;
 			len = s - start;
 		}
-		else if ((*s && *(s + 1)) && ((*s == '>' && *(s + 1) == '>') || 
+		else if ((*s && *(s + 1)) && ((*s == '>' && *(s + 1) == '>') ||
 			(*s == '<' && *(s + 1) == '<') || (*s == '&' && *(s + 1) == '&')))
 		{
 			len = 2;
@@ -253,7 +253,7 @@ void	print_tokens(t_lexer *lexer)
 {
 	for (int i = 0; i < lexer->token_count; i++)
 	{
-		printf("TOKEN: <%s>		TYPE: %d\n", lexer->tokens[i].text, lexer->tokens[i].type);
+		printf("TOKEN: <%s>	TYPE: <%d>\n", lexer->tokens[i].text, lexer->tokens[i].type);
 	}
+	printf("Numeber of tokens: %d\n", lexer->token_count);
 }
-
