@@ -7,7 +7,7 @@ INCLUDES = -I. -Ilibft
 LIBFT_DIR = libft
 LIBFT = $(LIBFT_DIR)/libft.a
 
-SOURCES = main.c tokenizer.c 
+SOURCES = main.c tokenizer.c parser.c parser_utils.c
 
 OBJ = $(SOURCES:.c=.o)
 
