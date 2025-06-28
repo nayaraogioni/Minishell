@@ -22,7 +22,10 @@
 # include <readline/history.h>
 # include <string.h>
 # include <stdbool.h>
-# include "libft/libft.h"
+# include <sys/types.h>
+# include <sys/wait.h>
+# include <fcntl.h>
+//# include "libft/libft.h"
 # include "lexer.h"
 # include "parser.h"
 
@@ -33,12 +36,12 @@
 
 typedef struct s_parsephase_data
 {
-	t_command	*root_command;
+	t_command		*commands[MAX_ARGS];
+	int				n_cmds;
 }			t_parse_data;
 
-
-
 static volatile	int	keepRunning = 1;
+extern	char		**environ;
 
 // cd /some/path/ && ls | grep *.txt > output.txt && cat output.txt
 
@@ -64,6 +67,11 @@ t_lexer	*create_sublexer(t_lexer *lexer, int start, int end);
 void	free_sublexer(t_lexer *sublexer);
 
 //exec_commands.c
-//void	execute_command_pwd(t_data *shell);
-//void	execute_command_exit(t_data *shell);
+int		cmd_path_generator(t_lexer *lexer, char *full_path);
+void	execute(t_lexer *lexer);
+//redirections_utils.c
+int		set_output(t_command *cmd);
+int		set_input(t_command *cmd);
+int		set_pipe(int *read_fd, int *write_fd);
+int		set_heredoc(const char *delim);
 #endif

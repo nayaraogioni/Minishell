@@ -12,6 +12,7 @@
 
 #ifndef PARSER_H
 # define PARSER_H
+# include "lexer.h"
 # include "minishell.h"
 # define MAX_ARGS 1024
 
@@ -19,7 +20,7 @@ typedef struct s_redirect
 {
 	t_token_type	type;
 	char			*filename;
-	int				fd;	// File descriptor for the redirection	
+	int				fd;	// File descriptor for the redirection
 }			t_redirect;
 
 typedef struct s_command //mkdir test argv[0]

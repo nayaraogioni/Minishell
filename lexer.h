@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nayara <nayara@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 22:57:27 by dopereir          #+#    #+#             */
-/*   Updated: 2025/06/07 16:49:58 by nayara           ###   ########.fr       */
+/*   Updated: 2025/06/08 23:54:33 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 typedef enum e_token_type
 {
 	T_WORD,			// 0 simple word
-	T_PIPE,			// 1 | 
+	T_PIPE,			// 1 |
 	T_REDIR_IN,		// 2 <
 	T_REDIR_OUT,	// 3 >
 	T_REDIR_APPEND,	// 4 >>
@@ -40,6 +40,8 @@ typedef struct s_lexer
 	char	*input;
 	t_token	*tokens;
 	int		token_count;
+	char	*path;
+	char	*args[MAX_ARGS];
 }			t_lexer;
 
 #endif

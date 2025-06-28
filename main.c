@@ -16,6 +16,8 @@
 // ctrl-c (sigint)
 // ctrl-d (EOF signal)
 
+
+int	main(void)
 //MAIN PARA TESTE DE PARSING
 // Função para imprimir a árvore de comandos (debug)
 void print_command_tree(t_command *cmd, int depth)
@@ -115,7 +117,7 @@ void test_specific_commands(void)
         "mkdir dir && ls | grep dir",       // Sequência + pipeline
         "cat < input.txt | grep test > output.txt", // Pipeline com redirecionamentos
         NULL
-    };
+    }
     
     for (int i = 0; test_commands[i]; i++)
     {
@@ -426,13 +428,13 @@ int main(void)
 			print_tokens(lexer); // PRINT TOKENS
 			// execute(lexer);
 			//parse_function(lexer);
-				// criar t_parse_data -> 
-			
+				// criar t_parse_data ->
+			// execute t_parse_data ->
 			add_history(lexer->input);
 			free (lexer->input);
 		}
 		//keepRunning = 0;
-		printf("KEEP RUNNING: %d\n", keepRunning);
+		//printf("KEEP RUNNING: %d\n", keepRunning);
 	}
 	return (0);
 } */
