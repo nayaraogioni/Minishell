@@ -10,17 +10,18 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+
 #include "minishell.h"
 
 t_command *init_command(void)
 {
     t_command *cmd;
     int i;
-    
+
     cmd = malloc(sizeof(t_command));
     if (!cmd)
         return NULL;
-    
+
     // Inicializar todos os campos
     cmd->type = T_WORD;
     cmd->name = NULL;
@@ -34,7 +35,7 @@ t_command *init_command(void)
     cmd->left = NULL;
     cmd->right = NULL;
 	cmd->next_is_pipe = 0;
-    
+
     // Inicializar array argv
     i = 0;
     while (i < MAX_ARGS)
@@ -42,7 +43,7 @@ t_command *init_command(void)
         cmd->argv[i] = NULL;
         i++;
     }
-    
+
     return cmd;
 }
 
@@ -124,7 +125,7 @@ t_command	*parse_simple_command(t_lexer *lexer)
 				}
 				if (lexer->tokens[i - 1].type == T_REDIR_APPEND)
 					cmd->type = T_REDIR_APPEND;
-			}	
+			}
 			else
 			{
 				printf("minishell: syntax error near unexpected token\n");
@@ -157,7 +158,7 @@ t_command	*parse_simple_command(t_lexer *lexer)
 t_command	*parse_pipeline(t_lexer *lexer)
 {
 	t_command	*pipeline_cmd;
-	t_lexer	*sublexer;
+	t_lexer		*sublexer;
 	int		start;
 	int		pipe_pos;
 	int		i;
@@ -172,7 +173,6 @@ t_command	*parse_pipeline(t_lexer *lexer)
 		free_command(pipeline_cmd);
 		return NULL;
 	}
-
 	i = 0;
  	while (i < MAX_ARGS)
 	{
@@ -191,12 +191,17 @@ t_command	*parse_pipeline(t_lexer *lexer)
 			free_command(pipeline_cmd);
 			return NULL;
 		}
-		pipeline_cmd->commands[pipeline_cmd->command_count] = parse_simple_command(sublexer);
-		if (!pipeline_cmd->commands[pipeline_cmd->command_count])
 		{
-			free_sublexer(sublexer);
-			free_command(pipeline_cmd);
-			return NULL;
+			t_command	*leaf = parse_simple_command(sublexer);
+			if (!leaf)
+			{
+				free_sublexer(sublexer);
+				free_command(pipeline_cmd);
+				return (NULL);
+			}
+			if (pipe_pos < lexer->token_count)
+				leaf->next_is_pipe = 1;
+			pipeline_cmd->commands[pipeline_cmd->command_count] = leaf;
 		}
 		pipeline_cmd->command_count++;
 		free_sublexer(sublexer);
@@ -210,7 +215,7 @@ t_command	*parse_pipeline(t_lexer *lexer)
 t_command	*parse_sequence(t_lexer *lexer)
 {
 	t_command	*sequence_cmd;
-	t_lexer	*sublexer;
+	t_lexer		*sublexer;
 	int		start;
 	int		and_pos;
 	int		i;

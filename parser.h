@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nayara <nayara@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 23:08:53 by dopereir          #+#    #+#             */
-/*   Updated: 2025/06/28 16:43:40 by nayara           ###   ########.fr       */
+/*   Updated: 2025/06/28 17:26:58 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ typedef struct s_command //mkdir test argv[0]
 	int	command_count;
 	struct s_command	*left;
 	struct s_command	*right;
-	int	next_is_pipe;
+	int	next_is_pipe; 
 }			t_command;
 
 

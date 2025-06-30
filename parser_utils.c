@@ -1,3 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parser_utils.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/28 17:22:24 by dopereir          #+#    #+#             */
+/*   Updated: 2025/06/30 22:49:18 by dopereir         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+
 #include "minishell.h"
 
 int	has_pipes(t_lexer *lexer)
@@ -8,7 +21,10 @@ int	has_pipes(t_lexer *lexer)
 	while (i < lexer->token_count)
 	{
 		if (lexer->tokens[i].type == T_PIPE)
+		{
+			printf("Found a pipe at %s[%d]", lexer->tokens[i].text, i);
 			return (1);
+		}
 		i++;
 	}
 	return (0);

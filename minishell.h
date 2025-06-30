@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nayara <nayara@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 01:10:10 by dopereir          #+#    #+#             */
-/*   Updated: 2025/06/28 13:18:20 by nayara           ###   ########.fr       */
+/*   Updated: 2025/06/30 10:45:25 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
 # include <sys/types.h>
 # include <sys/wait.h>
 # include <fcntl.h>
-//# include "libft/libft.h"
+# include "libft/libft.h"
 # include "lexer.h"
 # include "parser.h"
 
@@ -53,6 +53,8 @@ void	clear_token(t_token *tokens, int token_count);
 int		token_counter(char *str, char delim);
 t_token	*split_tokens(char *str, char delim, t_lexer *lexer);
 void	lexing_input(t_lexer *lexer, char delim);
+//parser.c
+t_command	*init_command(void);
 t_command	*parse_function(t_lexer *lexer);
 t_command	*parse_sequence(t_lexer *lexer);
 t_command	*parse_pipeline(t_lexer *lexer);
@@ -65,13 +67,16 @@ int	find_next_pipe(t_lexer *lexer, int start);
 int	find_next_logical_operator(t_lexer *lexer, int start);
 t_lexer	*create_sublexer(t_lexer *lexer, int start, int end);
 void	free_sublexer(t_lexer *sublexer);
-
+//collect_commands.c
+void			free_parsed_data(t_parse_data *parsed_data);
+t_parse_data	format_parsed_data(t_lexer *lexer);
+void			print_parsed_data(const t_parse_data *pd);
 //exec_commands.c
-int		cmd_path_generator(t_lexer *lexer, char *full_path);
-void	execute(t_lexer *lexer);
+int				cmd_path_generator(t_lexer *lexer, char *full_path);
+void			execute(t_lexer *lexer);
 //redirections_utils.c
-int		set_output(t_command *cmd);
-int		set_input(t_command *cmd);
-int		set_pipe(int *read_fd, int *write_fd);
-int		set_heredoc(const char *delim);
+int				set_output(t_command *cmd);
+int				set_input(t_command *cmd);
+int				set_pipe(int *read_fd, int *write_fd);
+int				set_heredoc(const char *delim);
 #endif
