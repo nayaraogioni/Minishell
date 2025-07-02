@@ -21,10 +21,7 @@ int	has_pipes(t_lexer *lexer)
 	while (i < lexer->token_count)
 	{
 		if (lexer->tokens[i].type == T_PIPE)
-		{
-			printf("Found a pipe at %s[%d]", lexer->tokens[i].text, i);
 			return (1);
-		}
 		i++;
 	}
 	return (0);
@@ -44,7 +41,7 @@ int	has_logical_operators(t_lexer *lexer)
 	return (0);
 }
 
-// conta quantos argumentos sao palavras (T_WORD) e nao redirecionamentos 
+// conta quantos argumentos sao palavras (T_WORD) e nao redirecionamentos
 int	count_args(t_lexer *lexer)
 {
 	int	i;
@@ -73,10 +70,10 @@ int	count_args(t_lexer *lexer)
 void free_command(t_command *cmd)
 {
     int i;
-    
+
     if (!cmd)
         return;
-    
+
     // Free basic string fields
     if (cmd->name)
     {
@@ -103,7 +100,7 @@ void free_command(t_command *cmd)
         free(cmd->filename);
         cmd->filename = NULL;
     }
-    
+
     // Free argv array
     i = 0;
     while (i < MAX_ARGS && cmd->argv[i])
@@ -112,7 +109,7 @@ void free_command(t_command *cmd)
         cmd->argv[i] = NULL;
         i++;
     }
-    
+
     // Free commands array
     if (cmd->commands)
     {
@@ -129,7 +126,7 @@ void free_command(t_command *cmd)
         free(cmd->commands);
         cmd->commands = NULL;
     }
-    
+
     // Free left and right commands (for tree structure)
     if (cmd->left)
     {
@@ -141,7 +138,7 @@ void free_command(t_command *cmd)
         free_command(cmd->right);
         cmd->right = NULL;
     }
-    
+
     free(cmd);
 }
 

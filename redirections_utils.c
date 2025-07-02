@@ -12,16 +12,15 @@
 
 #include "minishell.h"
 #include "parser.h"
-#include <csignal>
+#include <fcntl.h>
 #include <readline/readline.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-//call this function inside child process BEFORE exec
-// but after forking
-// this funcition basically will change the fd opened by the filename in the cmd
-// to the stdout_fileno
+// 1. call this function inside child process BEFORE exec but AFTER forking
+// 2. this funcition will change the FD opened with open(filename) to the
+// stdout_fileno
 int	set_output(t_command *cmd)
 {
 	int	fd_target;
@@ -29,7 +28,7 @@ int	set_output(t_command *cmd)
 
 	if (!cmd || !cmd->output_file)
 		return (-1);
-	flags = O_WRONLY | O_CREAT;
+	flags = O_WRONLY | O_CREAT | O_CLOEXEC;
 	if (cmd->type == T_REDIR_OUT)
 		flags |= O_TRUNC;
 	else if (cmd->type == T_REDIR_APPEND)
@@ -49,6 +48,7 @@ int	set_output(t_command *cmd)
 	return (0);
 }
 
+//RETURNS 0 ON SUCESS -1 ON FAILURE
 int	set_input(t_command *cmd)
 {
 	int	fd_source;
@@ -88,11 +88,13 @@ int	set_pipe(int *read_fd, int *write_fd)
 }
 
 //CHANGE STANDARD FUNCTION TO FT_FUNCTIONS
-int	set_heredoc(const char *delim)
+int	set_heredoc(char *delim)
 {
 	int		pipefd[2];
 	char	*line;
 
+	//SET A SIGINT HANDLER SO IF ^C during the heredoc cancels the here-doc
+	// rather the whole shell
 	if (pipe(pipefd) < 0)
 	{
 		perror("Pipe (heredoc)");
@@ -102,13 +104,13 @@ int	set_heredoc(const char *delim)
 	{
 		line = readline("> ");
 		if (!line)
-			break;
-		if (strcmp(line, delim) == 0)
+			break ;
+		if (ft_strcmp(line, delim) == 0)
 		{
 			free(line);
-			break;
+			break ;
 		}
-		write(pipefd[1], line, strlen(line));
+		write(pipefd[1], line, ft_strlen(line));//append the line into the fd pointed
 		write(pipefd[1], "\n", 1);
 		free(line);
 	}

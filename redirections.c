@@ -84,7 +84,7 @@ So the command array has 2 elements, each with redirection data already populate
 	}
 }*/
 
-int	main(void)
+/*int	main(void)
 {
 	int	pipefd[2];
 	t_command	*commands[3];
@@ -145,4 +145,4 @@ int	main(void)
 	}
 	free(commands[0]);
 	free(commands[1]);
-}
+	}*/

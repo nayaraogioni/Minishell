@@ -12,7 +12,7 @@
 
 #ifndef LEXER_H
 # define LEXER_H
-# include "minishell.h"
+# define MAX_ARGS 1024
 
 // tokens we currently support
 typedef enum e_token_type
@@ -23,10 +23,10 @@ typedef enum e_token_type
 	T_REDIR_OUT,	// 3 >
 	T_REDIR_APPEND,	// 4 >>
 	T_REDIR_HEREDOC,	// 5 << for here documents
-	T_AND,	// &&
-	T_VAR,	// $
-	T_WILDCARD,		// 7 *.c for wildcards
-	T_EOL			// 8 END OF LINE
+	T_AND,	// 6 &&
+	T_VAR,	// 7 $
+	T_WILDCARD,		// 8 *.c for wildcards
+	T_EOL			// 9 END OF LINE
 }			t_token_type;
 
 typedef struct s_token

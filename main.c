@@ -117,7 +117,7 @@ void print_command_tree(t_command *cmd, int depth)
 void test_specific_commands(void)
 {
 	printf("\n=== TESTANDO COMANDOS ESPECÍFICOS ===\n");
-	
+
 	char *test_commands[] = {
 		"ls -la",                           // Comando simples
 		"cat file.txt",                     // Comando simples com arquivo
@@ -134,22 +134,22 @@ void test_specific_commands(void)
 		"cat < input.txt | grep test > output.txt", // Pipeline com redirecionamentos
 		NULL
 	};
-	
+
 	for (int i = 0; test_commands[i]; i++)
 	{
 		printf("\n--- Testando: '%s' ---\n", test_commands[i]);
-		
+
 		t_lexer *lexer = malloc(sizeof(t_lexer));
 		lexer->input = ft_strdup(test_commands[i]);
 		lexer->tokens = NULL;
 		lexer->token_count = 0;
-		
+
 		// Tokenização
 		lexing_input(lexer, ' ');
-		
+
 		printf("Tokens:\n");
 		print_tokens(lexer);
-		
+
 		// Parsing
 		t_command *cmd = parse_function(lexer);
 		if (cmd)
@@ -162,14 +162,14 @@ void test_specific_commands(void)
 		{
 			printf("ERRO: Falha no parsing!\n");
 		}
-		
+
 		// Limpeza
 		free(lexer->input);
 		for (int j = 0; j < lexer->token_count; j++)
 			free(lexer->tokens[j].text);
 		free(lexer->tokens);
 		free(lexer);
-		
+
 		printf("----------------------------------------\n");
 	}
 }
@@ -179,17 +179,17 @@ int validate_parsing(void)
 {
 	printf("\n=== VALIDAÇÃO DE PARSING ===\n");
 	int errors = 0;
-	
+
 	// Teste 1: Comando simples
 	{
 		t_lexer *lexer = malloc(sizeof(t_lexer));
 		lexer->input = ft_strdup("ls -la");
 		lexer->tokens = NULL;
 		lexer->token_count = 0;
-		
+
 		lexing_input(lexer, ' ');
 		t_command *cmd = parse_function(lexer);
-		
+
 		if (!cmd || cmd->type != T_WORD || !cmd->name || strcmp(cmd->name, "ls") != 0)
 		{
 			printf("❌ ERRO: Comando simples falhou\n");
@@ -199,7 +199,7 @@ int validate_parsing(void)
 		{
 			printf("✅ OK: Comando simples\n");
 		}
-		
+
 		if (cmd) free_command(cmd);
 		free(lexer->input);
 		for (int j = 0; j < lexer->token_count; j++)
@@ -207,17 +207,17 @@ int validate_parsing(void)
 		free(lexer->tokens);
 		free(lexer);
 	}
-	
+
 	// Teste 2: Pipeline
 	{
 		t_lexer *lexer = malloc(sizeof(t_lexer));
 		lexer->input = ft_strdup("ls | grep test");
 		lexer->tokens = NULL;
 		lexer->token_count = 0;
-		
+
 		lexing_input(lexer, ' ');
 		t_command *cmd = parse_function(lexer);
-		
+
 		if (!cmd || cmd->type != T_PIPE || cmd->command_count != 2)
 		{
 			printf("❌ ERRO: Pipeline falhou\n");
@@ -227,7 +227,7 @@ int validate_parsing(void)
 		{
 			printf("✅ OK: Pipeline\n");
 		}
-		
+
 		if (cmd) free_command(cmd);
 		free(lexer->input);
 		for (int j = 0; j < lexer->token_count; j++)
@@ -235,17 +235,17 @@ int validate_parsing(void)
 		free(lexer->tokens);
 		free(lexer);
 	}
-	
+
 	// Teste 3: Sequência
 	{
 		t_lexer *lexer = malloc(sizeof(t_lexer));
 		lexer->input = ft_strdup("mkdir test && cd test");
 		lexer->tokens = NULL;
 		lexer->token_count = 0;
-		
+
 		lexing_input(lexer, ' ');
 		t_command *cmd = parse_function(lexer);
-		
+
 		if (!cmd || cmd->type != T_AND || cmd->command_count != 2)
 		{
 			printf("❌ ERRO: Sequência falhou\n");
@@ -255,7 +255,7 @@ int validate_parsing(void)
 		{
 			printf("✅ OK: Sequência\n");
 		}
-		
+
 		if (cmd) free_command(cmd);
 		free(lexer->input);
 		for (int j = 0; j < lexer->token_count; j++)
@@ -263,7 +263,7 @@ int validate_parsing(void)
 		free(lexer->tokens);
 		free(lexer);
 	}
-	
+
 	printf("\nResultado: %d erros encontrados\n", errors);
 	return errors;
 }
@@ -275,7 +275,7 @@ int main(void)
 	t_parse_data	pd;
 	char			*input;
    // int mode = 0; // 0 = interativo, 1 = teste automático
-	
+
 	printf("=== MINISHELL PARSER TESTER ===\n");
 	printf("Comandos especiais:\n");
 	printf("  'test'     - Executa testes automáticos\n");
@@ -283,28 +283,28 @@ int main(void)
 	printf("  'exit'     - Sair do programa\n");
 	printf("  'clear'    - Limpar tela\n");
 	printf("================================\n\n");
-	
+
 	lexer = malloc(sizeof(t_lexer));
 	lexer->input = NULL;
 	lexer->tokens = NULL;
 	lexer->token_count = 0;
-	
+
 	while (keepRunning)
 	{
 		input = readline("MINISHELL>$ ");
-		
+
 		if (!input)
 		{
 			printf("\nSaindo...\n");
 			break;
 		}
-		
+
 		if (strlen(input) == 0)
 		{
 			free(input);
 			continue;
 		}
-		
+
 		// Comandos especiais
 		if (strcmp(input, "exit") == 0)
 		{
@@ -329,22 +329,23 @@ int main(void)
 			free(input);
 			continue;
 		}
-		
+
 		// Processar comando normal
 		lexer->input = input;
 		lexer->tokens = NULL;
 		lexer->token_count = 0;
-		
+
 		printf("\n--- LEXING ---\n");
 		lexing_input(lexer, ' ');
 		print_tokens(lexer);
-		
+
 		printf("\n--- PARSING ---\n");
 		pd = format_parsed_data(lexer);
-		print_parsed_data(&pd); //DISCOVER HOW TO INCLUDE A PIPE PRESENCE
-
+		print_parsed_data(&pd);
+		exec_parsed_cmds(&pd); //
+		//************************************
 		add_history(input);
-		
+
 		// Libera tokens
 		for (int i = 0; i < lexer->token_count; i++)
 		{
@@ -353,12 +354,12 @@ int main(void)
 		}
 		if (lexer->tokens)
 			free(lexer->tokens);
-		
+
 		free(input);
-		
+
 		printf("\n==================================================\n");
 	}
-	
+
 	free(lexer);
 	printf("Programa finalizado.\n");
 	return (0);

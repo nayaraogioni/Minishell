@@ -13,60 +13,65 @@
 #include "libft/libft.h"
 #include "minishell.h"
 
+char	*ft_strjoin_three(const char *a, const char *b, const char *c)
+{
+	char	*tmp;
+	char	*res;
+
+	tmp = ft_strjoin(a, b);
+	res = ft_strjoin(tmp, c);
+	free(tmp);
+	return (res);
+}
+
 //MAY USE THIS FUNCTION TO GENERATE A PATH
-int	cmd_path_generator(t_lexer *lexer, char *full_path)
-{
-	int		found_path_flag;
-	char	*dir;
-	char	*command;
-	char	*path_copy;
-
-	path_copy = ft_strdup(getenv("PATH"));
-	command = ft_strdup(lexer->tokens[0].text);
-	found_path_flag = 0;
-	dir = ft_strtok(path_copy, ":");
-	while (dir)
-	{
-		ft_strcpy(full_path, dir);
-		ft_strcat(full_path, "/");
-		ft_strcat(full_path, command);
-		if (access(full_path, X_OK) == 0)
-		{
-			found_path_flag = 1;
-			break ;
-		}
-		dir = ft_strtok(NULL, ":");
-	}
-	free (command);
-	free (path_copy);
-	return (found_path_flag);
-}
-
-int	check_command_exists(char *command, t_token_type *type, char *full_path)
+char	*cmd_path_generator(char *cmd_name)
 {
 	char	*path_copy;
 	char	*dir;
-	int		command_exists;
+	char	*command_path;
+	char	*result;
 
-	command_exists = 0;
+	if (!cmd_name || !*cmd_name)
+		return (NULL);
+	result = NULL;
 	path_copy = ft_strdup(getenv("PATH"));
+	if (!path_copy)
+		return (NULL);
 	dir = ft_strtok(path_copy, ":");
 	while (dir)
 	{
-		ft_strcpy(full_path, dir);
-		ft_strcat(full_path, "/");
-		ft_strcat(full_path, command);
-		if (access(full_path, X_OK) == 0)
+		command_path = ft_strjoin_three(dir, "/", cmd_name);
+		if (!command_path)
 		{
-			command_exists = 1;
+			dir = ft_strtok(NULL, ":");
+			continue ;
+		}
+		if (access(command_path, X_OK) == 0)
+		{
+			result = ft_strdup(command_path);
+			free (command_path);
 			break ;
 		}
+		free (command_path);
 		dir = ft_strtok(NULL, ":");
 	}
 	free (path_copy);
-	if (command_exists && type == T_WORD)
-	{
-		return (command_exists);
-	}
-	return (0);
+	return (result);
 }
+
+/*int	main(void)
+{
+	char	*cmd;
+
+	while(1)
+	{
+		cmd = readline("> ");
+		if (ft_strcmp(cmd, "exit") == 0)
+			break ;
+		if (cmd_path_generator(cmd))
+			printf("COMMAND EXISTS!\n");
+		else
+			printf("command do not exist!\n");
+	}
+	}*/

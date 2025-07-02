@@ -11,6 +11,9 @@
 /* ************************************************************************** */
 
 
+//#include "lexer.h"
+#include "lexer.h"
+#include "libft/libft.h"
 #include "minishell.h"
 
 t_command *init_command(void)
@@ -35,6 +38,8 @@ t_command *init_command(void)
     cmd->left = NULL;
     cmd->right = NULL;
 	cmd->next_is_pipe = 0;
+	cmd->next_is_and = 0;
+	cmd->hd_delim = NULL;
 
     // Inicializar array argv
     i = 0;
@@ -125,6 +130,8 @@ t_command	*parse_simple_command(t_lexer *lexer)
 				}
 				if (lexer->tokens[i - 1].type == T_REDIR_APPEND)
 					cmd->type = T_REDIR_APPEND;
+				else if (lexer->tokens[i - 1].type == T_REDIR_OUT)
+					cmd->type = T_REDIR_OUT;
 			}
 			else
 			{
@@ -138,17 +145,26 @@ t_command	*parse_simple_command(t_lexer *lexer)
 			i++;
 			if (i < lexer->token_count && lexer->tokens[i].type == T_WORD)
 			{
-				if (cmd->filename)
-					free(cmd->filename);
-				cmd->filename = ft_strdup(lexer->tokens[i].text);
-				if (!cmd->filename)
+				if (cmd->hd_delim)
+					free(cmd->hd_delim);
+				cmd->hd_delim = ft_strdup(lexer->tokens[i].text);
+				if (!cmd->hd_delim)
 				{
 					free_command(cmd);
-					return NULL;
+					return (NULL);
 				}
 				cmd->type = T_REDIR_HEREDOC;
+				//AT EXECUTION PHASE SET SIGNAL HANDLER TO END HEREDOC AS WELL ^C or ^D
 			}
 		}
+		/*else if (lexer->tokens[i].type == T_AND)
+		{
+			i++;
+			if (i < lexer->token_count && lexer->tokens[i].type == T_WORD) //check bounds
+			{
+				//create new command?
+			}
+		}*/
 		i++;
 	}
 	cmd->argv[arg_index] = NULL; // termina o array de args com NULL

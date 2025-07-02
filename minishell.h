@@ -21,6 +21,7 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <string.h>
+# include <time.h>
 # include <stdbool.h>
 # include <sys/types.h>
 # include <sys/wait.h>
@@ -71,12 +72,13 @@ void	free_sublexer(t_lexer *sublexer);
 void			free_parsed_data(t_parse_data *parsed_data);
 t_parse_data	format_parsed_data(t_lexer *lexer);
 void			print_parsed_data(const t_parse_data *pd);
+//execute_helpers.c
+char			*cmd_path_generator(char	*cmd_name);
 //exec_commands.c
-int				cmd_path_generator(t_lexer *lexer, char *full_path);
-void			execute(t_lexer *lexer);
+void			exec_parsed_cmds(t_parse_data *pd);
 //redirections_utils.c
 int				set_output(t_command *cmd);
 int				set_input(t_command *cmd);
 int				set_pipe(int *read_fd, int *write_fd);
-int				set_heredoc(const char *delim);
+int				set_heredoc(char *delim);
 #endif
