@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 01:10:10 by dopereir          #+#    #+#             */
-/*   Updated: 2025/06/30 10:45:25 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/07/03 23:55:16 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ typedef struct s_parsephase_data
 	int				n_cmds;
 }			t_parse_data;
 
-static volatile	int	keepRunning = 1;
+static volatile sig_atomic_t	g_heredoc_sig = 0;
 extern	char		**environ;
 
 // cd /some/path/ && ls | grep *.txt > output.txt && cat output.txt

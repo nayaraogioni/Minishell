@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 08:48:55 by dopereir          #+#    #+#             */
-/*   Updated: 2025/06/30 11:09:31 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/07/04 00:51:45 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ static t_command	*copy_simple_cmd(t_command *src)
 		return (NULL);
 	dest->type = src->type;
 	dest->next_is_pipe = src->next_is_pipe;
+	dest->next_is_and = src->next_is_and;
 	if (src->name)
 		dest->name = ft_strdup(src->name);
 	if (src->path)
@@ -31,8 +32,8 @@ static t_command	*copy_simple_cmd(t_command *src)
 		dest->input_file = ft_strdup(src->input_file);
 	if (src->output_file)
 		dest->output_file = ft_strdup(src->output_file);
-	if (src->filename)
-		dest->filename = ft_strdup(src->filename);
+	if (src->hd_delim)
+		dest->hd_delim = ft_strdup(src->hd_delim);
 	dest->pid_filename_output = src->pid_filename_output;
 	while (i < MAX_ARGS && src->argv[i])
 	{
@@ -132,7 +133,7 @@ void	print_parsed_data(const t_parse_data *pd)
 		printf("Path: %s\n", cmd->path ? cmd->path : "(null)");
 		printf("Input Redir: %s\n", cmd->input_file ? cmd->input_file : "(none)");
 		printf("Output Redir: %s\n", cmd->output_file ? cmd->output_file : "(none)");
-		printf("Heredoc File: %s\n", cmd->filename ? cmd->filename : "(none)");
+		printf("Heredoc Delimiter: %s\n", cmd->hd_delim ? cmd->hd_delim : "(none)");
 		printf("Pipe flag: %d\n", cmd->next_is_pipe);
 		printf("PID Filename Output: %d\n", (int)cmd->pid_filename_output);
 

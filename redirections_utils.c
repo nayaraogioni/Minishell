@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "libft/libft.h"
 #include "minishell.h"
 #include "parser.h"
 #include <fcntl.h>
@@ -87,33 +88,54 @@ int	set_pipe(int *read_fd, int *write_fd)
 	return (0);
 }
 
-//CHANGE STANDARD FUNCTION TO FT_FUNCTIONS
+static void	heredoc_handler(int	ignore)
+{
+	ignore = 1;
+	g_heredoc_sig = 1;
+	write(ignore, "\n", 1);
+}
+
+//SET A SIGINT HANDLER SO IF ^C during the heredoc cancels the here-doc
 int	set_heredoc(char *delim)
 {
-	int		pipefd[2];
-	char	*line;
+	int					pipefd[2];
+	//char				*line;
+	struct sigaction	orig_int;
+	struct sigaction	ignore_quit;
+	struct sigaction	sa;
 
-	//SET A SIGINT HANDLER SO IF ^C during the heredoc cancels the here-doc
-	// rather the whole shell
 	if (pipe(pipefd) < 0)
 	{
 		perror("Pipe (heredoc)");
 		return (-1);
 	}
-	while (1)
-	{
-		line = readline("> ");
-		if (!line)
-			break ;
-		if (ft_strcmp(line, delim) == 0)
-		{
-			free(line);
-			break ;
-		}
-		write(pipefd[1], line, ft_strlen(line));//append the line into the fd pointed
-		write(pipefd[1], "\n", 1);
-		free(line);
-	}
-	close(pipefd[1]);
-	return (pipefd[0]);
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags   = SA_RESTART;
+	sa.sa_handler = heredoc_handler;
+	sigaction(SIGINT, &sa, &orig_int);
+	ignore_quit.sa_handler = SIG_IGN;
+	sigaction(SIGQUIT, &ignore_quit, NULL);
+	while (!g_heredoc_sig) {
+        char *line = readline("> ");
+        if (!line) break;
+        if (strcmp(line, delim) == 0) {
+            free(line);
+            break;
+        }
+        write(pipefd[1], line, strlen(line));
+        write(pipefd[1], "\n", 1);
+        free(line);
+    }
+
+    // restore original handler
+    sigaction(SIGINT,  &orig_int, NULL);
+    sigaction(SIGQUIT, &ignore_quit, NULL);
+
+    close(pipefd[1]);
+    if (g_heredoc_sig) {
+        g_heredoc_sig = 0;   // reset for next time
+        close(pipefd[0]);
+        return -1;           // signal “abort heredoc”
+    }
+    return pipefd[0];
 }
