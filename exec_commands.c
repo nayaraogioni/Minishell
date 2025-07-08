@@ -6,16 +6,14 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 22:48:16 by dopereir          #+#    #+#             */
-/*   Updated: 2025/06/25 22:46:14 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/07/04 10:08:06 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-//#include "lexer.h"
 #include "lexer.h"
 #include "minishell.h"
 #include "parser.h"
 #include <unistd.h>
-//#include "parser.h"
 
 int	argv_delimiter(char *arg)
 {
@@ -42,25 +40,21 @@ void	exec_parsed_cmds(t_parse_data *pd)
 {
 	int		prev_fd;
 	pid_t	pids[MAX_ARGS];
-	int		pipe_read;
-	int		pipe_write;
+	int		curr_pipe[2];
 	int		i;
 	int		heredoc_fd;
+	int		make_pipe;
 	t_command	*cmd;
 
+	prev_fd = -1;
 	for (i = 0; i < pd->n_cmds; i++)
 	{
 		cmd = pd->commands[i];
-		pipe_read = -1;
-		pipe_write = -1;
-		prev_fd = -1;
-		if (cmd->next_is_pipe == 1)
+		make_pipe = cmd->next_is_pipe;
+		if (make_pipe && pipe(curr_pipe) < 0)
 		{
-			if (set_pipe(&pipe_read, &pipe_write) < 0)
-			{
-				printf("Error on set_pipe\n");
-				exit(1);
-			}
+			printf("Error on set_pipe\n");
+			exit(1);
 		}
 		pids[i] = fork();//FORK THE CHILD
 		if (pids[i] < 0)
@@ -70,10 +64,10 @@ void	exec_parsed_cmds(t_parse_data *pd)
 		}
 		if (pids[i] == 0) //CHILD RUNTIME
 		{
-			if (cmd->type == T_REDIR_HEREDOC) //IS HEREDOC?
+			//input setting
+			if (cmd->hd_delim) //IS HEREDOC?
 			{
-				//add a heredoc_delim variable to parser to keep track of the delim str?
-				heredoc_fd = set_heredoc(cmd->hd_delim);//DELIMITER)
+				heredoc_fd = set_heredoc(cmd->hd_delim);
 				if (heredoc_fd < 0)
 					exit(1);
 				dup2(heredoc_fd, STDIN_FILENO);
@@ -82,17 +76,23 @@ void	exec_parsed_cmds(t_parse_data *pd)
 			else if (cmd->input_file) //SETUP STDIN
 				set_input(cmd);
 			else if (prev_fd != -1)
+			{
 				dup2(prev_fd, STDIN_FILENO);
+				close(prev_fd);
+			}
+
+			//output setting
 			if (cmd->output_file) //SETUO STDOUT
 				set_output(cmd);
-			else if (pipe_write != -1)
-				dup2(pipe_write, STDOUT_FILENO);
-			if (prev_fd != -1) // CLOSE FDS WE DONT NEED
-				close(prev_fd);
-			if (pipe_read  != -1)
-				close(pipe_read);
-			if (pipe_write != -1)
-				close(pipe_write);
+			else if (make_pipe)
+				dup2(curr_pipe[1], STDOUT_FILENO);
+			if (make_pipe)
+			{
+				close(curr_pipe[0]);
+				close(curr_pipe[1]);
+			}
+			
+			
 			cmd->path = cmd_path_generator(cmd->name);
 			execve(cmd->path, cmd->argv, environ);
 			free (cmd->path);
@@ -100,12 +100,14 @@ void	exec_parsed_cmds(t_parse_data *pd)
 			exit(127);
 		}
 		//PARENT RUNTIME
+		if (make_pipe)
+			close(curr_pipe[1]);
 		if (prev_fd != -1)
 			close(prev_fd);
-		if (pipe_write != -1)
-			close(pipe_write);
-		prev_fd = pipe_read; //NEXT INTERATION CHILDS READ FROM HERE
+		prev_fd = make_pipe ? curr_pipe[0] : -1;
 	}
+	if (prev_fd != -1)
+		close(prev_fd);
 	for (i = 0; i < pd->n_cmds; i++)
 		waitpid(pids[i], NULL, 0);
 }

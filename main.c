@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 23:15:37 by dopereir          #+#    #+#             */
-/*   Updated: 2025/06/30 22:31:57 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/07/03 23:57:48 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,8 +77,8 @@ void print_command_tree(t_command *cmd, int depth)
 		if (cmd->type == T_REDIR_APPEND && cmd->output_file) {
 			indent(depth); printf("    >> %s\n", cmd->output_file);
 		}
-		if (cmd->type == T_REDIR_HEREDOC && cmd->filename) {
-			indent(depth); printf("    << %s\n", cmd->filename);
+		if (cmd->type == T_REDIR_HEREDOC && cmd->hd_delim) {
+			indent(depth); printf("    << %s\n", cmd->hd_delim);
 		}
 	}
 
@@ -289,7 +289,7 @@ int main(void)
 	lexer->tokens = NULL;
 	lexer->token_count = 0;
 
-	while (keepRunning)
+	while (1)
 	{
 		input = readline("MINISHELL>$ ");
 
@@ -361,85 +361,7 @@ int main(void)
 	}
 
 	free(lexer);
+	//add cleanup functions if needed
 	printf("Programa finalizado.\n");
 	return (0);
 }
-
-// MAIN ALTERADA
-/* int main(void)
-{
-	t_lexer *lexer;
-	t_parse_data *parse_data;
-
-	lexer = malloc(sizeof(t_lexer));
-	if (!lexer)
-		return (1);
-	lexer->input = NULL;
-	lexer->tokens = NULL;
-	lexer->token_count = 0;
-	int keepRunning = 1;
-	while (keepRunning)
-	{
-		lexer->input = readline("PROMPT>$ ");
-		if (!lexer->input)
-		{
-			printf("exit\n");
-			break;
-		}
-		if (lexer->input[0] != '\0')
-		{
-			lexing_input(lexer, ' ');
-			if (lexer->token_count > 0)
-			{
-				printf("\n=== TOKENS ===\n");
-				print_tokens(lexer);
-				parse_data = parse_input(lexer);
-				if (parse_data)
-				{
-					print_parsed_commnads(parse_data);
-					execute_parsed_commands(parse_data);
-					free_parse_data(parse_data);
-				}
-			}
-		}
-		add_history(lexer->input);
-	}
-	free(lexer->input);
-	lexer->input = NULL;
-	if (lexer->tokens)
-		clear_token(lexer->tokens, lexer->token_count);
-	free(lexer);
-	return (0);
-} */
-//MAIN ORIGINAL
-/* int	main(void)
-{
-	t_lexer	*lexer;
-
-	lexer = malloc(sizeof(t_lexer));
-	lexer->input = NULL;
-	lexer->tokens = NULL;
-	//lexer->path = NULL;
-	lexer->token_count = 0;
-
-	int	flag = 1;
-
-	while(flag)
-	{
-		lexer->input = readline("PROMPT>$ "); // READ (1/2)
-		if (lexer->input)
-		{
-			lexing_input(lexer, ' '); // READ(2/2)
-			print_tokens(lexer); // PRINT TOKENS
-			// execute(lexer);
-			//parse_function(lexer);
-				// criar t_parse_data ->
-			// execute t_parse_data ->
-			add_history(lexer->input);
-			free (lexer->input);
-		}
-		//keepRunning = 0;
-		//printf("KEEP RUNNING: %d\n", keepRunning);
-	}
-	return (0);
-} */

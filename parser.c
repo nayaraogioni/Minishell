@@ -18,46 +18,42 @@
 
 t_command *init_command(void)
 {
-    t_command *cmd;
-    int i;
+	t_command	*cmd;
+	int			i;
 
-    cmd = malloc(sizeof(t_command));
-    if (!cmd)
-        return NULL;
-
-    // Inicializar todos os campos
-    cmd->type = T_WORD;
-    cmd->name = NULL;
-    cmd->path = NULL;
-    cmd->input_file = NULL;
-    cmd->output_file = NULL;
-    cmd->filename = NULL;
-    cmd->pid_filename_output = 0;
-    cmd->command_count = 0;
-    cmd->commands = NULL;
-    cmd->left = NULL;
-    cmd->right = NULL;
+	cmd = malloc(sizeof(t_command));
+	if (!cmd)
+		return NULL;
+	cmd->type = T_WORD;
+	cmd->name = NULL;
+	cmd->path = NULL;
+	cmd->input_file = NULL;
+	cmd->output_file = NULL;
+	cmd->filename = NULL;
+	cmd->pid_filename_output = 0;
+	cmd->command_count = 0;
+	cmd->commands = NULL;
+	cmd->left = NULL;
+	cmd->right = NULL;
 	cmd->next_is_pipe = 0;
 	cmd->next_is_and = 0;
 	cmd->hd_delim = NULL;
-
-    // Inicializar array argv
-    i = 0;
-    while (i < MAX_ARGS)
-    {
-        cmd->argv[i] = NULL;
-        i++;
-    }
-
-    return cmd;
+	i = 0;
+	while (i < MAX_ARGS)
+	{
+		cmd->argv[i] = NULL;
+		i++;
+	}
+	return (cmd);
 }
 
 t_command	*parse_simple_command(t_lexer *lexer)
 {
+	printf("**** ENTER PARSE_SIMPLE_CMD ******\n");
 	t_command	*cmd;
-	int	args_count;
-	int	i;
-	int	arg_index;
+	int			args_count;
+	int			i;
+	int			arg_index;
 
 	i = 0;
 	arg_index = 0;
@@ -112,7 +108,7 @@ t_command	*parse_simple_command(t_lexer *lexer)
 			{
 				printf("minishell: syntax error near unexpected token\n");
 				free_command(cmd);
-				return NULL; // falta o nome do arquivo de entrada
+				return (NULL); // falta o nome do arquivo de entrada
 			}
 		}
 		else if (lexer->tokens[i].type == T_REDIR_OUT || lexer->tokens[i].type == T_REDIR_APPEND)
@@ -173,6 +169,7 @@ t_command	*parse_simple_command(t_lexer *lexer)
 
 t_command	*parse_pipeline(t_lexer *lexer)
 {
+	printf("**** ENTER PARSE_PIPELINE ******\n");
 	t_command	*pipeline_cmd;
 	t_lexer		*sublexer;
 	int		start;
@@ -230,6 +227,7 @@ t_command	*parse_pipeline(t_lexer *lexer)
 
 t_command	*parse_sequence(t_lexer *lexer)
 {
+	printf("**** ENTER PARSE_SEQUENCE ******\n");
 	t_command	*sequence_cmd;
 	t_lexer		*sublexer;
 	int		start;
