@@ -3,12 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: nayara <nayara@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 22:57:27 by dopereir          #+#    #+#             */
-/*   Updated: 2025/06/08 23:54:33 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/07/08 14:35:11 by nayara           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include "minishell.h"
 
 #ifndef LEXER_H
 # define LEXER_H
@@ -42,6 +44,8 @@ typedef struct s_lexer
 	int		token_count;
 	char	*path;
 	char	*args[MAX_ARGS];
+	int	exit_status; // status do ultimo comando executado
+	pid_t	last_bg_pid;  // PID do ultimo processo em background (para casos de fork ou sleep por ex)
 }			t_lexer;
 
 #endif

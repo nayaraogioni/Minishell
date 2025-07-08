@@ -3,13 +3,12 @@
 /*                                                        :::      ::::::::   */
 /*   parser_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: nayara <nayara@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/28 17:22:24 by dopereir          #+#    #+#             */
-/*   Updated: 2025/06/30 22:49:18 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/07/08 14:27:18 by nayara           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #include "minishell.h"
 
@@ -21,6 +20,19 @@ int	has_pipes(t_lexer *lexer)
 	while (i < lexer->token_count)
 	{
 		if (lexer->tokens[i].type == T_PIPE)
+			return (1);
+		i++;
+	}
+	return (0);
+}
+int	has_variables(t_lexer *lexer)
+{
+	int	i;
+
+	i = 0;
+	while (i < lexer->token_count)
+	{
+		if (lexer->tokens[i].type == T_VAR)
 			return (1);
 		i++;
 	}
@@ -41,7 +53,7 @@ int	has_logical_operators(t_lexer *lexer)
 	return (0);
 }
 
-// conta quantos argumentos sao palavras (T_WORD) e nao redirecionamentos
+// conta quantos argumentos sao palavras (T_WORD) e nao redirecionamentos 
 int	count_args(t_lexer *lexer)
 {
 	int	i;
@@ -70,10 +82,10 @@ int	count_args(t_lexer *lexer)
 void free_command(t_command *cmd)
 {
     int i;
-
+    
     if (!cmd)
         return;
-
+    
     // Free basic string fields
     if (cmd->name)
     {
@@ -100,7 +112,7 @@ void free_command(t_command *cmd)
         free(cmd->filename);
         cmd->filename = NULL;
     }
-
+    
     // Free argv array
     i = 0;
     while (i < MAX_ARGS && cmd->argv[i])
@@ -109,7 +121,7 @@ void free_command(t_command *cmd)
         cmd->argv[i] = NULL;
         i++;
     }
-
+    
     // Free commands array
     if (cmd->commands)
     {
@@ -126,7 +138,7 @@ void free_command(t_command *cmd)
         free(cmd->commands);
         cmd->commands = NULL;
     }
-
+    
     // Free left and right commands (for tree structure)
     if (cmd->left)
     {
@@ -138,7 +150,7 @@ void free_command(t_command *cmd)
         free_command(cmd->right);
         cmd->right = NULL;
     }
-
+    
     free(cmd);
 }
 

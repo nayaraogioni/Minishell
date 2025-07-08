@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: nayara <nayara@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 01:10:10 by dopereir          #+#    #+#             */
-/*   Updated: 2025/07/03 23:55:16 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/07/08 14:28:47 by nayara           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,7 @@ t_command	*parse_pipeline(t_lexer *lexer);
 t_command	*parse_simple_command(t_lexer *lexer);
 int	has_pipes(t_lexer *lexer);
 int	has_logical_operators(t_lexer *lexer);
+int	has_variables(t_lexer *lexer);
 int	count_args(t_lexer *lexer);
 void	free_command(t_command *cmd);
 int	find_next_pipe(t_lexer *lexer, int start);
@@ -81,4 +82,11 @@ int				set_output(t_command *cmd);
 int				set_input(t_command *cmd);
 int				set_pipe(int *read_fd, int *write_fd);
 int				set_heredoc(char *delim);
+
+
+//expand_var.c
+int	expand_variables(t_lexer *lexer);
+char	*get_special_var(char *var_name, t_lexer *lexer);
+void	update_last_bg_pid(t_lexer *lexer, pid_t pid);
+
 #endif

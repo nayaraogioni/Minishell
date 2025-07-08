@@ -280,6 +280,14 @@ t_command	*parse_sequence(t_lexer *lexer)
 
 t_command	*parse_function(t_lexer *lexer)
 {
+	if (has_variables(lexer))
+	{
+		if (expand_variables(lexer) == -1)
+		{
+			printf("minishell: error expanding variables\n");
+			return NULL;
+		}
+	}
 	if (has_logical_operators(lexer))
 		return parse_sequence(lexer);
 	if (has_pipes(lexer))
