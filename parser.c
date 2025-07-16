@@ -15,6 +15,7 @@
 #include "lexer.h"
 #include "libft/libft.h"
 #include "minishell.h"
+#include <stdio.h>
 
 t_command *init_command(void)
 {
@@ -79,7 +80,7 @@ t_command	*parse_simple_command(t_lexer *lexer)
 					return NULL;
 				}
 			}
-			if (arg_index< MAX_ARGS - 1) // evita overflow
+			if (arg_index < MAX_ARGS - 1) // evita overflow
 			{
 				cmd->argv[arg_index] = ft_strdup(lexer->tokens[i].text);
 				if (!cmd->argv[arg_index])
@@ -106,7 +107,10 @@ t_command	*parse_simple_command(t_lexer *lexer)
 			}
 			else
 			{
-				printf("minishell: syntax error near unexpected token\n");
+				if (lexer->tokens[i].type)
+					argument_redirs_error(lexer->tokens[i].type);
+				else
+					printf("minishell: syntax error near unexpected token `newline'\n");
 				free_command(cmd);
 				return (NULL); // falta o nome do arquivo de entrada
 			}
@@ -131,7 +135,11 @@ t_command	*parse_simple_command(t_lexer *lexer)
 			}
 			else
 			{
-				printf("minishell: syntax error near unexpected token\n");
+				//must do to every t_token_type
+				if (lexer->tokens[i].type)
+					argument_redirs_error(lexer->tokens[i].type);
+				else
+					printf("minishell: syntax error near unexpected token `newline'\n");
 				free_command(cmd);
 				return NULL;
 			}
@@ -153,14 +161,21 @@ t_command	*parse_simple_command(t_lexer *lexer)
 				//AT EXECUTION PHASE SET SIGNAL HANDLER TO END HEREDOC AS WELL ^C or ^D
 			}
 		}
-		/*else if (lexer->tokens[i].type == T_AND)
+		else if (lexer->tokens[i].type == T_AND)
 		{
 			i++;
 			if (i < lexer->token_count && lexer->tokens[i].type == T_WORD) //check bounds
 			{
-				//create new command?
+				cmd->argv[arg_index] = NULL; // termina o array de args com NULL
+				return (cmd);
 			}
-		}*/
+		}
+		/*else if (lexer->tokens[i].type == T_PIPE)
+		{
+			printf("minishell: syntax error near unexpected token `newline'\n");
+			free_command(cmd);
+			return (NULL);
+			}*/
 		i++;
 	}
 	cmd->argv[arg_index] = NULL; // termina o array de args com NULL
@@ -201,6 +216,7 @@ t_command	*parse_pipeline(t_lexer *lexer)
 		sublexer = create_sublexer(lexer, start, pipe_pos);
 		if (!sublexer)
 		{
+			printf("minishell: syntax error near unexpected token `|'\n");
 			free_command(pipeline_cmd);
 			return NULL;
 		}

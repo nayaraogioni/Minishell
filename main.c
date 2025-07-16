@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 23:15:37 by dopereir          #+#    #+#             */
-/*   Updated: 2025/07/03 23:57:48 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/07/06 22:34:55 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,21 +15,6 @@
 //handle ctrl-D later
 // ctrl-c (sigint)
 // ctrl-d (EOF signal)
-
-
-static const char *cmd_type_str(t_token_type type)
-{
-	switch (type) {
-	case T_WORD:          return "T_WORD";
-	case T_PIPE:          return "T_PIPE";
-	case T_REDIR_IN:      return "T_REDIR_IN";
-	case T_REDIR_OUT:     return "T_REDIR_OUT";
-	case T_REDIR_APPEND:  return "T_REDIR_APPEND";
-	case T_REDIR_HEREDOC: return "T_REDIR_HEREDOC";
-	case T_AND:           return "T_AND";
-	default:              return "UNKNOWN";
-	}
-}
 
 static void indent(int depth)
 {
@@ -269,11 +254,15 @@ int validate_parsing(void)
 }
 
 // Main atualizada
-int main(void)
+int main(int argc, char **argv, char **envp)
 {
 	t_lexer			*lexer;
 	t_parse_data	pd;
+	t_env			*my_env;
 	char			*input;
+
+	(void)argc;
+	(void)argv;
    // int mode = 0; // 0 = interativo, 1 = teste automático
 
 	printf("=== MINISHELL PARSER TESTER ===\n");
@@ -289,6 +278,8 @@ int main(void)
 	lexer->tokens = NULL;
 	lexer->token_count = 0;
 
+	my_env = NULL;
+	env_init(&my_env, envp);
 	while (1)
 	{
 		input = readline("MINISHELL>$ ");
@@ -299,38 +290,32 @@ int main(void)
 			break;
 		}
 
-		if (strlen(input) == 0)
+		if (ft_strlen(input) == 0)
 		{
 			free(input);
 			continue;
 		}
 
 		// Comandos especiais
-		if (strcmp(input, "exit") == 0)
+		if (ft_strcmp(input, "exit") == 0)
 		{
 			free(input);
 			break;
 		}
-		else if (strcmp(input, "test") == 0)
+		else if (ft_strcmp(input, "test") == 0)
 		{
 			free(input);
 			test_specific_commands();
 			continue;
 		}
-		else if (strcmp(input, "validate") == 0)
+		else if (ft_strcmp(input, "validate") == 0)
 		{
 			free(input);
 			validate_parsing();
 			continue;
 		}
-		else if (strcmp(input, "clear") == 0)
-		{
-			system("clear");
-			free(input);
-			continue;
-		}
-
 		// Processar comando normal
+
 		lexer->input = input;
 		lexer->tokens = NULL;
 		lexer->token_count = 0;
@@ -342,8 +327,10 @@ int main(void)
 		printf("\n--- PARSING ---\n");
 		pd = format_parsed_data(lexer);
 		print_parsed_data(&pd);
-		exec_parsed_cmds(&pd); //
-		//************************************
+
+
+		exec_parsed_cmds(&pd, &my_env);
+		// BEFORE ALL THIS CREATE THE T_ENV VARIABLE AND INSTANCE
 		add_history(input);
 
 		// Libera tokens
@@ -356,11 +343,12 @@ int main(void)
 			free(lexer->tokens);
 
 		free(input);
-
-		printf("\n==================================================\n");
+		printf("\n=======================END OF CMD===========================\n");
 	}
 
 	free(lexer);
+	clean_env_list(&my_env);
+	//add function to clean enlist
 	//add cleanup functions if needed
 	printf("Programa finalizado.\n");
 	return (0);
