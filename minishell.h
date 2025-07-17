@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: nayara <nayara@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 01:10:10 by dopereir          #+#    #+#             */
 /*   Updated: 2025/07/06 22:07:33 by dopereir         ###   ########.fr       */
@@ -65,6 +65,22 @@ int				find_next_pipe(t_lexer *lexer, int start);
 int				find_next_logical_operator(t_lexer *lexer, int start);
 t_lexer			*create_sublexer(t_lexer *lexer, int start, int end);
 void			free_sublexer(t_lexer *sublexer);
+
+t_command	*init_command(void);
+t_command	*parse_function(t_lexer *lexer);
+t_command	*parse_sequence(t_lexer *lexer);
+t_command	*parse_pipeline(t_lexer *lexer);
+t_command	*parse_simple_command(t_lexer *lexer);
+int	has_pipes(t_lexer *lexer);
+int	has_logical_operators(t_lexer *lexer);
+int	has_variables(t_lexer *lexer);
+int	count_args(t_lexer *lexer);
+void	free_command(t_command *cmd);
+int	find_next_pipe(t_lexer *lexer, int start);
+int	find_next_logical_operator(t_lexer *lexer, int start);
+t_lexer	*create_sublexer(t_lexer *lexer, int start, int end);
+void	free_sublexer(t_lexer *sublexer);
+
 //collect_commands.c
 void			free_parsed_data(t_parse_data *parsed_data);
 t_parse_data	format_parsed_data(t_lexer *lexer);
@@ -103,4 +119,13 @@ bool			is_any_builtin(char *name);
 //error_handlers.c
 char			*cmd_type_str(t_token_type type);
 void			argument_redirs_error(t_token_type type);
+
+int				set_heredoc(char *delim);
+
+
+//expand_var.c
+int	expand_variables(t_lexer *lexer);
+char	*get_special_var(char *var_name, t_lexer *lexer);
+void	update_last_bg_pid(t_lexer *lexer, pid_t pid);
+
 #endif

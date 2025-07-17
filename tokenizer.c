@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: nayara <nayara@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:28:33 by dopereir          #+#    #+#             */
-/*   Updated: 2025/06/25 22:59:50 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/07/08 14:24:25 by nayara           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,7 @@ t_token_type	determine_type(char *token_text)
 		return (T_REDIR_HEREDOC);
 	else if (ft_strcmp(token_text, "&&") == 0)
 		return (T_AND);
-	else if (token_text[0] == '$' && ft_strlen(token_text) > 1)
+	else if (token_text[0] == '$')
 		return (T_VAR);
 	else if (token_text[0] == '*')
 		return (T_WILDCARD);
@@ -189,11 +189,11 @@ t_token	*split_tokens(char *str, char delim, t_lexer *lexer)
 		if (*s == '\0')
 			break ;
 		start = s;
-		if (*s == '$' && *(s + 1) != delim)
+		if (*s == '$' && *(s + 1) && *(s + 1) != '\0')
 		{
 			start = s;
 			s++;
-			while (*s && (ft_isalnum(*s) || *s == '_'))
+			while (*s && (ft_isalnum(*s) || *s == '_' || *s == '?' || *s == '!' || *s == '@' || *s == '#' || *s == '$'))
 				s++;
 			len = s - start;
 		}
