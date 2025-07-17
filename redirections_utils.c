@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 21:59:46 by dopereir          #+#    #+#             */
-/*   Updated: 2025/06/26 21:59:49 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/07/04 23:00:53 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,10 +38,10 @@ int	set_output(t_command *cmd)
 		return (-1);
 	fd_target = open(cmd->output_file, flags, 0644);
 	if (fd_target < 0)
-		return (perror("Open (stdout redirection error)"), -1);
+		return (perror("minishell: (stdout redirection error)"), -1);
 	if (dup2(fd_target, STDOUT_FILENO) < 0)
 	{
-		perror("dup2 (stdout redirection)");
+		perror("minishell: (stdout redirection error)");
 		close(fd_target);
 		return (-1);
 	}
@@ -59,12 +59,12 @@ int	set_input(t_command *cmd)
 	fd_source = open(cmd->input_file, O_RDONLY);
 	if (fd_source < 0)
 	{
-		perror("open (input redirection)");
+		perror("minishell: (input redirection)");
 		return (-1);
 	}
 	if (dup2(fd_source, STDIN_FILENO) < 0)
 	{
-		perror("dup2 (input redirection)");
+		perror("minishell: dup2: (input redirection)");
 		close(fd_source);
 		return (-1);
 	}
@@ -88,7 +88,7 @@ int	set_pipe(int *read_fd, int *write_fd)
 	return (0);
 }
 
-static void	heredoc_handler(int	ignore)
+void	heredoc_sig_handler(int ignore)
 {
 	ignore = 1;
 	g_heredoc_sig = 1;
@@ -96,10 +96,10 @@ static void	heredoc_handler(int	ignore)
 }
 
 //SET A SIGINT HANDLER SO IF ^C during the heredoc cancels the here-doc
-int	set_heredoc(char *delim)
+/*int	set_heredoc(char *delim)
 {
 	int					pipefd[2];
-	//char				*line;
+	char				*line;
 	struct sigaction	orig_int;
 	struct sigaction	ignore_quit;
 	struct sigaction	sa;
@@ -110,32 +110,34 @@ int	set_heredoc(char *delim)
 		return (-1);
 	}
 	sigemptyset(&sa.sa_mask);
-	sa.sa_flags   = SA_RESTART;
+	sa.sa_flags = SA_RESTART;
 	sa.sa_handler = heredoc_handler;
 	sigaction(SIGINT, &sa, &orig_int);
 	ignore_quit.sa_handler = SIG_IGN;
 	sigaction(SIGQUIT, &ignore_quit, NULL);
-	while (!g_heredoc_sig) {
-        char *line = readline("> ");
-        if (!line) break;
-        if (strcmp(line, delim) == 0) {
-            free(line);
-            break;
-        }
-        write(pipefd[1], line, strlen(line));
-        write(pipefd[1], "\n", 1);
-        free(line);
-    }
-
-    // restore original handler
-    sigaction(SIGINT,  &orig_int, NULL);
-    sigaction(SIGQUIT, &ignore_quit, NULL);
-
-    close(pipefd[1]);
-    if (g_heredoc_sig) {
-        g_heredoc_sig = 0;   // reset for next time
-        close(pipefd[0]);
-        return -1;           // signal “abort heredoc”
-    }
-    return pipefd[0];
-}
+	while (!g_heredoc_sig)
+	{
+		line = readline("> ");
+		if (!line)
+			break ;
+		if (ft_strcmp(line, delim) == 0)
+		{
+			free(line);
+			break ;
+		}
+		write(pipefd[1], line, strlen(line));
+		write(pipefd[1], "\n", 1);
+		free(line);
+	}
+	sigaction(SIGINT,  &orig_int, NULL); // restore original handler
+	sigaction(SIGQUIT, &ignore_quit, NULL);
+	close(pipefd[1]);
+	if (g_heredoc_sig)
+	{
+		ft_printf("minishell: warning: here-document delimited by end-of-file (wanted '%s')\n", delim);
+		g_heredoc_sig = 0;   // reset for next time
+		close(pipefd[0]);
+		return (-1);           // signal “abort heredoc”
+	}
+	return (pipefd[0]);
+	}*/

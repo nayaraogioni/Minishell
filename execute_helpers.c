@@ -6,12 +6,16 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 09:32:18 by dopereir          #+#    #+#             */
-/*   Updated: 2025/06/25 23:51:25 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/07/06 17:18:43 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft/libft.h"
 #include "minishell.h"
+#include "parser.h"
+#include <linux/limits.h>
+#include <time.h>
+#include <unistd.h>
 
 char	*ft_strjoin_three(const char *a, const char *b, const char *c)
 {
@@ -24,54 +28,45 @@ char	*ft_strjoin_three(const char *a, const char *b, const char *c)
 	return (res);
 }
 
-//MAY USE THIS FUNCTION TO GENERATE A PATH
+static void	free_splits(char **arr)
+{
+	int	i;
+
+	i = 0;
+	while (arr[i])
+	{
+		free(arr[i]);
+		i++;
+	}
+	free(arr);
+}
+
+//Give a command name and use this function to return a path
 char	*cmd_path_generator(char *cmd_name)
 {
-	char	*path_copy;
-	char	*dir;
-	char	*command_path;
+	char	**paths;
 	char	*result;
+	char	*tmp;
+	int		i;
 
 	if (!cmd_name || !*cmd_name)
 		return (NULL);
 	result = NULL;
-	path_copy = ft_strdup(getenv("PATH"));
-	if (!path_copy)
+	paths = ft_split(getenv("PATH"), ':');
+	if (!paths)
 		return (NULL);
-	dir = ft_strtok(path_copy, ":");
-	while (dir)
+	i = 0;
+	while (paths[i])
 	{
-		command_path = ft_strjoin_three(dir, "/", cmd_name);
-		if (!command_path)
+		tmp = ft_strjoin_three(paths[i], "/", cmd_name);
+		if (tmp && access(tmp, X_OK) == 0)
 		{
-			dir = ft_strtok(NULL, ":");
-			continue ;
-		}
-		if (access(command_path, X_OK) == 0)
-		{
-			result = ft_strdup(command_path);
-			free (command_path);
+			result = tmp;
 			break ;
 		}
-		free (command_path);
-		dir = ft_strtok(NULL, ":");
+		free (tmp);
+		i++;
 	}
-	free (path_copy);
+	free_splits(paths);
 	return (result);
 }
-
-/*int	main(void)
-{
-	char	*cmd;
-
-	while(1)
-	{
-		cmd = readline("> ");
-		if (ft_strcmp(cmd, "exit") == 0)
-			break ;
-		if (cmd_path_generator(cmd))
-			printf("COMMAND EXISTS!\n");
-		else
-			printf("command do not exist!\n");
-	}
-	}*/

@@ -6,13 +6,15 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 22:48:16 by dopereir          #+#    #+#             */
-/*   Updated: 2025/07/04 10:08:06 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/07/06 17:03:38 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "lexer.h"
 #include "minishell.h"
 #include "parser.h"
+#include <stdbool.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 int	argv_delimiter(char *arg)
@@ -36,7 +38,7 @@ int	argv_delimiter(char *arg)
 	return (0);
 }
 
-void	exec_parsed_cmds(t_parse_data *pd)
+void	exec_parsed_cmds(t_parse_data *pd, t_env **env_list)
 {
 	int		prev_fd;
 	pid_t	pids[MAX_ARGS];
@@ -44,13 +46,26 @@ void	exec_parsed_cmds(t_parse_data *pd)
 	int		i;
 	int		heredoc_fd;
 	int		make_pipe;
+	bool	is_parent_bt;
+	char	**child_env;
 	t_command	*cmd;
 
 	prev_fd = -1;
 	for (i = 0; i < pd->n_cmds; i++)
 	{
 		cmd = pd->commands[i];
+		is_parent_bt = is_parent_builtin(cmd->name);
 		make_pipe = cmd->next_is_pipe;
+		if (is_parent_bt && pd->n_cmds == 1)
+		{
+			if (cmd->input_file)
+				set_input(cmd);
+			if (cmd->output_file)
+				set_output(cmd);
+			run_parent_built(cmd, env_list);
+			printf("Entered parent built in part, cmd->name: %s\n", cmd->name);
+			break ;
+		}
 		if (make_pipe && pipe(curr_pipe) < 0)
 		{
 			printf("Error on set_pipe\n");
@@ -62,6 +77,7 @@ void	exec_parsed_cmds(t_parse_data *pd)
 			perror("fork at exec_commands");
 			exit(1);
 		}
+
 		if (pids[i] == 0) //CHILD RUNTIME
 		{
 			//input setting
@@ -74,7 +90,10 @@ void	exec_parsed_cmds(t_parse_data *pd)
 				close(heredoc_fd);
 			}
 			else if (cmd->input_file) //SETUP STDIN
-				set_input(cmd);
+			{
+				if (set_input(cmd) == -1)
+					exit(1);
+			}
 			else if (prev_fd != -1)
 			{
 				dup2(prev_fd, STDIN_FILENO);
@@ -82,8 +101,11 @@ void	exec_parsed_cmds(t_parse_data *pd)
 			}
 
 			//output setting
-			if (cmd->output_file) //SETUO STDOUT
-				set_output(cmd);
+			if (cmd->output_file) //SETUP STDOUT
+			{
+				if (set_output(cmd) == -1)
+					exit(1);
+			}
 			else if (make_pipe)
 				dup2(curr_pipe[1], STDOUT_FILENO);
 			if (make_pipe)
@@ -91,11 +113,21 @@ void	exec_parsed_cmds(t_parse_data *pd)
 				close(curr_pipe[0]);
 				close(curr_pipe[1]);
 			}
-			
-			
+
+			//child-safe built in dispatcher or exec not builtin command
+			if (!ft_strcmp(cmd->name, "env"))
+			{
+				ft_env(*env_list);
+				exit(0);
+			}
+			//add for pwd and echo later.
+
+
 			cmd->path = cmd_path_generator(cmd->name);
-			execve(cmd->path, cmd->argv, environ);
+			child_env = env_to_array(*env_list);
+			execve(cmd->path, cmd->argv, child_env);
 			free (cmd->path);
+			free_env_array(child_env, list_lenght(*env_list));//WRITE LIST_LENGHT
 			perror("execve failed");// only if exec fails
 			exit(127);
 		}

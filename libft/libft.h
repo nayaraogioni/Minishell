@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/13 14:47:56 by dopereir          #+#    #+#             */
-/*   Updated: 2025/06/04 22:28:32 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/07/06 22:47:32 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,7 @@ char	**ft_split(char const *s, char c);
 char	*ft_strtok(char *str, char *sep);
 size_t	ft_strcspn(char *s1, char *s2);
 size_t	ft_strspn(char *s1, char *s2);
+char	*ft_strndup(char *s, size_t n);
 char	*ft_itoa(int n);
 char	*ft_strmapi(char const *s, char (*f)(unsigned int, char));
 void	ft_putchar_fd(char c, int fd);

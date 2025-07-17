@@ -6,21 +6,14 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 08:48:55 by dopereir          #+#    #+#             */
-/*   Updated: 2025/07/04 00:51:45 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/07/04 23:25:52 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static t_command	*copy_simple_cmd(t_command *src)
+static void	copy_simple_fields(t_command *src, t_command *dest)
 {
-	t_command	*dest;
-	int			i;
-
-	dest = init_command();
-	i = 0;
-	if (!dest)
-		return (NULL);
 	dest->type = src->type;
 	dest->next_is_pipe = src->next_is_pipe;
 	dest->next_is_and = src->next_is_and;
@@ -35,6 +28,18 @@ static t_command	*copy_simple_cmd(t_command *src)
 	if (src->hd_delim)
 		dest->hd_delim = ft_strdup(src->hd_delim);
 	dest->pid_filename_output = src->pid_filename_output;
+}
+
+static t_command	*copy_simple_cmd(t_command *src)
+{
+	t_command	*dest;
+	int			i;
+
+	dest = init_command();
+	i = 0;
+	if (!dest)
+		return (NULL);
+	copy_simple_fields(src, dest);
 	while (i < MAX_ARGS && src->argv[i])
 	{
 		dest->argv[i] = ft_strdup(src->argv[i]);
@@ -137,7 +142,7 @@ void	print_parsed_data(const t_parse_data *pd)
 		printf("Pipe flag: %d\n", cmd->next_is_pipe);
 		printf("PID Filename Output: %d\n", (int)cmd->pid_filename_output);
 
-		/* Print argv[] */
+		// Print argv[]
 		printf("Arguments:");
 		if (!cmd->argv[0]) {
 			printf(" (none)\n");
@@ -148,7 +153,7 @@ void	print_parsed_data(const t_parse_data *pd)
 			printf("\n");
 		}
 
-		/* If there were sub‑commands (shouldn't happen for leaves) */
+		// If there were sub‑commands (shouldn't happen for leaves)
 		if (cmd->command_count > 0) {
 			printf("  (Unexpected subcommands count = %d)\n", cmd->command_count);
 		}
