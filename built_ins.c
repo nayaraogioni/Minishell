@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 17:17:58 by dopereir          #+#    #+#             */
-/*   Updated: 2025/07/06 19:16:45 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/07/19 02:12:13 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,25 +30,13 @@ int	ft_cd(char **argv, t_env **env_list)
 	else
 		target = argv[1];
 	if (!target)
-	{
-		fprintf(stderr, "minishell: cd: HOME or OLDPWD not set\n");
 		return (1);
-	}
 	if (!getcwd(oldpwd, sizeof(oldpwd)))
-	{
-		perror("minishell: cd");
-		return (1);
-	}
+		return (perror("minishell: cd"), 1);
 	if (chdir(target) != 0)
-	{
-		perror("minishell: cd");
-		return (1);
-	}
+		return (perror("minishell: cd"), 1);
 	if (!getcwd(newpwd, sizeof(newpwd)))
-	{
-		perror("minishell: cd");
-		return (1);
-	}
+		return (perror("minishell: cd"), 1);
 	ft_setenv(env_list, "OLDPWD", oldpwd);
 	ft_setenv(env_list, "PWD", newpwd);
 	return (0);

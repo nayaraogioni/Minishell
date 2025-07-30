@@ -44,7 +44,7 @@ typedef struct s_lexer
 	int		token_count;
 	char	*path;
 	char	*args[MAX_ARGS];
-	int	exit_status; // status do ultimo comando executado
+	int		exit_status; // status do ultimo comando executado
 	pid_t	last_bg_pid;  // PID do ultimo processo em background (para casos de fork ou sleep por ex)
 }			t_lexer;
 

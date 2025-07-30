@@ -31,7 +31,8 @@ typedef struct s_command //mkdir test argv[0]
 	char				*output_file; // Output file for redirection
 	char				*argv[MAX_ARGS]; // Arguments for the command
 	char				*filename; //path to file redirection
-	char				*hd_delim;
+	char				*hd_delim; //delimiter to use on heredoc
+	int					heredoc_fd;
 	pid_t				pid_filename_output;
 	// para pipelines e sequencias
 	struct				s_command	**commands; // arrray de comandos filhos

@@ -51,7 +51,7 @@ char	*cmd_path_generator(char *cmd_name)
 
 	if (!cmd_name || !*cmd_name)
 		return (NULL);
-	result = NULL;
+	result = cmd_name;
 	paths = ft_split(getenv("PATH"), ':');
 	if (!paths)
 		return (NULL);

@@ -53,7 +53,7 @@ int	has_logical_operators(t_lexer *lexer)
 	return (0);
 }
 
-// conta quantos argumentos sao palavras (T_WORD) e nao redirecionamentos 
+// conta quantos argumentos sao palavras (T_WORD) e nao redirecionamentos
 int	count_args(t_lexer *lexer)
 {
 	int	i;
@@ -79,79 +79,83 @@ int	count_args(t_lexer *lexer)
 	}
 	return (count);
 }
-void free_command(t_command *cmd)
+
+void	free_command(t_command *cmd)
 {
-    int i;
-    
-    if (!cmd)
-        return;
-    
-    // Free basic string fields
-    if (cmd->name)
-    {
-        free(cmd->name);
-        cmd->name = NULL;
-    }
-    if (cmd->path)
-    {
-        free(cmd->path);
-        cmd->path = NULL;
-    }
-    if (cmd->input_file)
-    {
-        free(cmd->input_file);
-        cmd->input_file = NULL;
-    }
-    if (cmd->output_file)
-    {
-        free(cmd->output_file);
-        cmd->output_file = NULL;
-    }
-    if (cmd->filename)
-    {
-        free(cmd->filename);
-        cmd->filename = NULL;
-    }
-    
-    // Free argv array
-    i = 0;
-    while (i < MAX_ARGS && cmd->argv[i])
-    {
-        free(cmd->argv[i]);
-        cmd->argv[i] = NULL;
-        i++;
-    }
-    
-    // Free commands array
-    if (cmd->commands)
-    {
-        i = 0;
-        while (i < cmd->command_count && i < MAX_ARGS)
-        {
-            if (cmd->commands[i])
-            {
-                free_command(cmd->commands[i]);
-                cmd->commands[i] = NULL;
-            }
-            i++;
-        }
-        free(cmd->commands);
-        cmd->commands = NULL;
-    }
-    
-    // Free left and right commands (for tree structure)
-    if (cmd->left)
-    {
-        free_command(cmd->left);
-        cmd->left = NULL;
-    }
-    if (cmd->right)
-    {
-        free_command(cmd->right);
-        cmd->right = NULL;
-    }
-    
-    free(cmd);
+	int	i;
+
+	if (!cmd)
+		return;
+	if (cmd->name)
+	{
+		free(cmd->name);
+		cmd->name = NULL;
+	}
+	if (cmd->path)
+	{
+		free(cmd->path);
+		cmd->path = NULL;
+	}
+	if (cmd->input_file)
+	{
+		free(cmd->input_file);
+		cmd->input_file = NULL;
+	}
+	if (cmd->output_file)
+	{
+		free(cmd->output_file);
+		cmd->output_file = NULL;
+	}
+	if (cmd->filename)
+	{
+		free(cmd->filename);
+		cmd->filename = NULL;
+	}
+	if (cmd->hd_delim)
+	{
+		free(cmd->hd_delim);
+		cmd->hd_delim = NULL;
+	}
+
+	// Free argv array
+	i = 0;
+	while (i < MAX_ARGS && cmd->argv[i])
+	{
+		free(cmd->argv[i]);
+		cmd->argv[i] = NULL;
+		i++;
+	}
+
+	// Free commands array
+	if (cmd->commands)
+	{
+		i = 0;
+		while (i < cmd->command_count && i < MAX_ARGS)
+		{
+			if (cmd->commands[i])
+			{
+				free_command(cmd->commands[i]);
+				cmd->commands[i] = NULL;
+			}
+			i++;
+		}
+		free(cmd->commands);
+		cmd->commands = NULL;
+	}
+
+	// Free left and right commands (for tree structure)
+	if (cmd->left)
+	{
+		free_command(cmd->left);
+		cmd->left = NULL;
+	}
+	if (cmd->right)
+	{
+		free_command(cmd->right);
+		cmd->right = NULL;
+	}
+
+	free(cmd);
 }
 
 int	find_next_pipe(t_lexer *lexer, int start)

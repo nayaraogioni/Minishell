@@ -50,7 +50,7 @@ t_command *init_command(void)
 
 t_command	*parse_simple_command(t_lexer *lexer)
 {
-	printf("**** ENTER PARSE_SIMPLE_CMD ******\n");
+	//printf("**** ENTER PARSE_SIMPLE_CMD ******\n");
 	t_command	*cmd;
 	int			args_count;
 	int			i;
@@ -184,7 +184,7 @@ t_command	*parse_simple_command(t_lexer *lexer)
 
 t_command	*parse_pipeline(t_lexer *lexer)
 {
-	printf("**** ENTER PARSE_PIPELINE ******\n");
+	//printf("**** ENTER PARSE_PIPELINE ******\n");
 	t_command	*pipeline_cmd;
 	t_lexer		*sublexer;
 	int		start;
@@ -241,9 +241,9 @@ t_command	*parse_pipeline(t_lexer *lexer)
 	return pipeline_cmd;
 }
 
-t_command	*parse_sequence(t_lexer *lexer)
+t_command	*parse_sequence(t_lexer *lexer, t_env *my_env)
 {
-	printf("**** ENTER PARSE_SEQUENCE ******\n");
+	//printf("**** ENTER PARSE_SEQUENCE ******\n");
 	t_command	*sequence_cmd;
 	t_lexer		*sublexer;
 	int		start;
@@ -278,7 +278,7 @@ t_command	*parse_sequence(t_lexer *lexer)
 			free_command(sequence_cmd);
 			return NULL;
 		}
-		sequence_cmd->commands[sequence_cmd->command_count] = parse_function(sublexer);
+		sequence_cmd->commands[sequence_cmd->command_count] = parse_function(sublexer, my_env);
 		if (!sequence_cmd->commands[sequence_cmd->command_count])
 		{
 			free_sublexer(sublexer);
@@ -294,18 +294,18 @@ t_command	*parse_sequence(t_lexer *lexer)
 	return sequence_cmd;
 }
 
-t_command	*parse_function(t_lexer *lexer)
+t_command	*parse_function(t_lexer *lexer, t_env *my_env)
 {
 	if (has_variables(lexer))
 	{
-		if (expand_variables(lexer) == -1)
+		if (expand_variables(lexer, my_env) == -1)
 		{
 			printf("minishell: error expanding variables\n");
 			return NULL;
 		}
 	}
 	if (has_logical_operators(lexer))
-		return parse_sequence(lexer);
+		return parse_sequence(lexer, my_env);
 	if (has_pipes(lexer))
 		return parse_pipeline(lexer);
 	else
