@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 08:48:55 by dopereir          #+#    #+#             */
-/*   Updated: 2025/07/04 23:25:52 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/07/19 01:48:27 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ void	free_parsed_data(t_parse_data *parsed_data)
 // > format_parsed_data(t_lexer *lexer)
 // copy the data returned by parse_function into a t_parse_data structure,
 // and free the original data
-t_parse_data	format_parsed_data(t_lexer *lexer)
+t_parse_data	format_parsed_data(t_lexer *lexer, t_env *my_env)
 {
 	t_parse_data	parsed_data;
 	t_command		*root;
@@ -104,7 +104,7 @@ t_parse_data	format_parsed_data(t_lexer *lexer)
 	i = 0;
 	while (i < MAX_ARGS)
 		parsed_data.commands[i++] = NULL;
-	root = parse_function(lexer);
+	root = parse_function(lexer, my_env);
 	if (!root)
 		return (parsed_data);
 	collect_commands(root, &parsed_data);

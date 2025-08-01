@@ -88,13 +88,6 @@ int	set_pipe(int *read_fd, int *write_fd)
 	return (0);
 }
 
-void	heredoc_sig_handler(int ignore)
-{
-	ignore = 1;
-	g_heredoc_sig = 1;
-	write(ignore, "\n", 1);
-}
-
 //SET A SIGINT HANDLER SO IF ^C during the heredoc cancels the here-doc
 /*int	set_heredoc(char *delim)
 {

@@ -6,13 +6,16 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 22:48:16 by dopereir          #+#    #+#             */
-/*   Updated: 2025/07/06 17:03:38 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/07/19 02:13:33 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "lexer.h"
+#include "libft/libft.h"
 #include "minishell.h"
 #include "parser.h"
+#include <asm-generic/errno-base.h>
+#include <errno.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -44,7 +47,7 @@ void	exec_parsed_cmds(t_parse_data *pd, t_env **env_list)
 	pid_t	pids[MAX_ARGS];
 	int		curr_pipe[2];
 	int		i;
-	int		heredoc_fd;
+	//int		heredoc_fd;
 	int		make_pipe;
 	bool	is_parent_bt;
 	char	**child_env;
@@ -63,31 +66,36 @@ void	exec_parsed_cmds(t_parse_data *pd, t_env **env_list)
 			if (cmd->output_file)
 				set_output(cmd);
 			run_parent_built(cmd, env_list);
-			printf("Entered parent built in part, cmd->name: %s\n", cmd->name);
+			//printf("Entered parent built in part, cmd->name: %s\n", cmd->name);
 			break ;
 		}
 		if (make_pipe && pipe(curr_pipe) < 0)
 		{
-			printf("Error on set_pipe\n");
+			//printf("Error on set_pipe\n");
 			exit(1);
 		}
 		pids[i] = fork();//FORK THE CHILD
 		if (pids[i] < 0)
 		{
-			perror("fork at exec_commands");
+			//perror("fork at exec_commands");
 			exit(1);
 		}
 
 		if (pids[i] == 0) //CHILD RUNTIME
 		{
 			//input setting
-			if (cmd->hd_delim) //IS HEREDOC?
+			/*if (cmd->hd_delim) //IS HEREDOC?
 			{
-				heredoc_fd = set_heredoc(cmd->hd_delim);
+				heredoc_fd = set_heredoc(cmd->hd_delim);//CAUSES CONFLICT W MAIN
 				if (heredoc_fd < 0)
 					exit(1);
 				dup2(heredoc_fd, STDIN_FILENO);
 				close(heredoc_fd);
+			}*/
+			if (cmd->heredoc_fd >= 0)
+			{
+				dup2(cmd->heredoc_fd, STDIN_FILENO);
+				close(cmd->heredoc_fd);
 			}
 			else if (cmd->input_file) //SETUP STDIN
 			{
@@ -124,12 +132,33 @@ void	exec_parsed_cmds(t_parse_data *pd, t_env **env_list)
 
 
 			cmd->path = cmd_path_generator(cmd->name);
+			char	*str_test = ft_strdup(cmd->name);
 			child_env = env_to_array(*env_list);
 			execve(cmd->path, cmd->argv, child_env);
+
+			int	err = errno;
 			free (cmd->path);
 			free_env_array(child_env, list_lenght(*env_list));//WRITE LIST_LENGHT
-			perror("execve failed");// only if exec fails
-			exit(127);
+			//perror("execve failed");// only if exec fails
+			if (err == ENOENT)
+			{
+				printf("Command '%s' not found.\n", str_test);
+				free (str_test);
+				exit(127);
+			}
+			else if (err == EACCES)
+			{
+				printf("Permission denied: %s\n", str_test);
+				free (str_test);
+				exit(126);
+			}
+			else if (err == EFAULT)
+			{
+				printf("Error executing '%s': %s\n", str_test, strerror(err));
+				free (str_test);
+				exit(1);
+			}
+			free(str_test);
 		}
 		//PARENT RUNTIME
 		if (make_pipe)

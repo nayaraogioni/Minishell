@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expand_var.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nayara <nayara@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 17:46:12 by nayara            #+#    #+#             */
-/*   Updated: 2025/07/08 13:24:43 by nayara           ###   ########.fr       */
+/*   Updated: 2025/07/19 01:48:37 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,16 +33,29 @@ char	*get_special_var(char *var_name, t_lexer *lexer)
 		return (ft_strdup(""));
 	else if (ft_strcmp(var_name, "!") == 0)
 	{
-		 if (lexer->last_bg_pid > 0)
-		 	return (ft_itoa(lexer->last_bg_pid));
+		if (lexer->last_bg_pid > 0)
+			return (ft_itoa(lexer->last_bg_pid));
 		else
 			return (ft_strdup(""));
 	}
 	return (NULL);
 }
-int	expand_variables(t_lexer *lexer)
+
+int	set_value(char *var_value, char	*var_name, t_lexer *lexer, t_env *my_env)
 {
-	int	i;
+	var_value = get_special_var((char *)var_name, lexer);
+	if (!var_value)
+		var_value = ft_getenv(my_env, var_name);
+	if (!var_value)
+		var_value = ft_strdup("");
+	if (!var_value)
+		return (-1);
+	return (0);
+}
+
+int	expand_variables(t_lexer *lexer, t_env *my_env)
+{
+	int		i;
 	char	*var_name;
 	char	*var_value;
 	char	*old_text;
@@ -52,12 +65,12 @@ int	expand_variables(t_lexer *lexer)
 	{
 		if (lexer->tokens[i].type == T_VAR)
 		{
-			var_name = lexer->tokens[i].text + 1; // pula o $
+			var_name = lexer->tokens[i].text + 1;
 			var_value = get_special_var((char *)var_name, lexer);
 			if (!var_value)
-				var_value = getenv(var_name);
+				var_value = ft_getenv(my_env, var_name);
 			if (!var_value)
-				var_value = ft_strdup(""); // Variável não encontrada
+				var_value = ft_strdup("");
 			if (!var_value)
 				return (-1);
 			old_text = lexer->tokens[i].text;
