@@ -101,6 +101,7 @@ t_parse_data	format_parsed_data(t_lexer *lexer, t_env *my_env)
 	int				i;
 
 	parsed_data.n_cmds = 0;
+	parsed_data.pd_exit_status = 0;
 	i = 0;
 	while (i < MAX_ARGS)
 		parsed_data.commands[i++] = NULL;
@@ -140,7 +141,7 @@ void	print_parsed_data(const t_parse_data *pd)
 		printf("Output Redir: %s\n", cmd->output_file ? cmd->output_file : "(none)");
 		printf("Heredoc Delimiter: %s\n", cmd->hd_delim ? cmd->hd_delim : "(none)");
 		printf("Pipe flag: %d\n", cmd->next_is_pipe);
-		printf("PID Filename Output: %d\n", (int)cmd->pid_filename_output);
+		printf("Heredoc FD: %d\n", (int)cmd->heredoc_fd);
 
 		// Print argv[]
 		printf("Arguments:");

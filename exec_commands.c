@@ -47,7 +47,6 @@ void	exec_parsed_cmds(t_parse_data *pd, t_env **env_list)
 	pid_t	pids[MAX_ARGS];
 	int		curr_pipe[2];
 	int		i;
-	//int		heredoc_fd;
 	int		make_pipe;
 	bool	is_parent_bt;
 	char	**child_env;
@@ -71,34 +70,27 @@ void	exec_parsed_cmds(t_parse_data *pd, t_env **env_list)
 		}
 		if (make_pipe && pipe(curr_pipe) < 0)
 		{
-			//printf("Error on set_pipe\n");
 			exit(1);
 		}
 		pids[i] = fork();//FORK THE CHILD
 		if (pids[i] < 0)
 		{
-			//perror("fork at exec_commands");
 			exit(1);
 		}
 
 		if (pids[i] == 0) //CHILD RUNTIME
 		{
+			//write(STDERR_FILENO, "ENTER CHILD RUNTIME\n", 20);
 			//input setting
-			/*if (cmd->hd_delim) //IS HEREDOC?
-			{
-				heredoc_fd = set_heredoc(cmd->hd_delim);//CAUSES CONFLICT W MAIN
-				if (heredoc_fd < 0)
-					exit(1);
-				dup2(heredoc_fd, STDIN_FILENO);
-				close(heredoc_fd);
-			}*/
 			if (cmd->heredoc_fd >= 0)
 			{
+				printf("GOT HERE HEREDOC FD\n");
 				dup2(cmd->heredoc_fd, STDIN_FILENO);
 				close(cmd->heredoc_fd);
 			}
 			else if (cmd->input_file) //SETUP STDIN
 			{
+				printf("GOT HERE input_file\n");
 				if (set_input(cmd) == -1)
 					exit(1);
 			}
@@ -107,29 +99,32 @@ void	exec_parsed_cmds(t_parse_data *pd, t_env **env_list)
 				dup2(prev_fd, STDIN_FILENO);
 				close(prev_fd);
 			}
-
 			//output setting
 			if (cmd->output_file) //SETUP STDOUT
 			{
+				printf("GOT HERE output_file\n");
 				if (set_output(cmd) == -1)
 					exit(1);
 			}
 			else if (make_pipe)
+			{
+				printf("GOT DUP2\n");
 				dup2(curr_pipe[1], STDOUT_FILENO);
+			}
 			if (make_pipe)
 			{
+				printf("GOT CLOSE PIPEFD 0 AND 1\n");
 				close(curr_pipe[0]);
 				close(curr_pipe[1]);
 			}
 
-			//child-safe built in dispatcher or exec not builtin command
 			if (!ft_strcmp(cmd->name, "env"))
 			{
+				printf("CALLED FT_ENV\n");
 				ft_env(*env_list);
 				exit(0);
 			}
 			//add for pwd and echo later.
-
 
 			cmd->path = cmd_path_generator(cmd->name);
 			char	*str_test = ft_strdup(cmd->name);
@@ -142,20 +137,24 @@ void	exec_parsed_cmds(t_parse_data *pd, t_env **env_list)
 			//perror("execve failed");// only if exec fails
 			if (err == ENOENT)
 			{
+				//printf("GOT IN ENOENT CHECK\n");
 				printf("Command '%s' not found.\n", str_test);
 				free (str_test);
+				//pd->pd_exit_status = 127;
 				exit(127);
 			}
 			else if (err == EACCES)
 			{
 				printf("Permission denied: %s\n", str_test);
 				free (str_test);
+				//pd->pd_exit_status = 126;
 				exit(126);
 			}
 			else if (err == EFAULT)
 			{
 				printf("Error executing '%s': %s\n", str_test, strerror(err));
 				free (str_test);
+				//pd->pd_exit_status = 1;
 				exit(1);
 			}
 			free(str_test);
@@ -169,6 +168,15 @@ void	exec_parsed_cmds(t_parse_data *pd, t_env **env_list)
 	}
 	if (prev_fd != -1)
 		close(prev_fd);
+	int	wstatus;
 	for (i = 0; i < pd->n_cmds; i++)
-		waitpid(pids[i], NULL, 0);
+	{
+		if (waitpid(pids[i], &wstatus, 0) < 0)
+			continue ;
+		if (WIFEXITED(wstatus))
+			pd->pd_exit_status = WEXITSTATUS(wstatus);
+		else if (WIFSIGNALED(wstatus))
+			pd->pd_exit_status = 128 + WTERMSIG(wstatus);
+	}
+	ft_setenv(env_list, "?", ft_itoa(pd->pd_exit_status));
 }

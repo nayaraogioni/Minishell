@@ -55,8 +55,8 @@ void	env_init(t_env **my_env, char **envp)
 	}
 }
 
-//assumes tat env is correctly created and populated with var envs
-//replicates getenv behaviour
+//assumes that env is correctly created and populated with var envs
+//replicates original getenv behaviour
 char	*ft_getenv(t_env *env, char *key)
 {
 	while (env)

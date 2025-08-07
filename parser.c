@@ -39,6 +39,7 @@ t_command *init_command(void)
 	cmd->next_is_pipe = 0;
 	cmd->next_is_and = 0;
 	cmd->hd_delim = NULL;
+	cmd->heredoc_fd = -1;
 	i = 0;
 	while (i < MAX_ARGS)
 	{
@@ -48,7 +49,7 @@ t_command *init_command(void)
 	return (cmd);
 }
 
-t_command	*parse_simple_command(t_lexer *lexer)
+t_command	*parse_simple_command(t_lexer *lexer, t_env *env_list)
 {
 	//printf("**** ENTER PARSE_SIMPLE_CMD ******\n");
 	t_command	*cmd;
@@ -56,6 +57,7 @@ t_command	*parse_simple_command(t_lexer *lexer)
 	int			i;
 	int			arg_index;
 
+	(void)env_list;
 	i = 0;
 	arg_index = 0;
 	cmd = init_command();
@@ -182,7 +184,7 @@ t_command	*parse_simple_command(t_lexer *lexer)
 	return (cmd);
 }
 
-t_command	*parse_pipeline(t_lexer *lexer)
+t_command	*parse_pipeline(t_lexer *lexer, t_env *my_env)
 {
 	//printf("**** ENTER PARSE_PIPELINE ******\n");
 	t_command	*pipeline_cmd;
@@ -221,7 +223,7 @@ t_command	*parse_pipeline(t_lexer *lexer)
 			return NULL;
 		}
 		{
-			t_command	*leaf = parse_simple_command(sublexer);
+			t_command	*leaf = parse_simple_command(sublexer, my_env);
 			if (!leaf)
 			{
 				free_sublexer(sublexer);
@@ -307,7 +309,7 @@ t_command	*parse_function(t_lexer *lexer, t_env *my_env)
 	if (has_logical_operators(lexer))
 		return parse_sequence(lexer, my_env);
 	if (has_pipes(lexer))
-		return parse_pipeline(lexer);
+		return parse_pipeline(lexer, my_env);
 	else
-		return parse_simple_command(lexer);
+		return parse_simple_command(lexer, my_env);
 }
