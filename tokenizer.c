@@ -3,14 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: nayara <nayara@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:28:33 by dopereir          #+#    #+#             */
-/*   Updated: 2025/06/25 22:59:50 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/07/08 14:24:25 by nayara           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "libft/libft.h"
 #include "minishell.h"
+#include <time.h>
 
 bool	bool_changer(bool key)
 {
@@ -120,7 +122,7 @@ t_token_type	determine_type(char *token_text)
 		return (T_REDIR_HEREDOC);
 	else if (ft_strcmp(token_text, "&&") == 0)
 		return (T_AND);
-	else if (token_text[0] == '$' && ft_strlen(token_text) > 1)
+	else if (token_text[0] == '$')
 		return (T_VAR);
 	else if (token_text[0] == '*')
 		return (T_WILDCARD);
@@ -151,20 +153,41 @@ void	remove_quotes_from_token(t_token *token)
 
 int	add_token(t_token **tokens, int index, char *start, int len)
 {
-	(*tokens)[index].text = malloc(len + 1);
-	if (!(*tokens)[index].text)
+	char	*txt;
+	int j;
+
+	txt = malloc(len + 1);
+	if (!txt)
 	{
-		for (int j = 0; j < index; j++)
-				free((*tokens)[j].text);
-			free(*tokens);
-			*tokens = NULL;
-			return (-1);
+		j = 0;
+		while (j < index)
+		{
+			free((*tokens)[j].text);
+			j++;
+		}
+		free(*tokens);
+		*tokens = NULL;
+		return (-1);
 	}
-	ft_strncpy((*tokens)[index].text, start, len);
-	(*tokens)[index].text[len] = '\0';
+	ft_strncpy(txt, start, len);
+	txt[len] = '\0';
+	(*tokens)[index].text = txt;
 	remove_quotes_from_token(&(*tokens)[index]);
 	(*tokens)[index].type = determine_type((*tokens)[index].text);
 	return (0);
+}
+
+static void	free_tokens_partial(t_token *tokens, int count)
+{
+	int	j;
+
+	j = 0;
+	while (j < count)
+	{
+		free (tokens[j].text);
+		j++;
+	}
+	free (tokens);
 }
 
 t_token	*split_tokens(char *str, char delim, t_lexer *lexer)
@@ -175,6 +198,7 @@ t_token	*split_tokens(char *str, char delim, t_lexer *lexer)
 	int		len;
 	int		i;
 	char	quote_char;
+	int		rc;
 
 	s = str;
 	quote_char = '\0';
@@ -189,11 +213,10 @@ t_token	*split_tokens(char *str, char delim, t_lexer *lexer)
 		if (*s == '\0')
 			break ;
 		start = s;
-		if (*s == '$' && *(s + 1) != delim)
+		if (*s == '$' && *(s + 1))
 		{
-			start = s;
 			s++;
-			while (*s && (ft_isalnum(*s) || *s == '_'))
+			while (*s && (ft_isalnum(*s) || *s == '_' || *s == '?' || *s == '!' || *s == '@' || *s == '#' || *s == '$'))
 				s++;
 			len = s - start;
 		}
@@ -224,28 +247,42 @@ t_token	*split_tokens(char *str, char delim, t_lexer *lexer)
 				s++;
 			len = s - start;
 		}
-		add_token(&tokens, i, start, len);
+		rc = add_token(&tokens, i, start, len);
+		if (rc < 0)
+		{
+			free_tokens_partial(tokens, i);
+			lexer->tokens = NULL;
+			lexer->token_count = 0;
+			return (NULL);
+		}
 		i++;
 	}
+	lexer->token_count = i;
 	lexer->tokens = tokens;
 	return (tokens);
 }
 
 void	lexing_input(t_lexer *lexer, char delim)
 {
-	if (!validate_quotes(lexer->input)) // validade_quotes retorna 1 se bem sucedida
-	{
-		lexer->token_count = 0;
-		lexer->tokens = NULL;
-		return ;
-	}
 	if (lexer->tokens && lexer->token_count > 0)
 	{
 		clear_token(lexer->tokens, lexer->token_count);
 		lexer->tokens = NULL;
+		lexer->token_count = 0;
+	}
+	if (!validate_quotes(lexer->input)) // validade_quotes retorna 1 se bem sucedida
+	{
+		lexer->tokens = NULL;
+		lexer->token_count = 0;
+		return ;
 	}
 	lexer->token_count = token_counter(lexer->input, delim);
-	lexer->tokens = split_tokens(lexer->input, delim, lexer);
+	if (!split_tokens(lexer->input, delim, lexer))
+	{
+		lexer->tokens = NULL;
+		lexer->token_count = 0;
+		return ;
+	}
 }
 
 //function to print tokens for debugging

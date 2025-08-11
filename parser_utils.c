@@ -3,13 +3,12 @@
 /*                                                        :::      ::::::::   */
 /*   parser_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: nayara <nayara@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/28 17:22:24 by dopereir          #+#    #+#             */
-/*   Updated: 2025/06/30 22:49:18 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/07/08 14:27:18 by nayara           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #include "minishell.h"
 
@@ -21,6 +20,21 @@ int	has_pipes(t_lexer *lexer)
 	while (i < lexer->token_count)
 	{
 		if (lexer->tokens[i].type == T_PIPE)
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
+//check if has T_VAR type, 1 if has, 0 if don't
+int	has_variables(t_lexer *lexer)
+{
+	int	i;
+
+	i = 0;
+	while (i < lexer->token_count)
+	{
+		if (lexer->tokens[i].type == T_VAR)
 			return (1);
 		i++;
 	}
@@ -67,79 +81,83 @@ int	count_args(t_lexer *lexer)
 	}
 	return (count);
 }
-void free_command(t_command *cmd)
+
+void	free_command(t_command *cmd)
 {
-    int i;
+	int	i;
 
-    if (!cmd)
-        return;
+	if (!cmd)
+		return;
+	if (cmd->name)
+	{
+		free(cmd->name);
+		cmd->name = NULL;
+	}
+	if (cmd->path)
+	{
+		free(cmd->path);
+		cmd->path = NULL;
+	}
+	if (cmd->input_file)
+	{
+		free(cmd->input_file);
+		cmd->input_file = NULL;
+	}
+	if (cmd->output_file)
+	{
+		free(cmd->output_file);
+		cmd->output_file = NULL;
+	}
+	if (cmd->filename)
+	{
+		free(cmd->filename);
+		cmd->filename = NULL;
+	}
+	if (cmd->hd_delim)
+	{
+		free(cmd->hd_delim);
+		cmd->hd_delim = NULL;
+	}
 
-    // Free basic string fields
-    if (cmd->name)
-    {
-        free(cmd->name);
-        cmd->name = NULL;
-    }
-    if (cmd->path)
-    {
-        free(cmd->path);
-        cmd->path = NULL;
-    }
-    if (cmd->input_file)
-    {
-        free(cmd->input_file);
-        cmd->input_file = NULL;
-    }
-    if (cmd->output_file)
-    {
-        free(cmd->output_file);
-        cmd->output_file = NULL;
-    }
-    if (cmd->filename)
-    {
-        free(cmd->filename);
-        cmd->filename = NULL;
-    }
+	// Free argv array
+	i = 0;
+	while (i < MAX_ARGS && cmd->argv[i])
+	{
+		free(cmd->argv[i]);
+		cmd->argv[i] = NULL;
+		i++;
+	}
 
-    // Free argv array
-    i = 0;
-    while (i < MAX_ARGS && cmd->argv[i])
-    {
-        free(cmd->argv[i]);
-        cmd->argv[i] = NULL;
-        i++;
-    }
+	// Free commands array
+	if (cmd->commands)
+	{
+		i = 0;
+		while (i < cmd->command_count && i < MAX_ARGS)
+		{
+			if (cmd->commands[i])
+			{
+				free_command(cmd->commands[i]);
+				cmd->commands[i] = NULL;
+			}
+			i++;
+		}
+		free(cmd->commands);
+		cmd->commands = NULL;
+	}
 
-    // Free commands array
-    if (cmd->commands)
-    {
-        i = 0;
-        while (i < cmd->command_count && i < MAX_ARGS)
-        {
-            if (cmd->commands[i])
-            {
-                free_command(cmd->commands[i]);
-                cmd->commands[i] = NULL;
-            }
-            i++;
-        }
-        free(cmd->commands);
-        cmd->commands = NULL;
-    }
+	// Free left and right commands (for tree structure)
+	if (cmd->left)
+	{
+		free_command(cmd->left);
+		cmd->left = NULL;
+	}
+	if (cmd->right)
+	{
+		free_command(cmd->right);
+		cmd->right = NULL;
+	}
 
-    // Free left and right commands (for tree structure)
-    if (cmd->left)
-    {
-        free_command(cmd->left);
-        cmd->left = NULL;
-    }
-    if (cmd->right)
-    {
-        free_command(cmd->right);
-        cmd->right = NULL;
-    }
-
-    free(cmd);
+	free(cmd);
 }
 
 int	find_next_pipe(t_lexer *lexer, int start)

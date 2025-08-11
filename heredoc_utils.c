@@ -10,81 +10,104 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "libft/libft.h"
 #include "minishell.h"
+#include "parser.h"
+#include <asm-generic/ioctls.h>
+#include <readline/readline.h>
+#include <signal.h>
+#include <stdlib.h>
+#include <time.h>
+#include <unistd.h>
 
-static int	create_pipe(int pipefd[2])
+void	heredoc_sig_handler(int ignore)
 {
-	if (pipe(pipefd) < 0)
+	(void)ignore;
+	g_heredoc_sig = 1;
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
+	rl_done = 1;
+}
+
+static void	heredoc_loop_helper(t_command *cmd, int pipefd[2], t_env *env)
+{
+	char	*line;
+	char	*expanded_line;
+
+	while (!g_heredoc_sig)
 	{
-		perror("Pipe (heredoc)");
+		line = readline("> ");
+		if (!line)
+		{
+			printf("minishell: warning: here-document delimited by "\
+				"end-of-file (wanted '%s')\n", cmd->hd_delim);
+			break ;
+		}
+		if (ft_strcmp(line, cmd->hd_delim) == 0)
+		{
+			free(line);
+			break ;
+		}
+		expanded_line = expand_heredoc_line(line, env);
+		free(line);
+		write(pipefd[1], expanded_line, ft_strlen(expanded_line));
+		write(pipefd[1], "\n", 1);
+		free(expanded_line);
+	}
+}
+
+static void	heredoc_setup_signal_helper(struct sigaction *orig_int)
+{
+	struct sigaction	sa;
+
+	sa.sa_handler = heredoc_sig_handler;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = 0;
+	sigaction(SIGINT, &sa, orig_int);
+}
+
+static int	process_heredoc(t_command *cmd, t_env *env)
+{
+	int	pipefd[2];
+
+	if (pipe(pipefd) < 0)
+		return (-1);
+	cmd->heredoc_fd = pipefd[0];
+	g_heredoc_sig = 0;
+	heredoc_loop_helper(cmd, pipefd, env);
+	close(pipefd[1]);
+	if (g_heredoc_sig)
+	{
+		close(cmd->heredoc_fd);
 		return (-1);
 	}
 	return (0);
 }
 
-static void	restore_signals(const struct sigaction *orig)
+int	handle_all_heredocs(t_parse_data *pd, t_env *env)
 {
-	sigaction(SIGINT, orig, NULL);
-	sigaction(SIGQUIT, &(struct sigaction){.sa_handler = SIG_DFL}, NULL);
-}
-
-static void	setup_signals(struct sigaction *orig)
-{
-	struct sigaction	sa;
-	struct sigaction	ign;
-
-	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = SA_RESTART;
-	sa.sa_handler = heredoc_sig_handler;
-	sigaction(SIGINT, &sa, orig);
-	ign.sa_handler = SIG_IGN;
-	sigemptyset(&ign.sa_mask);
-	ign.sa_flags = 0;
-	sigaction(SIGQUIT, &ign, NULL);
-}
-
-static int	read_heredoc(int write_fd, char *delim, int *got_sig)
-{
-	char	*line;
-
-	while (!*got_sig)
-	{
-		line = readline("> ");
-		if (!line)
-		{
-			*got_sig = 1;
-			break ;
-		}
-		if (ft_strcmp(line, delim) == 0)
-		{
-			free(line);
-			break ;
-		}
-		write(write_fd, line, strlen(line));
-		write(write_fd, "\n", 1);
-		free(line);
-	}
-	return (*got_sig);
-}
-
-int	set_heredoc(char *delim)
-{
-	int					pipefd[2];
 	struct sigaction	orig_int;
-	int					aborted;
+	t_command			*cmd;
+	int					i;
 
-	if (create_pipe(pipefd) < 0)
-		return (-1);
-	setup_signals(&orig_int);
-	aborted = read_heredoc(pipefd[1], delim, (int *)&g_heredoc_sig);
-	restore_signals(&orig_int);
-	close(pipefd[1]);
-	if (aborted)
+	i = 0;
+	heredoc_setup_signal_helper(&orig_int);
+	while (i < pd->n_cmds)
 	{
-		ft_printf("minishell: warning: here-document "
-			"delimited by end-of-file (wanted '%s')\n", delim);
-		g_heredoc_sig = 0;
-		return (pipefd[0]);
+		cmd = pd->commands[i];
+		if (!cmd->hd_delim)
+		{
+			i++;
+			continue ;
+		}
+		if (process_heredoc(cmd, env) < 0)
+		{
+			sigaction(SIGINT, &orig_int, NULL);
+			return (-1);
+		}
+		i++;
 	}
-	return (pipefd[0]);
+	sigaction(SIGINT, &orig_int, NULL);
+	return (0);
 }

@@ -6,7 +6,7 @@
 #    By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/10 20:59:32 by dopereir          #+#    #+#              #
-#    Updated: 2025/07/06 22:54:40 by dopereir         ###   ########.fr        #
+#    Updated: 2025/08/01 20:39:53 by dopereir         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -53,6 +53,7 @@ Sources = calculate_padding_bonus.c \
 		ft_strcspn.c \
 		ft_strdup.c \
 		ft_striteri.c \
+		ft_strjoin_free.c \
 		ft_strjoin.c \
 		ft_strlcat.c \
 		ft_strlcpy.c \

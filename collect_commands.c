@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 08:48:55 by dopereir          #+#    #+#             */
-/*   Updated: 2025/07/04 23:25:52 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/07/19 01:48:27 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,17 +94,18 @@ void	free_parsed_data(t_parse_data *parsed_data)
 // > format_parsed_data(t_lexer *lexer)
 // copy the data returned by parse_function into a t_parse_data structure,
 // and free the original data
-t_parse_data	format_parsed_data(t_lexer *lexer)
+t_parse_data	format_parsed_data(t_lexer *lexer, t_env *my_env)
 {
 	t_parse_data	parsed_data;
 	t_command		*root;
 	int				i;
 
 	parsed_data.n_cmds = 0;
+	parsed_data.pd_exit_status = 0;
 	i = 0;
 	while (i < MAX_ARGS)
 		parsed_data.commands[i++] = NULL;
-	root = parse_function(lexer);
+	root = parse_function(lexer, my_env);
 	if (!root)
 		return (parsed_data);
 	collect_commands(root, &parsed_data);
@@ -114,7 +115,7 @@ t_parse_data	format_parsed_data(t_lexer *lexer)
 
 /* ------------ TESTING FUNCTIONS -------------*/
 
-static const char	*type_to_string(t_token_type type)
+/*static const char	*type_to_string(t_token_type type)
 {
 	switch (type) {
 		case T_WORD:			return "WORD";
@@ -136,11 +137,14 @@ void	print_parsed_data(const t_parse_data *pd)
 		printf("Type: %s\n", type_to_string(cmd->type));
 		printf("Name: %s\n", cmd->name ? cmd->name : "(null)");
 		printf("Path: %s\n", cmd->path ? cmd->path : "(null)");
-		printf("Input Redir: %s\n", cmd->input_file ? cmd->input_file : "(none)");
-		printf("Output Redir: %s\n", cmd->output_file ? cmd->output_file : "(none)");
-		printf("Heredoc Delimiter: %s\n", cmd->hd_delim ? cmd->hd_delim : "(none)");
+		printf("Input Redir: %s\n",
+			cmd->input_file ? cmd->input_file : "(none)");
+		printf("Output Redir: %s\n",
+			cmd->output_file ? cmd->output_file : "(none)");
+		printf("Heredoc Delimiter: %s\n",
+			cmd->hd_delim ? cmd->hd_delim : "(none)");
 		printf("Pipe flag: %d\n", cmd->next_is_pipe);
-		printf("PID Filename Output: %d\n", (int)cmd->pid_filename_output);
+		printf("Heredoc FD: %d\n", (int)cmd->heredoc_fd);
 
 		// Print argv[]
 		printf("Arguments:");
@@ -155,8 +159,8 @@ void	print_parsed_data(const t_parse_data *pd)
 
 		// If there were sub‑commands (shouldn't happen for leaves)
 		if (cmd->command_count > 0) {
-			printf("  (Unexpected subcommands count = %d)\n", cmd->command_count);
+			printf(" (Unexpected subcmds count = %d)\n", cmd->command_count);
 		}
 		printf("\n");
 	}
-}
+	}*/
