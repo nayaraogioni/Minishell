@@ -38,6 +38,7 @@ typedef struct s_parsephase_data
 	t_command		*commands[MAX_ARGS];
 	t_command		*root;
 	int				n_cmds;
+	int				pd_exit_status;
 }			t_parse_data;
 
 typedef struct s_env
@@ -58,8 +59,8 @@ void			lexing_input(t_lexer *lexer, char delim);
 t_command		*init_command(void);
 //t_command		*parse_function(t_lexer *lexer);
 //t_command		*parse_sequence(t_lexer *lexer);
-t_command		*parse_pipeline(t_lexer *lexer);
-t_command		*parse_simple_command(t_lexer *lexer);
+t_command		*parse_pipeline(t_lexer *lexer, t_env *my_env);
+t_command		*parse_simple_command(t_lexer *lexer, t_env *env_list);
 int				has_pipes(t_lexer *lexer);
 int				has_logical_operators(t_lexer *lexer);
 int				count_args(t_lexer *lexer);
@@ -72,8 +73,7 @@ void			free_sublexer(t_lexer *sublexer);
 t_command	*init_command(void);
 t_command	*parse_function(t_lexer *lexer, t_env *my_env);
 t_command	*parse_sequence(t_lexer *lexer, t_env *my_env);
-t_command	*parse_pipeline(t_lexer *lexer);
-t_command	*parse_simple_command(t_lexer *lexer);
+//t_command	*parse_pipeline(t_lexer *lexer);
 int	has_pipes(t_lexer *lexer);
 int	has_logical_operators(t_lexer *lexer);
 int	has_variables(t_lexer *lexer);
@@ -94,8 +94,7 @@ char			*cmd_path_generator(char	*cmd_name);
 void			exec_parsed_cmds(t_parse_data *pd, t_env **env_list);
 //heredoc_utils.c
 void			heredoc_sig_handler(int ignore);
-int				set_heredoc(char *delim);
-int				handle_all_heredocs(t_parse_data *pd);
+int				handle_all_heredocs(t_parse_data *pd, t_env *env);
 //redirections_utils.c
 int				set_output(t_command *cmd);
 int				set_input(t_command *cmd);
@@ -130,5 +129,6 @@ void			sigint_handler(int signo);
 int				expand_variables(t_lexer *lexer, t_env *my_env);
 char			*get_special_var(char *var_name, t_lexer *lexer);
 void			update_last_bg_pid(t_lexer *lexer, pid_t pid);
+char			*expand_heredoc_line(char *line, t_env *env);
 
 #endif

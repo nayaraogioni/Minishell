@@ -264,6 +264,7 @@ int main(int argc, char **argv, char **envp)
 	t_env			*my_env;
 	char			*input;
 	struct sigaction	sa_int = {0}, sa_quit = {0};
+	//static	int		main_exit_status = 0;
 
 	sa_int.sa_handler = sigint_handler;
 	sigemptyset(&sa_int.sa_mask);
@@ -278,14 +279,6 @@ int main(int argc, char **argv, char **envp)
 	(void)argc;
 	(void)argv;
 
-	/*printf("=== MINISHELL PARSER TESTER ===\n");
-	printf("Comandos especiais:\n");
-	printf("  'test'     - Executa testes automáticos\n");
-	printf("  'validate' - Executa validação de parsing\n");
-	printf("  'exit'     - Sair do programa\n");
-	printf("  'clear'    - Limpar tela\n");
-	printf("================================\n\n");*/
-
 	lexer = malloc(sizeof(t_lexer));
 	lexer->input = NULL;
 	lexer->tokens = NULL;
@@ -299,7 +292,10 @@ int main(int argc, char **argv, char **envp)
 
 		if (!input) //CTRL-D EOF
 			break;
-
+		if (ft_getenv(my_env, "?"))
+			lexer->exit_status = ft_atoi(ft_getenv(my_env, "?"));
+		else
+			lexer->exit_status = 0;
 		if (ft_strlen(input) == 0)
 		{
 			free(input);
@@ -312,19 +308,6 @@ int main(int argc, char **argv, char **envp)
 			free(input);
 			break;
 		}
-		else if (ft_strcmp(input, "test") == 0)
-		{
-			free(input);
-			test_specific_commands(my_env);
-			continue;
-		}
-		else if (ft_strcmp(input, "validate") == 0)
-		{
-			free(input);
-			validate_parsing(my_env);
-			continue;
-		}
-
 		lexer->input = input;
 		lexer->tokens = NULL;
 		lexer->token_count = 0;
@@ -334,9 +317,9 @@ int main(int argc, char **argv, char **envp)
 		//print_tokens(lexer);
 
 		//printf("\n--- PARSING ---\n");
-		pd = format_parsed_data(lexer, my_env); //MUST ALSO RECEIVE MY_ENV
+		pd = format_parsed_data(lexer, my_env);
 		//print_parsed_data(&pd);
-		if (handle_all_heredocs(&pd) < 0)
+		if (handle_all_heredocs(&pd, my_env) < 0)
 		{
 			add_history(input);
 			free_parsed_data(&pd);
@@ -355,6 +338,8 @@ int main(int argc, char **argv, char **envp)
 		}
 		if (lexer->tokens)
 			free(lexer->tokens);
+		//main_exit_status = pd.pd_exit_status;
+		//lexer->exit_status = main_exit_status;
 		free_parsed_data(&pd);
 		free(input);
 		//printf("\n=======================END OF CMD===========================\n");

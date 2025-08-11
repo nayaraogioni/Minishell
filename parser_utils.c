@@ -25,6 +25,8 @@ int	has_pipes(t_lexer *lexer)
 	}
 	return (0);
 }
+
+//check if has T_VAR type, 1 if has, 0 if don't
 int	has_variables(t_lexer *lexer)
 {
 	int	i;
