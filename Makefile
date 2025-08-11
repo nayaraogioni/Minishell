@@ -10,7 +10,8 @@ LIBFT = $(LIBFT_DIR)/libft.a
 SOURCES = main.c tokenizer.c parser.c parser_utils.c built_ins.c error_handlers.c \
 		collect_commands.c exec_commands.c environment_functions.c cleanup_env_list.c \
 		execute_helpers.c redirections_utils.c environment_functions_utils.c \
-		heredoc_utils.c expand_var.c signal_handlers.c \
+		heredoc_utils.c expand_var.c expand_var_heredoc_helper.c signal_handlers.c \
+		exec_refactoring.c \
 
 OBJ = $(SOURCES:.c=.o)
 

@@ -115,7 +115,7 @@ t_parse_data	format_parsed_data(t_lexer *lexer, t_env *my_env)
 
 /* ------------ TESTING FUNCTIONS -------------*/
 
-static const char	*type_to_string(t_token_type type)
+/*static const char	*type_to_string(t_token_type type)
 {
 	switch (type) {
 		case T_WORD:			return "WORD";
@@ -137,9 +137,12 @@ void	print_parsed_data(const t_parse_data *pd)
 		printf("Type: %s\n", type_to_string(cmd->type));
 		printf("Name: %s\n", cmd->name ? cmd->name : "(null)");
 		printf("Path: %s\n", cmd->path ? cmd->path : "(null)");
-		printf("Input Redir: %s\n", cmd->input_file ? cmd->input_file : "(none)");
-		printf("Output Redir: %s\n", cmd->output_file ? cmd->output_file : "(none)");
-		printf("Heredoc Delimiter: %s\n", cmd->hd_delim ? cmd->hd_delim : "(none)");
+		printf("Input Redir: %s\n",
+			cmd->input_file ? cmd->input_file : "(none)");
+		printf("Output Redir: %s\n",
+			cmd->output_file ? cmd->output_file : "(none)");
+		printf("Heredoc Delimiter: %s\n",
+			cmd->hd_delim ? cmd->hd_delim : "(none)");
 		printf("Pipe flag: %d\n", cmd->next_is_pipe);
 		printf("Heredoc FD: %d\n", (int)cmd->heredoc_fd);
 
@@ -156,8 +159,8 @@ void	print_parsed_data(const t_parse_data *pd)
 
 		// If there were sub‑commands (shouldn't happen for leaves)
 		if (cmd->command_count > 0) {
-			printf("  (Unexpected subcommands count = %d)\n", cmd->command_count);
+			printf(" (Unexpected subcmds count = %d)\n", cmd->command_count);
 		}
 		printf("\n");
 	}
-}
+	}*/

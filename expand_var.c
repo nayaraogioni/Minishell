@@ -10,19 +10,16 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "lexer.h"
 #include "libft/libft.h"
 #include "minishell.h"
 #include <time.h>
 
-void	update_last_bg_pid(t_lexer *lexer, pid_t pid)
-{
-	lexer->last_bg_pid = pid;
-}
-
+//return a allocated memory block, assumes caller will free it
 char	*get_special_var(char *var_name, t_lexer *lexer)
 {
 	if (ft_strcmp(var_name, "?") == 0)
-		return (ft_itoa(lexer->exit_status));//Modify here
+		return (ft_itoa(lexer->exit_status));
 	else if (ft_strcmp(var_name, "$") == 0)
 		return (ft_itoa(getppid()));
 	else if (ft_strcmp(var_name, "0") == 0)
@@ -55,30 +52,50 @@ int	set_value(char *var_value, char	*var_name, t_lexer *lexer, t_env *my_env)
 	return (0);
 }
 
+//return 0 on sucess
+//return -1 on failure
+int	exp_var_iter(t_lexer *lexer, t_env *my_env, int i)
+{
+	int		is_alloc;
+	char	*var_value;
+	char	*old_text;
+
+	is_alloc = 1;
+	var_value = get_special_var(lexer->tokens[i].text + 1, lexer);
+	if (!var_value)
+	{
+		var_value = ft_getenv(my_env, lexer->tokens[i].text + 1);
+		is_alloc = 0;
+	}
+	if (!var_value)
+	{
+		var_value = ft_strdup("");
+		is_alloc = 1;
+	}
+	if (!var_value)
+		return (-1);
+	old_text = lexer->tokens[i].text;
+	lexer->tokens[i].text = ft_strdup(var_value);
+	lexer->tokens[i].type = T_WORD;
+	free(old_text);
+	if (is_alloc)
+		free(var_value);
+	return (0);
+}
+
 int	expand_variables(t_lexer *lexer, t_env *my_env)
 {
 	int		i;
-	char	*var_name;
-	char	*var_value;
-	char	*old_text;
+	int		rc;
 
 	i = 0;
 	while (i < lexer->token_count)
 	{
 		if (lexer->tokens[i].type == T_VAR)
 		{
-			var_name = lexer->tokens[i].text + 1;
-			var_value = get_special_var((char *)var_name, lexer);
-			if (!var_value)
-				var_value = ft_getenv(my_env, var_name);
-			if (!var_value)
-				var_value = ft_strdup("");
-			if (!var_value)
-				return (-1);
-			old_text = lexer->tokens[i].text;
-			lexer->tokens[i].text = ft_strdup(var_value);
-			free(old_text);
-			lexer->tokens[i].type = T_WORD;
+			rc = exp_var_iter(lexer, my_env, i);
+			if (rc == -1)
+				return (rc);
 		}
 		i++;
 	}
@@ -88,11 +105,37 @@ int	expand_variables(t_lexer *lexer, t_env *my_env)
 char	*expand_heredoc_line(char *line, t_env *env)
 {
 	int		i;
-	int		start;
+	char	*out;
 	char	*key;
-	char	*out = ft_strdup("");
 
 	i = 0;
+	out = ft_strdup("");
+	while (line[i])
+	{
+		if (line[i] == '$')
+		{
+			key = hd_helper_extract_key(line, &i);
+			if (key)
+				out = hd_helper_exp_varname(out, key, env);
+			else
+				out = hd_helper_append_char(out, line[i++]);
+		}
+		else
+			out = hd_helper_append_char(out, line[i++]);
+	}
+	return (out);
+}
+
+/* ORIGINAL FUNCTION THAT WORKS BEFORE REFACTORING
+char	*expand_heredoc_line2(char *line, t_env *env)
+{
+	int		i;
+	int		start;
+	char	*key;
+	char	*out;
+
+	i = 0;
+	out = ft_strdup("");
 	while (line[i])
 	{
 		if (line[i] == '$')
@@ -103,7 +146,7 @@ char	*expand_heredoc_line(char *line, t_env *env)
 			{
 				i++; // skip '('
 				size_t name_start = i;
-				while (line[i] && (ft_isalnum((unsigned char)line[i]) || line[i] == '_'))
+				while (line[i] && (ft_isalnum(line[i]) || line[i] == '_'))
 					i++;
 				if (line[i] == ')')
 				{
@@ -111,17 +154,12 @@ char	*expand_heredoc_line(char *line, t_env *env)
 					i++; // skip ')'
 				}
 				else
-				{
-					// no closing ')': treat literally
 					i = start + 1;
-					//free(key);
-					//key = NULL;
-				}
 			}
 			else
 			{
 				size_t name_start = i;
-				while (line[i] && (isalnum((unsigned char)line[i]) || line[i]=='_'))
+				while (line[i] && (isalnum(line[i]) || line[i]=='_'))
 					i++;
 				key = ft_substr(line, name_start, i - name_start);
 			}
@@ -134,24 +172,19 @@ char	*expand_heredoc_line(char *line, t_env *env)
 					val = ft_strdup(raw_value);
 				else
 					val = ft_strdup("");
-				//if (!val)
-					//val = ft_strdup("");  // undefined vars expand to empty
-				// Join: free only 'out', keep 'val' alive so we can free it ourselves
 				out = ft_strjoin_free(out, val, 'L');//R
 				free(val);
 				free(key);
 				continue ;
 			}
-			// If we fell through (bad syntax), emit literal '$'
 			out = ft_strjoin_free(out, "$", 'L');//N
 		}
 		else
 		{
-			// copy a single character
 			char tmp[2] = { line[i], '\0' };
 			out = ft_strjoin_free(out, tmp, 'L');//R
 			i++;
 		}
 	}
 	return (out);
-}
+	}*/
