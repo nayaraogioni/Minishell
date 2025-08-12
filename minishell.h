@@ -82,6 +82,21 @@ int				find_next_pipe(t_lexer *lexer, int start);
 int				find_next_logical_operator(t_lexer *lexer, int start);
 t_lexer			*create_sublexer(t_lexer *lexer, int start, int end);
 void			free_sublexer(t_lexer *sublexer);
+
+t_command	*init_command(void);
+t_command	*parse_function(t_lexer *lexer, t_env *my_env);
+t_command	*parse_sequence(t_lexer *lexer, t_env *my_env);
+//t_command	*parse_pipeline(t_lexer *lexer);
+int	has_pipes(t_lexer *lexer);
+int	has_logical_operators(t_lexer *lexer);
+int	has_variables(t_lexer *lexer);
+int	count_args(t_lexer *lexer);
+void	free_command(t_command *cmd);
+int	find_next_pipe(t_lexer *lexer, int start);
+int	find_next_logical_operator(t_lexer *lexer, int start);
+t_lexer	*create_sublexer(t_lexer *lexer, int start, int end);
+void	free_sublexer(t_lexer *sublexer);
+
 //collect_commands.c
 void			free_parsed_data(t_parse_data *parsed_data);
 t_parse_data	format_parsed_data(t_lexer *lexer, t_env *my_env);

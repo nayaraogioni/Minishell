@@ -45,6 +45,7 @@ void	ft_unsetenv(t_env **env, char *key)
 //prints our whole enviroment list USE AS ENV COMMAND
 void	ft_env(t_env *env)
 {
+	printf("GOT FT_ENV DIRECTLY\n");
 	while (env)
 	{
 		if (env->value)

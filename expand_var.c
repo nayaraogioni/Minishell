@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "lexer.h"
+
 #include "libft/libft.h"
 #include "minishell.h"
 #include <time.h>
@@ -146,7 +146,7 @@ char	*expand_heredoc_line2(char *line, t_env *env)
 			{
 				i++; // skip '('
 				size_t name_start = i;
-				while (line[i] && (ft_isalnum(line[i]) || line[i] == '_'))
+        while (line[i] && (ft_isalnum(line[i]) || line[i] == '_'))
 					i++;
 				if (line[i] == ')')
 				{
@@ -154,7 +154,7 @@ char	*expand_heredoc_line2(char *line, t_env *env)
 					i++; // skip ')'
 				}
 				else
-					i = start + 1;
+        i = start + 1;
 			}
 			else
 			{
@@ -187,4 +187,3 @@ char	*expand_heredoc_line2(char *line, t_env *env)
 		}
 	}
 	return (out);
-	}*/

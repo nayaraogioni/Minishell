@@ -10,6 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "minishell.h"
+
 #ifndef LEXER_H
 # define LEXER_H
 # define MAX_ARGS 1024

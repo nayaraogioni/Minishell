@@ -43,7 +43,6 @@ char	*cmd_path_helper(char **paths, char *cmd_name)
 {
 	char	*tmp;
 	int		i;
-
 	i = 0;
 	while (paths[i])
 	{
