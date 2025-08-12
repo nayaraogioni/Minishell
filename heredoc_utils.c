@@ -49,7 +49,6 @@ static void	heredoc_loop_helper(t_command *cmd, int pipefd[2], t_env *env)
 			free(line);
 			break ;
 		}
-		//build a function to expand the variable
 		expanded_line = expand_heredoc_line(line, env);
 		free(line);
 		write(pipefd[1], expanded_line, ft_strlen(expanded_line));

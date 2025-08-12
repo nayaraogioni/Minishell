@@ -54,7 +54,6 @@ void	ft_env(t_env *env)
 			write(STDOUT_FILENO, "=", 1);
 			write(STDOUT_FILENO, env->value, ft_strlen(env->value));
 			write(STDOUT_FILENO, "\n", 1);
-			//printf("%s=%s\n", env->key, env->value);
 		}
 		env = env->next;
 	}

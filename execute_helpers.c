@@ -12,10 +12,8 @@
 
 #include "libft/libft.h"
 #include "minishell.h"
-#include "parser.h"
 #include <linux/limits.h>
-#include <time.h>
-#include <unistd.h>
+#include <readline/chardefs.h>
 
 char	*ft_strjoin_three(const char *a, const char *b, const char *c)
 {
@@ -41,32 +39,40 @@ static void	free_splits(char **arr)
 	free(arr);
 }
 
-//Give a command name and use this function to return a path
-char	*cmd_path_generator(char *cmd_name)
+char	*cmd_path_helper(char **paths, char *cmd_name)
 {
-	char	**paths;
-	char	*result;
 	char	*tmp;
 	int		i;
-
-	if (!cmd_name || !*cmd_name)
-		return (NULL);
-	result = cmd_name;
-	paths = ft_split(getenv("PATH"), ':');
-	if (!paths)
-		return (NULL);
 	i = 0;
 	while (paths[i])
 	{
 		tmp = ft_strjoin_three(paths[i], "/", cmd_name);
 		if (tmp && access(tmp, X_OK) == 0)
-		{
-			result = tmp;
-			break ;
-		}
-		free (tmp);
+			return (tmp);
+		free(tmp);
 		i++;
 	}
+	return (NULL);
+}
+
+//Give a command name and use this function to return a path
+char	*cmd_path_generator(char *cmd_name, t_env *env)
+{
+	char	**paths;
+	char	*result;
+	char	*custom_path;
+
+	if (!cmd_name || !*cmd_name)
+		return (NULL);
+	custom_path = ft_getenv(env, "PATH");
+	if (!custom_path)
+		return (NULL);
+	paths = ft_split(custom_path, ':');
+	if (!paths)
+		return (NULL);
+	result = cmd_path_helper(paths, cmd_name);
 	free_splits(paths);
-	return (result);
+	if (result)
+		return (result);
+	return (cmd_name);
 }
