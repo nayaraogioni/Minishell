@@ -116,7 +116,7 @@ t_parse_data	format_parsed_data(t_lexer *lexer, t_env *my_env)
 
 /* ------------ TESTING FUNCTIONS -------------*/
 
-static const char	*type_to_string(t_token_type type)
+/*static const char	*type_to_string(t_token_type type)
 {
 	switch (type) {
 		case T_WORD:			return "WORD";
@@ -164,4 +164,8 @@ void	print_parsed_data(const t_parse_data *pd)
 		}
 		printf("\n");
 	}
+<<<<<<< HEAD
 	}
+=======
+	}*/
+>>>>>>> 2eb9026dfc52170b8260ec677da6b87387b1c6f7

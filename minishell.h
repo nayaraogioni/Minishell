@@ -90,7 +90,10 @@ t_parse_data	format_parsed_data(t_lexer *lexer, t_env *my_env);
 void			print_parsed_data(const t_parse_data *pd);
 //execute_helpers.c
 char			*cmd_path_generator(char *cmd_name, t_env *env);//TESTING
+<<<<<<< HEAD
 void			replace_env_value(t_env **env, char *key, char *value);
+=======
+>>>>>>> 2eb9026dfc52170b8260ec677da6b87387b1c6f7
 //heredoc_utils.c
 void			heredoc_sig_handler(int ignore);
 int				handle_all_heredocs(t_parse_data *pd, t_env *env);
@@ -146,8 +149,11 @@ int				pre_exec_setups_2(t_command *cmd, int c_pipe[2], int has_pipe);
 int				pos_exec_error_codes(char *cmd_name, int errno_code);
 int				pre_exec_prep(t_command *cmd, t_env **env, int n, int cp[2]);
 void			exit_code(t_parse_data *pd, t_env **env, pid_t pids[MAX_ARGS]);
+<<<<<<< HEAD
 //expand_var_helpers.c
 int		append_char(char **dst, char c);
 char	*expand_word_text(const char *src, int quot, t_env *env, int last_status);
+=======
+>>>>>>> 2eb9026dfc52170b8260ec677da6b87387b1c6f7
 
 #endif

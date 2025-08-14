@@ -42,6 +42,25 @@ void	ft_unsetenv(t_env **env, char *key)
 	}
 }
 
+<<<<<<< HEAD
+=======
+//prints our whole enviroment list USE AS ENV COMMAND
+void	ft_env(t_env *env)
+{
+	while (env)
+	{
+		if (env->value)
+		{
+			write(STDOUT_FILENO, env->key, ft_strlen(env->key));
+			write(STDOUT_FILENO, "=", 1);
+			write(STDOUT_FILENO, env->value, ft_strlen(env->value));
+			write(STDOUT_FILENO, "\n", 1);
+		}
+		env = env->next;
+	}
+}
+
+>>>>>>> 2eb9026dfc52170b8260ec677da6b87387b1c6f7
 //remove one of more vars, uses ft_unsetenv as helper
 int	ft_unset(char **argv, t_env **env)
 {

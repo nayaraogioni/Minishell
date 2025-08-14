@@ -10,10 +10,15 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+<<<<<<< HEAD
 #include "lexer.h"
 #include "libft/libft.h"
 #include "minishell.h"
 #include <stddef.h>
+=======
+#include "libft/libft.h"
+#include "minishell.h"
+>>>>>>> 2eb9026dfc52170b8260ec677da6b87387b1c6f7
 #include <time.h>
 
 bool	bool_changer(bool key)
@@ -127,7 +132,15 @@ t_token_type	determine_type(char *token_text, int qt_flag)
 		return (T_REDIR_HEREDOC);
 	else if (ft_strcmp(token_text, "&&") == 0)
 		return (T_AND);
+<<<<<<< HEAD
 	if (qt_flag == 1)
+=======
+	else if (token_text[0] == '$')
+		return (T_VAR);
+	else if (token_text[0] == '*')
+		return (T_WILDCARD);
+	else
+>>>>>>> 2eb9026dfc52170b8260ec677da6b87387b1c6f7
 		return (T_WORD);
 	i = 0;
 	while (token_text[i])
@@ -181,10 +194,15 @@ int	add_token(t_token **tokens, int index, char *start, int len, int qt_flag, in
 	ft_strncpy(txt, start, len);
 	txt[len] = '\0';
 	(*tokens)[index].text = txt;
+<<<<<<< HEAD
 	(*tokens)[index].quot = qt_flag;
 	(*tokens)[index].join_prev = join_prev;
 	//remove_quotes_from_token(&(*tokens)[index]);
 	(*tokens)[index].type = determine_type((*tokens)[index].text, qt_flag);//
+=======
+	remove_quotes_from_token(&(*tokens)[index]);
+	(*tokens)[index].type = determine_type((*tokens)[index].text);
+>>>>>>> 2eb9026dfc52170b8260ec677da6b87387b1c6f7
 	return (0);
 }
 
@@ -211,8 +229,11 @@ t_token	*split_tokens(char *str, char delim, t_lexer *lexer)
 	int		i;
 	char	quote_char;
 	int		rc;
+<<<<<<< HEAD
 	int		qt_flag;
 	int		join_prev;
+=======
+>>>>>>> 2eb9026dfc52170b8260ec677da6b87387b1c6f7
 
 	s = str;
 	tokens = malloc(lexer->token_count * sizeof(t_token));
@@ -225,12 +246,15 @@ t_token	*split_tokens(char *str, char delim, t_lexer *lexer)
 			s++;
 		if (*s == '\0')
 			break ;
+<<<<<<< HEAD
 		tok_begin = s;
 		qt_flag = 0;
 		join_prev = (tok_begin > str && *(tok_begin - 1) != delim) ? 1 : 0;
+=======
+		start = s;
+>>>>>>> 2eb9026dfc52170b8260ec677da6b87387b1c6f7
 		if (*s == '$' && *(s + 1))
 		{
-			start = s;
 			s++;
 			while (*s && (ft_isalnum(*s) || *s == '_' || *s == '?' || *s == '!' || *s == '@' || *s == '#' || *s == '$'))
 				s++;
@@ -288,7 +312,11 @@ t_token	*split_tokens(char *str, char delim, t_lexer *lexer)
 				s++;
 			len = s - start;
 		}
+<<<<<<< HEAD
 		rc = add_token(&tokens, i, start, len, qt_flag, join_prev);//
+=======
+		rc = add_token(&tokens, i, start, len);
+>>>>>>> 2eb9026dfc52170b8260ec677da6b87387b1c6f7
 		if (rc < 0)
 		{
 			free_tokens_partial(tokens, i);
@@ -324,6 +352,7 @@ void	lexing_input(t_lexer *lexer, char delim)
 		lexer->token_count = 0;
 		return ;
 	}
+<<<<<<< HEAD
 }
 
 char	*join_words(char *a, char *b)
@@ -352,6 +381,8 @@ char	*join_words(char *a, char *b)
 int	is_wordish(t_token *t)
 {
 	return (t->type == T_WORD || t->type == T_VAR);
+=======
+>>>>>>> 2eb9026dfc52170b8260ec677da6b87387b1c6f7
 }
 
 //function to print tokens for debugging
