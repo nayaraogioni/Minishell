@@ -129,7 +129,6 @@ void	exit_code(t_parse_data *pd, t_env **env, pid_t pids[MAX_ARGS])
 		}
 		i++;
 	}
-<<<<<<< HEAD
 	//printf("PD->PD_EXIT_STATUS: %d\n", pd->pd_exit_status);
 	exit_str = ft_itoa(pd->pd_exit_status);
 	//printf("EXIT_STR = %s\n", exit_str);
@@ -138,11 +137,5 @@ void	exit_code(t_parse_data *pd, t_env **env, pid_t pids[MAX_ARGS])
 	replace_env_value(env, "?", exit_str);
 	//ft_setenv(env, "?", exit_str);
 	//printf("ENV_TEST = %s\n", ft_getenv(*env, "?"));
-=======
-	exit_str = ft_itoa(pd->pd_exit_status);
-	if (!exit_str)
-		return ;
-	ft_setenv(env, "?", exit_str);
->>>>>>> 2eb9026dfc52170b8260ec677da6b87387b1c6f7
 	free (exit_str);
 }

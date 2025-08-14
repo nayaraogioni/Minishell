@@ -76,7 +76,6 @@ char	*cmd_path_generator(char *cmd_name, t_env *env)
 	if (result)
 		return (result);
 	return (cmd_name);
-<<<<<<< HEAD
 }
 
 void	replace_env_value(t_env **env, char *key, char *value)
@@ -98,6 +97,4 @@ void	replace_env_value(t_env **env, char *key, char *value)
 	}
 	env_add(env, ft_strdup(key), ft_strdup(value));
 	return ;
-=======
->>>>>>> 2eb9026dfc52170b8260ec677da6b87387b1c6f7
 }

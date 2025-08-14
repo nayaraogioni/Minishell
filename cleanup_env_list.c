@@ -104,8 +104,6 @@ char	**env_to_array(t_env *env)
 	int		count;
 	t_env	*tmp;
 	char	**arr;
-<<<<<<< HEAD
-=======
 
 	count = 0;
 	tmp = env;
@@ -123,50 +121,3 @@ char	**env_to_array(t_env *env)
 		return (NULL);
 	return (arr);
 }
-
-/*char	**env_to_array(t_env *env)
-{
-	int		count;
-	t_env	*tmp;
-	char	**arr;
-	int		i;
->>>>>>> 2eb9026dfc52170b8260ec677da6b87387b1c6f7
-
-	count = 0;
-	tmp = env;
-	while (tmp)
-	{
-		count++;
-		tmp = tmp->next;
-	}
-	arr = malloc((count + 1) * sizeof(char *));
-	if (!arr)
-		return (NULL);
-	arr[count] = NULL;
-	tmp = env;
-<<<<<<< HEAD
-	if (env_to_array_helper(tmp, arr) == 1)
-		return (NULL);
-=======
-	i = 0;
-	while (tmp)
-	{
-		const char	*val = (tmp->value) ? tmp->value : "";
-		size_t		klen = ft_strlen(tmp->key);
-		size_t		vlen = ft_strlen(val);
-		char		*s = malloc(klen + 1 + vlen + 1);
-		if (!s)
-		{
-			free_env_array(arr, i);
-			return NULL;
-		}
-		ft_memcpy(s, tmp->key, klen);
-		s[klen] = '=';
-		ft_memcpy(s + klen + 1, val, vlen);
-		s[klen + 1 + vlen] = '\0';
-		arr[i++] = s;
-		tmp = tmp->next;
-	}
->>>>>>> 2eb9026dfc52170b8260ec677da6b87387b1c6f7
-	return (arr);
-}*/
