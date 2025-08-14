@@ -225,13 +225,9 @@ t_token	*split_tokens(char *str, char delim, t_lexer *lexer)
 			s++;
 		if (*s == '\0')
 			break ;
-<<<<<<< HEAD
 		tok_begin = s;
 		qt_flag = 0;
 		join_prev = (tok_begin > str && *(tok_begin - 1) != delim) ? 1 : 0;
-=======
-		start = s;
->>>>>>> 0384cda6b8b7f354a1d6b8ffa81772123f696e80
 		if (*s == '$' && *(s + 1))
 		{
 			start = s;
