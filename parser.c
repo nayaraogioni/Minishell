@@ -16,6 +16,7 @@
 #include "libft/libft.h"
 #include "minishell.h"
 #include <stdio.h>
+#include <time.h>
 
 t_command *init_command(void)
 {
@@ -56,10 +57,12 @@ t_command	*parse_simple_command(t_lexer *lexer, t_env *env_list)
 	int			args_count;
 	int			i;
 	int			arg_index;
+	char		*acc;
 
 	(void)env_list;
 	i = 0;
 	arg_index = 0;
+	acc = NULL;
 	cmd = init_command();
 	if (!cmd)
 		return NULL;
@@ -71,28 +74,39 @@ t_command	*parse_simple_command(t_lexer *lexer, t_env *env_list)
 	}
 	while (i < lexer->token_count)
 	{
-		if (lexer->tokens[i].type == T_WORD)
+		if (is_wordish(&lexer->tokens[i]))
 		{
+			t_token	*t = &lexer->tokens[i];
 			if (cmd->name == NULL)
 			{
-				cmd->name = ft_strdup(lexer->tokens[i].text);
-				if (!cmd->name)
-				{
-					free_command(cmd);
-					return NULL;
-				}
+				cmd->name = ft_strdup(t->text);
+				if (!cmd->name) { free(acc); free_command(cmd); return (NULL); }
+				if (arg_index < MAX_ARGS - 1)
+					cmd->argv[arg_index++] = ft_strdup(t->text);
+				i++;
+				continue;
 			}
-			if (arg_index < MAX_ARGS - 1) // evita overflow
+			if (acc && t->join_prev == 0)
 			{
-				cmd->argv[arg_index] = ft_strdup(lexer->tokens[i].text);
-				if (!cmd->argv[arg_index])
-				{
-					free_command(cmd);
-					return NULL;
-				}
-				arg_index++;
+				if (arg_index < MAX_ARGS - 1) cmd->argv[arg_index++] = acc;
+				else free(acc);
+				acc = NULL;
 			}
+			char *tmp = join_words(acc, t->text);
+			if (!tmp) { free(acc); free_command(cmd); return (NULL); }
+			acc = tmp;
+			if (i + 1 >= lexer->token_count
+				|| !is_wordish(&lexer->tokens[i + 1])
+				|| lexer->tokens[i + 1].join_prev == 0)
+			{
+				if (arg_index < MAX_ARGS - 1) cmd->argv[arg_index++] = acc;
+				else free(acc);
+				acc = NULL;
+			}
+			i++;
+			continue;
 		}
+		//*******************
 		else if (lexer->tokens[i].type == T_REDIR_IN)
 		{
 			i++;
@@ -103,22 +117,24 @@ t_command	*parse_simple_command(t_lexer *lexer, t_env *env_list)
 				cmd->input_file = ft_strdup(lexer->tokens[i].text);
 				if (!cmd->input_file)
 				{
+					free (acc);
 					free_command(cmd);
-					return NULL;
+					return (NULL);
 				}
+				i++;
+				continue ;
 			}
+			if (i < lexer->token_count)
+				argument_redirs_error(lexer->tokens[i].type);
 			else
-			{
-				if (lexer->tokens[i].type)
-					argument_redirs_error(lexer->tokens[i].type);
-				else
-					printf("minishell: syntax error near unexpected token `newline'\n");
-				free_command(cmd);
-				return (NULL); // falta o nome do arquivo de entrada
-			}
+				printf("minishell: syntax error near unexpected token `newline'\n");
+			free (acc);
+			free_command(cmd);
+			return (NULL); // falta o nome do arquivo de entrada
 		}
 		else if (lexer->tokens[i].type == T_REDIR_OUT || lexer->tokens[i].type == T_REDIR_APPEND)
 		{
+			int	was_append = (lexer->tokens[i].type == T_REDIR_APPEND);
 			i++;
 			if (i < lexer->token_count && lexer->tokens[i].type == T_WORD)
 			{
@@ -127,24 +143,21 @@ t_command	*parse_simple_command(t_lexer *lexer, t_env *env_list)
 				cmd->output_file = ft_strdup(lexer->tokens[i].text);
 				if (!cmd->output_file)
 				{
+					free (acc);
 					free_command(cmd);
 					return NULL;
 				}
-				if (lexer->tokens[i - 1].type == T_REDIR_APPEND)
-					cmd->type = T_REDIR_APPEND;
-				else if (lexer->tokens[i - 1].type == T_REDIR_OUT)
-					cmd->type = T_REDIR_OUT;
+				cmd->type = was_append ? T_REDIR_APPEND : T_REDIR_OUT;
+				i++;
+				continue ;
 			}
+			if (i < lexer->token_count)
+				argument_redirs_error(lexer->tokens[i].type);
 			else
-			{
-				//must do to every t_token_type
-				if (lexer->tokens[i].type)
-					argument_redirs_error(lexer->tokens[i].type);
-				else
-					printf("minishell: syntax error near unexpected token `newline'\n");
-				free_command(cmd);
-				return NULL;
-			}
+				printf("minishell: syntax error near unexpected token `newline'\n");
+			free (acc);
+			free_command(cmd);
+			return NULL;
 		}
 		else if (lexer->tokens[i].type == T_REDIR_HEREDOC)
 		{
@@ -156,31 +169,68 @@ t_command	*parse_simple_command(t_lexer *lexer, t_env *env_list)
 				cmd->hd_delim = ft_strdup(lexer->tokens[i].text);
 				if (!cmd->hd_delim)
 				{
+					free (acc);
 					free_command(cmd);
 					return (NULL);
 				}
 				cmd->type = T_REDIR_HEREDOC;
-				//AT EXECUTION PHASE SET SIGNAL HANDLER TO END HEREDOC AS WELL ^C or ^D
+				i++;
+				continue ;
 			}
+			printf("minishell: syntax error near unexpected token `newline'\n");
+			free(acc);
+			free_command(cmd);
+			return (NULL);
 		}
 		else if (lexer->tokens[i].type == T_AND)
 		{
-			i++;
-			if (i < lexer->token_count && lexer->tokens[i].type == T_WORD) //check bounds
+			if (acc)
 			{
-				cmd->argv[arg_index] = NULL; // termina o array de args com NULL
-				return (cmd);
+				if (cmd->name == NULL)
+				{
+					cmd->name = ft_strdup(acc);
+					if (!cmd->name)
+					{
+						free(acc);
+						free_command(cmd);
+						return (NULL);
+					}
+				}
+				if (arg_index < MAX_ARGS - 1)
+					cmd->argv[arg_index++] = acc;
+				else
+					free(acc);
+				acc = NULL;
 			}
+			cmd->argv[arg_index] = NULL;
+			return (cmd);
 		}
-		/*else if (lexer->tokens[i].type == T_PIPE)
-		{
-			printf("minishell: syntax error near unexpected token `newline'\n");
-			free_command(cmd);
-			return (NULL);
-			}*/
 		i++;
 	}
-	cmd->argv[arg_index] = NULL; // termina o array de args com NULL
+	if (acc)
+	{
+		if (cmd->name == NULL)
+		{
+			cmd->name = ft_strdup(acc);
+			if (!cmd->name)
+			{
+				free(acc);
+				free_command(cmd);
+				return (NULL);
+			}
+		}
+		if (arg_index < MAX_ARGS - 1)
+			cmd->argv[arg_index++] = acc;
+		else
+			free(acc);
+		acc = NULL;
+	}
+	cmd->argv[arg_index] = NULL;
+	if (cmd->name == NULL && arg_index == 0 && !cmd->input_file && !cmd->output_file && !cmd->hd_delim)
+	{
+		free_command(cmd);
+		return (NULL);
+	}
 	return (cmd);
 }
 
@@ -293,7 +343,7 @@ t_command	*parse_sequence(t_lexer *lexer, t_env *my_env)
 			break; // se for o ultimo comando sai do loop
 		start = and_pos + 1; // pula o operador logico para o proximo
 	}
-	return sequence_cmd;
+	return (sequence_cmd);
 }
 
 t_command	*parse_function(t_lexer *lexer, t_env *my_env)
