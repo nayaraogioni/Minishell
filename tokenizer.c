@@ -10,8 +10,10 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "lexer.h"
 #include "libft/libft.h"
 #include "minishell.h"
+#include <stddef.h>
 #include <time.h>
 
 bool	bool_changer(bool key)
@@ -108,8 +110,11 @@ int token_counter(char *str, char delim)
 }
 
 
-t_token_type	determine_type(char *token_text)
+t_token_type	determine_type(char *token_text, int qt_flag)
 {
+	int	i;
+	if (!token_text || !*token_text)
+		return (T_WORD);
 	if (ft_strcmp(token_text, "|") == 0)
 		return (T_PIPE);
 	else if (ft_strcmp(token_text, "<") == 0)
@@ -122,18 +127,22 @@ t_token_type	determine_type(char *token_text)
 		return (T_REDIR_HEREDOC);
 	else if (ft_strcmp(token_text, "&&") == 0)
 		return (T_AND);
-	else if (token_text[0] == '$')
-		return (T_VAR);
-	else if (token_text[0] == '*')
-		return (T_WILDCARD);
-	else
+	if (qt_flag == 1)
 		return (T_WORD);
+	i = 0;
+	while (token_text[i])
+	{
+		if (token_text[i] == '$')
+			return (T_VAR);
+		i++;
+	}
+	return (T_WORD);
 }
 
 void	remove_quotes_from_token(t_token *token)
 {
 	char	*text;
-	int	len;
+	int		len;
 	char	*new_text;
 
 	text = token->text;
@@ -151,7 +160,7 @@ void	remove_quotes_from_token(t_token *token)
 	}
 }
 
-int	add_token(t_token **tokens, int index, char *start, int len)
+int	add_token(t_token **tokens, int index, char *start, int len, int qt_flag, int join_prev)
 {
 	char	*txt;
 	int j;
@@ -172,8 +181,10 @@ int	add_token(t_token **tokens, int index, char *start, int len)
 	ft_strncpy(txt, start, len);
 	txt[len] = '\0';
 	(*tokens)[index].text = txt;
-	remove_quotes_from_token(&(*tokens)[index]);
-	(*tokens)[index].type = determine_type((*tokens)[index].text);
+	(*tokens)[index].quot = qt_flag;
+	(*tokens)[index].join_prev = join_prev;
+	//remove_quotes_from_token(&(*tokens)[index]);
+	(*tokens)[index].type = determine_type((*tokens)[index].text, qt_flag);//
 	return (0);
 }
 
@@ -194,14 +205,16 @@ t_token	*split_tokens(char *str, char delim, t_lexer *lexer)
 {
 	char	*s;
 	char	*start;
+	char	*tok_begin;
 	t_token	*tokens;
 	int		len;
 	int		i;
 	char	quote_char;
 	int		rc;
+	int		qt_flag;
+	int		join_prev;
 
 	s = str;
-	quote_char = '\0';
 	tokens = malloc(lexer->token_count * sizeof(t_token));
 	if (!tokens)
 		return (NULL);
@@ -212,42 +225,70 @@ t_token	*split_tokens(char *str, char delim, t_lexer *lexer)
 			s++;
 		if (*s == '\0')
 			break ;
-		start = s;
+		tok_begin = s;
+		qt_flag = 0;
+		join_prev = (tok_begin > str && *(tok_begin - 1) != delim) ? 1 : 0;
 		if (*s == '$' && *(s + 1))
 		{
+			start = s;
 			s++;
 			while (*s && (ft_isalnum(*s) || *s == '_' || *s == '?' || *s == '!' || *s == '@' || *s == '#' || *s == '$'))
 				s++;
 			len = s - start;
 		}
-		else if (*s == '"' || *s == '\'')
+		else if (*s == '"' || *s == '\'') //this lexes a quoted piece?
 		{
 			quote_char = *s;
+			qt_flag = (quote_char == '\'') ? 1 : 2;
 			s++;
-			while (*s && *s != quote_char)
-				s++;
+			start = s;
+			if (quote_char == '"')
+			{
+				// In double quotes: a backslash escapes ", \, $, `, and newline
+				while (*s)
+				{
+					if (*s == '\\' && s[1] != '\0')
+					{
+						// Skip over the escaped char so we don't mistake \" for the end
+						s += 2;
+						continue;
+					}
+					if (*s == '"')
+						break;
+					s++;
+				}
+			}
+			else
+			{
+				// In single quotes: everything until next single quote
+				while (*s && *s != quote_char)
+					s++;
+			}
+			len = s - start;
 			if (*s == quote_char)
 				s++;
-			len = s - start;
 		}
 		else if ((*s && *(s + 1)) && ((*s == '>' && *(s + 1) == '>') ||
 			(*s == '<' && *(s + 1) == '<') || (*s == '&' && *(s + 1) == '&')))
 		{
+			start = s;
 			len = 2;
 			s += 2;
 		}
 		else if (*s == '|' || *s == '>' || *s == '<' || *s == '$')
 		{
+			start = s;
 			len = 1;
 			s++;
 		}
 		else
 		{
+			start = s;
 			while (*s && *s != delim && *s != '|' && *s != '>' && *s != '<' && *s != '&')
 				s++;
 			len = s - start;
 		}
-		rc = add_token(&tokens, i, start, len);
+		rc = add_token(&tokens, i, start, len, qt_flag, join_prev);//
 		if (rc < 0)
 		{
 			free_tokens_partial(tokens, i);
@@ -285,12 +326,40 @@ void	lexing_input(t_lexer *lexer, char delim)
 	}
 }
 
+char	*join_words(char *a, char *b)
+{
+	size_t	la;
+	size_t	lb;
+	char	*res;
+
+	if (!a && !b)
+		return (NULL);
+	la = a ? ft_strlen(a) : 0;
+	lb = b ? ft_strlen(b) : 0;
+	res = malloc(la + lb + 1);
+	if (!res)
+		return (NULL);
+	if (a)
+		ft_memcpy(res, a, la);
+	if (b)
+		ft_memcpy(res + la, b, lb);
+	res[la + lb] = '\0';
+	if (a)
+		free(a);
+	return (res);
+}
+
+int	is_wordish(t_token *t)
+{
+	return (t->type == T_WORD || t->type == T_VAR);
+}
+
 //function to print tokens for debugging
 void	print_tokens(t_lexer *lexer)
 {
 	for (int i = 0; i < lexer->token_count; i++)
 	{
-		printf("TOKEN: <%s>	TYPE: <%d>\n", lexer->tokens[i].text, lexer->tokens[i].type);
+		printf("TOKEN: <%s>	TYPE: <%d> EXIT_STATUS: <%d>\n", lexer->tokens[i].text, lexer->tokens[i].type, lexer->exit_status);
 	}
 	printf("Numeber of tokens: %d\n", lexer->token_count);
 }

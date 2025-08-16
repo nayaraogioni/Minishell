@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-
+#include "lexer.h"
 #include "libft/libft.h"
 #include "minishell.h"
 #include <time.h>
@@ -86,16 +86,27 @@ int	exp_var_iter(t_lexer *lexer, t_env *my_env, int i)
 int	expand_variables(t_lexer *lexer, t_env *my_env)
 {
 	int		i;
-	int		rc;
+	char	*repl;
+	t_token	*t;
 
 	i = 0;
 	while (i < lexer->token_count)
 	{
-		if (lexer->tokens[i].type == T_VAR)
+		t = &lexer->tokens[i];
+		if (t->quot == 1)
 		{
-			rc = exp_var_iter(lexer, my_env, i);
-			if (rc == -1)
-				return (rc);
+			i++;
+			continue;
+		}
+
+		if (t->text && ft_strchr(t->text, '$'))
+		{
+			repl = expand_word_text(t->text, t->quot, my_env, lexer->exit_status);
+			if (!repl)
+				return -1;
+			free (t->text);
+			t->text = repl;
+			t->type = T_WORD;
 		}
 		i++;
 	}
@@ -125,65 +136,3 @@ char	*expand_heredoc_line(char *line, t_env *env)
 	}
 	return (out);
 }
-
-/* ORIGINAL FUNCTION THAT WORKS BEFORE REFACTORING
-char	*expand_heredoc_line2(char *line, t_env *env)
-{
-	int		i;
-	int		start;
-	char	*key;
-	char	*out;
-
-	i = 0;
-	out = ft_strdup("");
-	while (line[i])
-	{
-		if (line[i] == '$')
-		{
-			start = i++;
-			key = NULL;
-			if (line[i] == '(')
-			{
-				i++; // skip '('
-				size_t name_start = i;
-        while (line[i] && (ft_isalnum(line[i]) || line[i] == '_'))
-					i++;
-				if (line[i] == ')')
-				{
-					key = ft_substr(line, name_start, i - name_start);
-					i++; // skip ')'
-				}
-				else
-        i = start + 1;
-			}
-			else
-			{
-				size_t name_start = i;
-				while (line[i] && (isalnum(line[i]) || line[i]=='_'))
-					i++;
-				key = ft_substr(line, name_start, i - name_start);
-			}
-			if (key)
-			{
-				char	*raw_value = ft_getenv(env, key);
-				char	*val;
-
-				if (raw_value)
-					val = ft_strdup(raw_value);
-				else
-					val = ft_strdup("");
-				out = ft_strjoin_free(out, val, 'L');//R
-				free(val);
-				free(key);
-				continue ;
-			}
-			out = ft_strjoin_free(out, "$", 'L');//N
-		}
-		else
-		{
-			char tmp[2] = { line[i], '\0' };
-			out = ft_strjoin_free(out, tmp, 'L');//R
-			i++;
-		}
-	}
-	return (out);

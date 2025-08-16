@@ -13,6 +13,7 @@
 #include "minishell.h"
 #include "parser.h"
 #include <signal.h>
+#include <unistd.h>
 
 //return a code that the caller must attribute to a exit() call
 // 0 for sucess
@@ -123,7 +124,6 @@ void	exec_parsed_cmds(t_parse_data *pd, t_env **env)
 
 		if (pids[i] == 0) //CHILD RUNTIME
 		{
-			//write(STDERR_FILENO, "ENTER CHILD RUNTIME\n", 20);
 			//input setting
 			if (cmd->heredoc_fd >= 0)
 			{
@@ -156,7 +156,7 @@ void	exec_parsed_cmds(t_parse_data *pd, t_env **env)
 			}
 			if (make_pipe)
 			{
-      //printf("GOT CLOSE PIPEFD 0 AND 1\n");
+				//printf("GOT CLOSE PIPEFD 0 AND 1\n");
 				close(curr_pipe[0]);
 				close(curr_pipe[1]);
 			}
@@ -173,6 +173,7 @@ void	exec_parsed_cmds(t_parse_data *pd, t_env **env)
 			char	*str_test = ft_strdup(cmd->name);
 			child_env = env_to_array(*env_list);
 			execve(cmd->path, cmd->argv, child_env);
+
 			free (cmd->path);
 			free_env_array(child_env, list_lenght(*env_list));//WRITE LIST_LENGHT
 			if (errno == ENOENT)

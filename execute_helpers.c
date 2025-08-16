@@ -43,6 +43,7 @@ char	*cmd_path_helper(char **paths, char *cmd_name)
 {
 	char	*tmp;
 	int		i;
+
 	i = 0;
 	while (paths[i])
 	{
@@ -75,4 +76,25 @@ char	*cmd_path_generator(char *cmd_name, t_env *env)
 	if (result)
 		return (result);
 	return (cmd_name);
+}
+
+void	replace_env_value(t_env **env, char *key, char *value)
+{
+	char	*tmp;
+
+	while (*env)
+	{
+		if (ft_strcmp((*env)->key, key) == 0)
+		{
+			tmp = ft_strdup(value);//this must be freed by clean_env_list
+			if (!tmp)
+				return ;
+			free ((*env)->value);
+			(*env)->value = tmp;
+			return ;
+		}
+		env = &(*env)->next;
+	}
+	env_add(env, ft_strdup(key), ft_strdup(value));
+	return ;
 }

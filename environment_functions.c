@@ -17,9 +17,20 @@ void	env_add(t_env **head, char *key, char *value)
 	t_env	*node;
 
 	node = malloc(sizeof(t_env));
+	if (!node)
+	{
+		free (key);
+		free (value);
+		return ;
+	}
 	node->key = key;
 	node->value = value;
 	node->next = *head;
+
+	fprintf(stderr, "[env_add] node=%p key=%p '%s' value=%p '%s'\n",
+		(void *)node, (void *)key, key ? key : "(null)",
+		(void *)value, value ? value : "(null)");
+
 	*head = node;
 }
 
@@ -69,6 +80,7 @@ char	*ft_getenv(t_env *env, char *key)
 }
 
 //FUNCTION TO REPLICATED EXPORT command
+// invetigate: this can create duplicate nodes?
 void	ft_setenv(t_env **env, char *key, char *value)
 {
 	t_env	*cur;

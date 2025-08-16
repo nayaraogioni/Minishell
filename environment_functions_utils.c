@@ -42,23 +42,6 @@ void	ft_unsetenv(t_env **env, char *key)
 	}
 }
 
-//prints our whole enviroment list USE AS ENV COMMAND
-void	ft_env(t_env *env)
-{
-	printf("GOT FT_ENV DIRECTLY\n");
-	while (env)
-	{
-		if (env->value)
-		{
-			write(STDOUT_FILENO, env->key, ft_strlen(env->key));
-			write(STDOUT_FILENO, "=", 1);
-			write(STDOUT_FILENO, env->value, ft_strlen(env->value));
-			write(STDOUT_FILENO, "\n", 1);
-		}
-		env = env->next;
-	}
-}
-
 //remove one of more vars, uses ft_unsetenv as helper
 int	ft_unset(char **argv, t_env **env)
 {
@@ -79,6 +62,22 @@ int	ft_unset(char **argv, t_env **env)
 		i++;
 	}
 	return (exit_code);
+}
+
+//prints our whole enviroment list USE AS ENV COMMAND
+void	ft_env(t_env *env)
+{
+	while (env)
+	{
+		if (env->value)
+		{
+			write(STDOUT_FILENO, env->key, ft_strlen(env->key));
+			write(STDOUT_FILENO, "=", 1);
+			write(STDOUT_FILENO, env->value, ft_strlen(env->value));
+			write(STDOUT_FILENO, "\n", 1);
+		}
+		env = env->next;
+	}
 }
 
 static void	add_export(char *arg, t_env **env)
