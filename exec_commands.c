@@ -10,9 +10,12 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "libft/libft.h"
 #include "minishell.h"
 #include "parser.h"
+#include <errno.h>
 #include <signal.h>
+#include <time.h>
 #include <unistd.h>
 
 //return a code that the caller must attribute to a exit() call
@@ -29,17 +32,13 @@ int	child_run(t_command *cmd, int fd, t_env **env, int c_pipe[2])
 		return (1);
 	if (pre_exec_setups_2(cmd, c_pipe, cmd->next_is_pipe) == 1)
 		return (1);
-	if (!ft_strcmp(cmd->name, "env"))
-	{
-		ft_env(*env);
-		return (0);
-	}
 	cmd->path = cmd_path_generator(cmd->name, *env);
 	tmp_cmd_name = ft_strdup(cmd->name);
 	child_env = env_to_array(*env);
 	execve(cmd->path, cmd->argv, child_env);
 	free (cmd->path);
 	free_env_array(child_env, list_lenght(*env));
+	child_env = NULL;
 	return_code = (pos_exec_error_codes(tmp_cmd_name, errno));
 	tmp_cmd_name = NULL;
 	return (return_code);
@@ -57,11 +56,13 @@ void	parent_run(t_command *cmd, int *fd, int pipe_var[2])
 		*fd = -1;
 }
 
-void	exec_parsed_cmds(t_parse_data *pd, t_env **env)
+/*void	exec_parsed_cmds(t_parse_data *pd, t_env **env, t_lexer *lexer)
 {
 	pid_t		pids[MAX_ARGS];
 	t_exec_data	ctx;
+	int			rc;
 
+	(void)lexer;
 	ctx.fd = -1;
 	ctx.i = 0;
 	pd->n_spawn_pids = 0;
@@ -76,7 +77,11 @@ void	exec_parsed_cmds(t_parse_data *pd, t_env **env)
 		if (pids[ctx.i] < 0)
 			exit(1);
 		if (pids[ctx.i] == 0)
-			exit (child_run(pd->commands[ctx.i], ctx.fd, env, ctx.pipe));
+		{
+			rc = child_run(pd->commands[ctx.i], ctx.fd, env, ctx.pipe);
+			clean_env_list(env);
+			exit (rc);
+		}
 		parent_run(pd->commands[ctx.i], &ctx.fd, ctx.pipe);
 		ctx.i++;
 		pd->n_spawn_pids++;
@@ -84,137 +89,65 @@ void	exec_parsed_cmds(t_parse_data *pd, t_env **env)
 	if (ctx.fd != -1)
 		close(ctx.fd);
 	exit_code(pd, env, pids);
+}*/
+
+static void	handle_child_process(t_command *cmd, int fd, t_env **env, \
+	int pipe[2])
+{
+	int	rc;
+
+	rc = child_run(cmd, fd, env, pipe);
+	clean_env_list(env);
+	_exit(rc);
 }
 
-/*void	exec_parsed_cmds(t_parse_data *pd, t_env **env_list)
+static void	handle_parent_process(t_command *cmd, int *fd, int pipe[2])
 {
-	int		prev_fd;
-	pid_t	pids[MAX_ARGS];
-	int		curr_pipe[2];
-	int		i;
-	int		make_pipe;
-	bool	is_parent_bt;
-	char	**child_env;
-	t_command	*cmd;
+	parent_run(cmd, fd, pipe);
+}
 
-	prev_fd = -1;
-	for (i = 0; i < pd->n_cmds; i++)
+static int	spawn_processes(t_parse_data *pd, t_env **env, pid_t *pids)
+{
+	t_exec_data	ctx;
+
+	ctx.fd = -1;
+	ctx.i = 0;
+	ctx.pipe[0] = -1;
+	ctx.pipe[1] = -1;
+	pd->n_spawn_pids = 0;
+	while (ctx.i < pd->n_cmds)
 	{
-		cmd = pd->commands[i];
-		is_parent_bt = is_parent_builtin(cmd->name);
-		make_pipe = cmd->next_is_pipe;
-		if (is_parent_bt && pd->n_cmds == 1)
+		ctx.rc = pre_exec_prep(pd->commands[ctx.i], env, pd->n_cmds, ctx.pipe);
+		if (ctx.rc == -1)
 		{
-			if (cmd->input_file)
-				set_input(cmd);
-			if (cmd->output_file)
-				set_output(cmd);
-			run_parent_built(cmd, env_list);
+			parent_run(pd->commands[ctx.i], &ctx.fd, ctx.pipe);
 			break ;
 		}
-		if (make_pipe && pipe(curr_pipe) < 0)
-		{
+		if (ctx.rc == 1)
 			exit(1);
-		}
-		pids[i] = fork();//FORK THE CHILD
-		if (pids[i] < 0)
-		{
+		pids[ctx.i] = fork();
+		if (pids[ctx.i] < 0)
 			exit(1);
-		}
-
-		if (pids[i] == 0) //CHILD RUNTIME
-		{
-			//input setting
-			if (cmd->heredoc_fd >= 0)
-			{
-				//printf("GOT HERE HEREDOC FD\n");
-				dup2(cmd->heredoc_fd, STDIN_FILENO);
-				close(cmd->heredoc_fd);
-			}
-			else if (cmd->input_file) //SETUP STDIN
-			{
-				//printf("GOT HERE input_file\n");
-				if (set_input(cmd) == -1)
-					exit(1);
-			}
-			else if (prev_fd != -1)
-			{
-				dup2(prev_fd, STDIN_FILENO);
-				close(prev_fd);
-			}
-			//output setting
-			if (cmd->output_file) //SETUP STDOUT
-			{
-				//printf("GOT HERE output_file\n");
-				if (set_output(cmd) == -1)
-					exit(1);
-			}
-			else if (make_pipe)
-			{
-				//printf("GOT DUP2\n");
-				dup2(curr_pipe[1], STDOUT_FILENO);
-			}
-			if (make_pipe)
-			{
-				//printf("GOT CLOSE PIPEFD 0 AND 1\n");
-				close(curr_pipe[0]);
-				close(curr_pipe[1]);
-			}
-
-			if (!ft_strcmp(cmd->name, "env"))
-			{
-				//printf("CALLED FT_ENV\n");
-				ft_env(*env_list);
-				exit(0);
-			}
-			//add for pwd and echo later.
-
-			cmd->path = cmd_path_generator(cmd->name);
-			char	*str_test = ft_strdup(cmd->name);
-			child_env = env_to_array(*env_list);
-			execve(cmd->path, cmd->argv, child_env);
-
-			free (cmd->path);
-			free_env_array(child_env, list_lenght(*env_list));//WRITE LIST_LENGHT
-			if (errno == ENOENT)
-			{
-				//printf("GOT IN ENOENT CHECK\n");
-				printf("Command '%s' not found.\n", str_test);
-				free (str_test);
-				exit(127);
-			}
-			else if (errno == EACCES)
-			{
-				printf("Permission denied: %s\n", str_test);
-				free (str_test);
-				exit(126);
-			}
-			else if (errno == EFAULT)
-			{
-				printf("Error executing '%s': %s\n", str_test, strerror(errno));
-				free (str_test);
-				exit(1);
-			}
-			free(str_test);
-		}
-		//PARENT RUNTIME
-		if (make_pipe)
-			close(curr_pipe[1]);
-		if (prev_fd != -1)
-			close(prev_fd);
-		prev_fd = make_pipe ? curr_pipe[0] : -1;
+		if (pids[ctx.i] == 0)
+			handle_child_process(pd->commands[ctx.i], ctx.fd, env, ctx.pipe);
+		handle_parent_process(pd->commands[ctx.i], &ctx.fd, ctx.pipe);
+		ctx.i++;
+		pd->n_spawn_pids++;
 	}
-	if (prev_fd != -1)
-		close(prev_fd);
-	int	wstatus;
-	for (i = 0; i < pd->n_cmds; i++)
-	{
-		if (waitpid(pids[i], &wstatus, 0) < 0)
-			continue ;
-		if (WIFEXITED(wstatus))
-			pd->pd_exit_status = WEXITSTATUS(wstatus);
-		else if (WIFSIGNALED(wstatus))
-			pd->pd_exit_status = 128 + WTERMSIG(wstatus);
-	}
-	ft_setenv(env_list, "?", ft_itoa(pd->pd_exit_status));
-}*/
+	if (ctx.fd != -1)
+		close(ctx.fd);
+	return (0);
+}
+
+void	exec_parsed_cmds(t_parse_data *pd, t_env **env, t_lexer *lexer)
+{
+	pid_t	pids[MAX_ARGS];
+	int		rc;
+
+	(void)lexer;
+	rc = spawn_processes(pd, env, pids);
+	if (rc == -1)
+		printf("SPAWN_PROCESS %d\n", rc);
+	if (rc == 0)
+		exit_code(pd, env, pids);
+}

@@ -26,7 +26,6 @@ void	sigint_handler(int signo)
 	}
 	else if (g_heredoc_sig == 1)
 	{
-		printf("GOT MAIN SIG HANDLER\n");
 		rl_replace_line("", 0);
 		printf("> ^C\n");
 		rl_on_new_line();

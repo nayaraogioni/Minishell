@@ -54,7 +54,7 @@ int	set_value(char *var_value, char	*var_name, t_lexer *lexer, t_env *my_env)
 
 //return 0 on sucess
 //return -1 on failure
-int	exp_var_iter(t_lexer *lexer, t_env *my_env, int i)
+int	exp_var_iter(t_lexer *lexer, t_env *my_env, int i)//DEPRECATED
 {
 	int		is_alloc;
 	char	*var_value;
@@ -93,17 +93,12 @@ int	expand_variables(t_lexer *lexer, t_env *my_env)
 	while (i < lexer->token_count)
 	{
 		t = &lexer->tokens[i];
-		if (t->quot == 1)
-		{
-			i++;
-			continue;
-		}
-
+		t->exp_exit_status = lexer->exit_status;
 		if (t->text && ft_strchr(t->text, '$'))
 		{
-			repl = expand_word_text(t->text, t->quot, my_env, lexer->exit_status);
+			repl = expand_word_text(my_env, t);
 			if (!repl)
-				return -1;
+				return (-1);
 			free (t->text);
 			t->text = repl;
 			t->type = T_WORD;

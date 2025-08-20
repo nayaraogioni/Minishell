@@ -80,7 +80,7 @@ void	ft_env(t_env *env)
 	}
 }
 
-static void	add_export(char *arg, t_env **env)
+static int	add_export(char *arg, t_env **env)
 {
 	char	*eq;
 	size_t	klen;
@@ -88,20 +88,24 @@ static void	add_export(char *arg, t_env **env)
 	char	*value;
 
 	eq = ft_strchr(arg, '=');
+	if (!eq)
+		return (-1);
 	klen = eq - arg;
 	key = ft_strndup(arg, klen);
+	if (!key)
+		return (-1);
 	value = ft_strdup(eq + 1);
-	if (key && value)
-	{
-		ft_setenv(env, key, value);
-		free(key);
-		free(value);
-	}
-	else
+	if (!value)
+		return (free(key), -1);
+	if (replace_env_value(env, key, value) != 0)
 	{
 		free(key);
 		free(value);
+		return (-1);
 	}
+	free(key);
+	free(value);
+	return (0);
 }
 
 int	ft_export(char **argv, t_env **env)
@@ -109,22 +113,27 @@ int	ft_export(char **argv, t_env **env)
 	int		exit_code;
 	int		i;
 	char	*eq;
+	int		quote_flag;
 
 	i = 1;
+	quote_flag = -1;
 	exit_code = 0;
 	while (argv[i])
 	{
 		eq = ft_strchr(argv[i], '=');
+		if (eq != NULL && *(eq + 1) != '\0' && (*(eq + 1) == '"' || *(eq + 1) == '\'')) // *****
+			quote_flag = 1; //FUNCTION WILL BE CALLED HERE
+		(void)quote_flag;
 		if (argv[i][0] == '\0' || eq == argv[i])
 		{
 			printf("minishell: export: '%s': not a valid identifier\n",
 				argv[i]);
-			exit_code = 1;
+			exit_code = -1;
 		}
 		else if (eq)
-			add_export(argv[i], env);
+			exit_code = add_export(argv[i], env);
 		else if (!ft_getenv(*env, argv[i]))
-			ft_setenv(env, argv[i], "");
+			exit_code = replace_env_value(env, argv[i], "");
 		i++;
 	}
 	return (exit_code);

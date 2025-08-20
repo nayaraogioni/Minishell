@@ -14,10 +14,10 @@
 #include "minishell.h"
 #include <time.h>
 
-int  append_char(char **dst, char c)
+int	append_char(char **dst, char c)
 {
-	char buf[2];
-	char *tmp;
+	char	buf[2];
+	char	*tmp;
 
 	buf[0] = c;
 	buf[1] = '\0';
@@ -28,92 +28,98 @@ int  append_char(char **dst, char c)
 	return (0);
 }
 
-
-char	*expand_word_text(const char *src, int quot, t_env *env, int last_status)
+static int	envp_expander(char *src, int *i, char **out, t_env *env)
 {
-	size_t	i = 0;
-	size_t	j;
-	char	*out = ft_strdup("");
-	char	*tmp;
-	char	*num;
+	int		j;
 	char	*name;
 	char	*val;
+	char	*tmp;
 
+	j = *i + 1;
+	while (ft_isalnum(src[j]) || src[j] == '_')
+		j++;
+	name = ft_substr(src, *i + 1, j - (*i + 1));
+	if (name)
+		val = ft_getenv(env, name);
+	else
+		val = NULL;
+	if (val)
+		tmp = join_words(*out, val);
+	else
+		tmp = join_words(*out, "");
+	free(name);
+	if (!tmp)
+		return (-1);
+	*out = tmp;
+	*i = j;
+	return (0);
+}
+
+static int	process_raw_var_case(t_token *t, t_env *env, int *i, char **out)
+{
+	int	j;
+
+	if (t->text[*i + 1] == '?')
+	{
+		if (!last_exit_expander(t->exp_exit_status, out))
+			return (-1);
+		*i += 2;
+		return (0);
+	}
+	j = *i + 1;
+	if (!(ft_isalpha(t->text[j]) || t->text[j] == '_'))
+	{
+		if (append_char(out, '$') < 0)
+			return (-1);
+		(*i)++;
+		return (0);
+	}
+	if (envp_expander(t->text, i, out, env) < 0)
+		return (-1);
+	return (0);
+}
+
+static int	iter_helper(t_env *env, t_token *t, char **out, int *i)
+{
+	if (t->text[*i] == '\\')
+	{
+		t->exp_index_consumed = process_backslash(*i, out, t->text, t->quot);
+		if (t->exp_index_consumed < 0)
+			return (-1);
+		(*i) += t->exp_index_consumed;
+		return (0);
+	}
+	if (t->text[*i] == '$')
+	{
+		if (process_raw_var_case(t, env, i, out) < 0)
+			return (-1);
+		return (0);
+	}
+	if (append_char(out, t->text[*i]) < 0)
+		return (-1);
+	return (1);
+}
+
+char	*expand_word_text(t_env *env, t_token *t)
+{
+	int		i;
+	char	*out;
+	int		res;
+
+	i = 0;
+	out = ft_strdup("");
 	if (!out)
 		return (NULL);
-	while (src[i])
+	while (t->text[i])
 	{
-		/* Escaped dollar: \$VAR → literal $VAR */
-		if (src[i] == '\\')
+		res = iter_helper(env, t, &out, &i);
+		if (res == -1)
 		{
-			if (quot == 2)
-			{
-				char next = src[i + 1];
-				if (next == '$' || next == '`' || next == '"' || next == '\\')
-				{
-					if (append_char(&out, next) < 0)
-						return (NULL);
-					i += 2;
-					continue;
-				}
-				if (append_char(&out, '\\') < 0)
-					return (NULL);
-				i++;
-				continue;
-			}
-			else
-			{
-				// Unquoted: a backslash quotes the next char (except end of string)
-				if (src[i + 1] != '\0')
-				{
-					if (append_char(&out, src[i + 1]) < 0)
-						return (NULL);
-					i += 2;
-					continue;
-				}
-				// Trailing backslash: drop it
-				i++;
-				continue;
-			}
-		}
-		if (src[i] == '$')
-		{
-			/* Special: $? */
-			if (src[i + 1] == '?')
-			{
-				num = ft_itoa(last_status);
-				tmp = join_words(out, num ? num : "");
-				out = tmp;
-				if (num)
-					free(num);
-				if (!out)
-					return (NULL);
-				i += 2;
-				continue;
-			}
-			/* Normal var: must start alpha/_ */
-			j = i + 1;
-			if (!(ft_isalpha(src[j]) || src[j] == '_'))
-			{
-				if (append_char(&out, '$') < 0)
-					return (NULL);
-				i++;
-				continue;
-			}
-			while (ft_isalnum(src[j]) || src[j] == '_')
-				j++;
-			name = ft_substr(src, i + 1, j - (i + 1));
-			val = name ? ft_getenv(env, name) : NULL;
-			tmp = join_words(out, val ? val : "");
-			out = tmp;
-			free(name);
-			if (!out)
-				return (NULL);
-			i = j;
-			continue;
-		}
-		if (append_char(&out, src[i]) < 0)
+			free(out);
 			return (NULL);
+		}
+		if (res == 0)
+			continue ;
 		i++;
 	}
 	return (out);

@@ -38,8 +38,8 @@ int	ft_cd(char **argv, t_env **env_list)
 		return (perror("minishell: cd"), 1);
 	if (!getcwd(newpwd, sizeof(newpwd)))
 		return (perror("minishell: cd"), 1);
-	ft_setenv(env_list, "OLDPWD", oldpwd);
-	ft_setenv(env_list, "PWD", newpwd);
+	replace_env_value(env_list, "OLDPWD", oldpwd);
+	replace_env_value(env_list, "PWD", newpwd);
 	return (0);
 }
 
@@ -53,13 +53,16 @@ int	run_parent_built(t_command *cmd, t_env **env_list)
 		return (ft_unset(cmd->argv, env_list));
 	else if (!ft_strcmp(cmd->name, "exit"))
 		printf("implement ft_exit\n");
+	else if (!ft_strcmp(cmd->name, "env"))
+		return (ft_env(*env_list), 0);
 	return (0);
 }
 
 bool	is_parent_builtin(char *name)
 {
 	return (!ft_strcmp(name, "cd") || !ft_strcmp(name, "export")
-		|| !ft_strcmp(name, "unset") || !ft_strcmp(name, "exit"));
+		|| !ft_strcmp(name, "unset") || !ft_strcmp(name, "exit")
+		|| !ft_strcmp(name, "env"));
 }
 
 bool	is_any_builtin(char *name)

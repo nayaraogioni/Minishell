@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 01:10:10 by dopereir          #+#    #+#             */
-/*   Updated: 2025/07/19 01:48:11 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/19 21:02:12 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,8 @@ typedef struct s_env
 }			t_env;
 
 static volatile sig_atomic_t	g_heredoc_sig = 0;
+//main.c
+void	cleanup_iter(t_lexer *lexer, t_parse_data *pd);
 //tokenizer.c
 void			print_tokens(t_lexer *shell); //FUNCTION FOR TESTING
 void			clear_token(t_token *tokens, int token_count);
@@ -90,7 +92,7 @@ t_parse_data	format_parsed_data(t_lexer *lexer, t_env *my_env);
 void			print_parsed_data(const t_parse_data *pd);
 //execute_helpers.c
 char			*cmd_path_generator(char *cmd_name, t_env *env);//TESTING
-void			replace_env_value(t_env **env, char *key, char *value);
+int				replace_env_value(t_env **env, char *key, char *value);
 //heredoc_utils.c
 void			heredoc_sig_handler(int ignore);
 int				handle_all_heredocs(t_parse_data *pd, t_env *env);
@@ -99,8 +101,8 @@ int				set_output(t_command *cmd);
 int				set_input(t_command *cmd);
 int				set_pipe(int *read_fd, int *write_fd);
 //environment_functions.c
-void			env_add(t_env **head, char *key, char *value);
-void			env_init(t_env **my_env, char **envp);
+int				env_add(t_env **head, char *key, char *value);
+int				env_init(t_env **my_env, char **envp);
 char			*ft_getenv(t_env *env, char *key);
 void			ft_setenv(t_env **env, char *key, char *value);
 //enviroment_functions_utils.c
@@ -109,7 +111,6 @@ void			ft_env(t_env *env);
 int				ft_unset(char **argv, t_env **env);
 int				ft_export(char **argv, t_env **env);
 //cleanup_env_list.c
-int		count_env(t_env *head); //FOR TESTING
 void			clean_env_list(t_env **env_list);
 void			free_env_array(char **arr, int count);
 char			**env_to_array(t_env *env);
@@ -139,15 +140,19 @@ char			*hd_helper_append_char(char *out, char c);
 //exec_commands.c
 int				child_run(t_command *cmd, int fd, t_env **env, int c_pipe[2]);
 void			parent_run(t_command *cmd, int *fd, int pipe_var[2]);
-void			exec_parsed_cmds(t_parse_data *pd, t_env **myenv);
+void			exec_parsed_cmds(t_parse_data *pd, t_env **myenv, t_lexer *lexer);
 //exec_refactoring.c
 int				pre_exec_setups(t_command *cmd, int prev_fd);
 int				pre_exec_setups_2(t_command *cmd, int c_pipe[2], int has_pipe);
 int				pos_exec_error_codes(char *cmd_name, int errno_code);
 int				pre_exec_prep(t_command *cmd, t_env **env, int n, int cp[2]);
-void			exit_code(t_parse_data *pd, t_env **env, pid_t pids[MAX_ARGS]);
+int				exit_code(t_parse_data *pd, t_env **env, pid_t pids[MAX_ARGS]);
 //expand_var_helpers.c
 int		append_char(char **dst, char c);
-char	*expand_word_text(const char *src, int quot, t_env *env, int last_status);
+char	*expand_word_text(t_env *env, t_token *t);
+//expand_var_helpers2.c
+int				backslash_helper(int i, char **out, char *src, int quot);
+int				process_backslash(int i, char **out, char *src, int quot);
+char			*last_exit_expander(int last_status, char **out);
 
 #endif

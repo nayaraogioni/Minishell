@@ -31,7 +31,7 @@ t_command *init_command(void)
 	cmd->path = NULL;
 	cmd->input_file = NULL;
 	cmd->output_file = NULL;
-	cmd->filename = NULL;
+	//cmd->filename = NULL;
 	cmd->pid_filename_output = 0;
 	cmd->command_count = 0;
 	cmd->commands = NULL;
@@ -52,7 +52,6 @@ t_command *init_command(void)
 
 t_command	*parse_simple_command(t_lexer *lexer, t_env *env_list)
 {
-	//printf("**** ENTER PARSE_SIMPLE_CMD ******\n");
 	t_command	*cmd;
 	int			args_count;
 	int			i;
@@ -80,7 +79,12 @@ t_command	*parse_simple_command(t_lexer *lexer, t_env *env_list)
 			if (cmd->name == NULL)
 			{
 				cmd->name = ft_strdup(t->text);
-				if (!cmd->name) { free(acc); free_command(cmd); return (NULL); }
+				if (!cmd->name)
+				{
+					free(acc);
+					free_command(cmd);
+					return (NULL);
+				}
 				if (arg_index < MAX_ARGS - 1)
 					cmd->argv[arg_index++] = ft_strdup(t->text);
 				i++;

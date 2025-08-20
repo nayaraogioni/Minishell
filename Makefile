@@ -1,7 +1,7 @@
 NAME = minishell
 
 CC = cc
-FLAGS = -Wall -Wextra -Werror
+FLAGS = -Wall -Wextra -Werror -g -O0
 INCLUDES = -I. -Ilibft
 
 LIBFT_DIR = libft
@@ -11,7 +11,7 @@ SOURCES = main.c tokenizer.c parser.c parser_utils.c built_ins.c error_handlers.
 		collect_commands.c exec_commands.c environment_functions.c cleanup_env_list.c \
 		execute_helpers.c redirections_utils.c environment_functions_utils.c \
 		heredoc_utils.c expand_var.c expand_var_heredoc_helper.c signal_handlers.c \
-		exec_refactoring.c expand_var_helpers.c \
+		exec_refactoring.c expand_var_helpers.c expand_var_helpers2.c \
 
 OBJ = $(SOURCES:.c=.o)
 

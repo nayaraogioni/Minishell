@@ -23,7 +23,6 @@ typedef struct s_command
 	char				*input_file; // Input file for redirection
 	char				*output_file; // Output file for redirection
 	char				*argv[MAX_ARGS]; // Arguments for the command
-	char				*filename; //path to file redirection
 	char				*hd_delim; //delimiter to use on heredoc
 	int					heredoc_fd;
 	pid_t				pid_filename_output;

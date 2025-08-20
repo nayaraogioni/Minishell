@@ -183,7 +183,6 @@ int	add_token(t_token **tokens, int index, char *start, int len, int qt_flag, in
 	(*tokens)[index].text = txt;
 	(*tokens)[index].quot = qt_flag;
 	(*tokens)[index].join_prev = join_prev;
-	//remove_quotes_from_token(&(*tokens)[index]);
 	(*tokens)[index].type = determine_type((*tokens)[index].text, qt_flag);//
 	return (0);
 }
@@ -326,6 +325,7 @@ void	lexing_input(t_lexer *lexer, char delim)
 	}
 }
 
+//Join words frees the first parameter char *a
 char	*join_words(char *a, char *b)
 {
 	size_t	la;
