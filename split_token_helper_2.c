@@ -1,0 +1,75 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   split_token_helper_2.c                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nayara <nayara@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/20 16:38:23 by nayara            #+#    #+#             */
+/*   Updated: 2025/08/20 17:18:12 by nayara           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+char	*parse_variable_or_quote(char *s, char **start, 
+	int *len, int *qt_flag)
+{
+	if (*s == '$' && *(s + 1))
+	{
+		*start = s;
+		return (handle_variable_token(s, len));
+	}
+	else if (*s == '"' || *s == '\'')
+	{
+		s++;
+		*start = s;
+		s--;
+		return (handle_quoted_token(s, len, qt_flag));
+	}
+	return (NULL);
+}
+
+char	*parse_operators_or_regular(char *s, char delim, char **start, 
+	int *len)
+{
+	if (is_double_operator(s))
+	{
+		*start = s;
+		return (handle_double_operators(s, len));
+	}
+	else if (is_single_operator(s))
+	{
+		*start = s;
+		return (handle_single_operators(s, len));
+	}
+	else
+	{
+		*start = s;
+		return (handle_regular_token(s, delim, len));
+	}
+}
+
+char	*parse_token(char *s, char delim, char **start, 
+	int *len, int *qt_flag)
+{
+	char	*result;
+
+	*qt_flag = 0;
+	result = parse_variable_or_quote(s, start, len, qt_flag);
+	if (result)
+		return (result);
+	return (parse_operators_or_regular(s, delim, start, len));
+}
+
+char	*skip_delimiters(char *s, char delim)
+{
+	while (*s && *s == delim)
+		s++;
+	return (s);
+}
+
+int	should_join_prev(char *tok_begin, char *str, char delim)
+{
+	return ((tok_begin > str && *(tok_begin - 1) != delim) ? 1 : 0);
+}
