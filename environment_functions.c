@@ -10,9 +10,12 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "libft/libft.h"
 #include "minishell.h"
 
-void	env_add(t_env **head, char *key, char *value)
+//In case of malloc fail, env_add free the vars
+// On sucess returns (0); Failure returns (-1);
+int	env_add(t_env **head, char *key, char *value)
 {
 	t_env	*node;
 
@@ -21,20 +24,18 @@ void	env_add(t_env **head, char *key, char *value)
 	{
 		free (key);
 		free (value);
-		return ;
+		return (-1);
 	}
 	node->key = key;
 	node->value = value;
 	node->next = *head;
-
-	fprintf(stderr, "[env_add] node=%p key=%p '%s' value=%p '%s'\n",
-		(void *)node, (void *)key, key ? key : "(null)",
-		(void *)value, value ? value : "(null)");
-
 	*head = node;
+	return (0);
 }
 
-static void	env_init_helper(t_env **env, char *env_str)
+//0 on sucess
+//-1 on failure
+static int	env_init_helper(t_env **env, char *env_str)
 {
 	char	*eq;
 	char	*key;
@@ -42,28 +43,37 @@ static void	env_init_helper(t_env **env, char *env_str)
 
 	eq = ft_strchr(env_str, '=');
 	if (!eq)
-		return ;
+		return (-1);
 	key = ft_strndup(env_str, eq - env_str);
 	value = ft_strdup(eq + 1);
-	if (!key || !value || *key == '\0')
+	if (!key || !value || key[0] == '\0')
 	{
 		free(key);
 		free(value);
-		return ;
+		return (-1);
 	}
-	env_add(env, key, value);
+	return (env_add(env, key, value));
 }
 
-void	env_init(t_env **my_env, char **envp)
+//in case of failure already cleans the env_list
+int	env_init(t_env **my_env, char **envp)
 {
 	int		i;
 
+	if (!my_env)
+		return (-1);
+	*my_env = NULL;
 	i = 0;
-	while (envp[i])
+	while (envp && envp[i])
 	{
-		env_init_helper(my_env, envp[i]);
+		if (env_init_helper(my_env, envp[i]) != 0)
+		{
+			clean_env_list(my_env);
+			return (-1);
+		}
 		i++;
 	}
+	return (0);
 }
 
 //assumes that env is correctly created and populated with var envs
@@ -80,7 +90,6 @@ char	*ft_getenv(t_env *env, char *key)
 }
 
 //FUNCTION TO REPLICATED EXPORT command
-// invetigate: this can create duplicate nodes?
 void	ft_setenv(t_env **env, char *key, char *value)
 {
 	t_env	*cur;

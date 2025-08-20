@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "libft/libft.h"
 #include "minishell.h"
 
 int	has_pipes(t_lexer *lexer)
@@ -107,11 +108,6 @@ void	free_command(t_command *cmd)
 	{
 		free(cmd->output_file);
 		cmd->output_file = NULL;
-	}
-	if (cmd->filename)
-	{
-		free(cmd->filename);
-		cmd->filename = NULL;
 	}
 	if (cmd->hd_delim)
 	{

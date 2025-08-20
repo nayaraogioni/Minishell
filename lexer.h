@@ -37,6 +37,8 @@ typedef struct s_token
 	t_token_type	type;
 	char			*text;
 	int				quot;
+	int				exp_exit_status;
+	int				exp_index_consumed;
 	int				join_prev;
 }			t_token;
 
@@ -45,7 +47,6 @@ typedef struct s_lexer
 	char	*input;
 	t_token	*tokens;
 	int		token_count;
-	//char	*path;
 	char	*args[MAX_ARGS];
 	int		exit_status; // status do ultimo comando executado
 	pid_t	last_bg_pid;

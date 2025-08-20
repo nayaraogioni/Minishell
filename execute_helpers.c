@@ -78,23 +78,33 @@ char	*cmd_path_generator(char *cmd_name, t_env *env)
 	return (cmd_name);
 }
 
-void	replace_env_value(t_env **env, char *key, char *value)
+//On sucess return 0;
+//On failure return -1;
+int	replace_env_value(t_env **env, char *key, char *value)
 {
-	char	*tmp;
+	char	*new_key;
+	char	*new_value;
 
 	while (*env)
 	{
 		if (ft_strcmp((*env)->key, key) == 0)
 		{
-			tmp = ft_strdup(value);//this must be freed by clean_env_list
-			if (!tmp)
-				return ;
+			new_value = ft_strdup(value);
+			if (!new_value)
+				return (-1);
 			free ((*env)->value);
-			(*env)->value = tmp;
-			return ;
+			(*env)->value = new_value;
+			return (0);
 		}
 		env = &(*env)->next;
 	}
-	env_add(env, ft_strdup(key), ft_strdup(value));
-	return ;
+	new_key = ft_strdup(key);
+	if (!new_key)
+		return (-1);
+	new_value = ft_strdup(value);
+	if (!new_value)
+		return (free (new_key), -1);
+	if (env_add(env, new_key, new_value) != 0)
+		return (-1);
+	return (0);
 }

@@ -13,10 +13,12 @@
 #include "libft/libft.h"
 #include "minishell.h"
 #include <readline/history.h>
+#include <stdlib.h>
+#include <time.h>
 
 //-g -fsanitize=address to use on gdb when needed
 
-static void	cleanup_iter(t_lexer *lexer, t_parse_data *pd)
+void	cleanup_iter(t_lexer *lexer, t_parse_data *pd)
 {
 	int	i;
 
@@ -36,7 +38,6 @@ static void	cleanup_iter(t_lexer *lexer, t_parse_data *pd)
 			free (lexer->tokens);
 			lexer->tokens = NULL;
 			lexer->token_count = 0;
-			//free (lexer->input);
 			lexer->input = NULL;
 		}
 	}
@@ -70,9 +71,11 @@ int main(int argc, char **argv, char **envp)
 	lexer->token_count = 0;
 	lexer->exit_status = 0;
 
-	my_env = NULL;
-	env_init(&my_env, envp);
-	printf("count_env result after env_init: <%d>\n", count_env(my_env));
+	if (env_init(&my_env, envp) != 0)
+	{
+		free (lexer);
+		return (0);
+	}
 	while (1)
 	{
 		input = readline("MINISHELL>$ ");
@@ -111,7 +114,7 @@ int main(int argc, char **argv, char **envp)
 			continue ;
 		}
 
-		exec_parsed_cmds(&pd, &my_env);
+		exec_parsed_cmds(&pd, &my_env, lexer);
 		add_history(input);
 
 		if (ft_getenv(my_env, "?"))
@@ -121,24 +124,10 @@ int main(int argc, char **argv, char **envp)
 
 		cleanup_iter(lexer, &pd);
 		free (input);
-		// Libera tokens
-		/*for (int i = 0; i < lexer->token_count; i++)
-		{
-			if (lexer->tokens[i].text)
-				free(lexer->tokens[i].text);
-		}
-		if (lexer->tokens)
-			free(lexer->tokens);
-		//main_exit_status = pd.pd_exit_status;
-		//lexer->exit_status = main_exit_status;
-		free_parsed_data(&pd);
-		free(input);*/
 		//printf("\n=======================END OF CMD===========================\n");
 	}
 
 	free(lexer);
-	printf("count_env result before clean: <%d>\n", count_env(my_env));
 	clean_env_list(&my_env);
-	printf("count_env result after clean: <%d>\n", count_env(my_env));
 	return (0);
 }

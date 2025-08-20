@@ -13,28 +13,16 @@
 #include "libft/libft.h"
 #include "minishell.h"
 
-int	count_env(t_env *head)
-{
-	int n=0;
-	while(head)
-	{
-		n++;
-		head=head->next;
-	}
-	return n;
-}
-
-
 void	clean_env_list(t_env **env_list)
 {
 	t_env	*cur;
 	t_env	*next;
 
+	if (!env_list)
+		return ;
 	cur = *env_list;
 	while (cur)
 	{
-		fprintf(stderr, "[clean_env] free node %p key=%p '%s' value=%p '%s'\n",
-			(void *)cur, (void *)cur->key, cur->key, (void *)cur->value, cur->value);
 		next = cur->next;
 		free(cur->key);
 		free(cur->value);
@@ -121,3 +109,6 @@ char	**env_to_array(t_env *env)
 		return (NULL);
 	return (arr);
 }
+
+/*fprintf(stderr, "[clean_env] free node %p key=%p '%s' value=%p '%s'\n",
+(void *)cur, (void *)cur->key, cur->key, (void *)cur->value, cur->value);*/
