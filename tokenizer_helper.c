@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer_helper.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nayara <nayara@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/20 16:30:41 by nayara            #+#    #+#             */
-/*   Updated: 2025/08/20 17:07:24 by nayara           ###   ########.fr       */
+/*   Updated: 2025/08/22 14:37:08 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,8 @@ void	remove_quotes_from_token(t_token *token)
 
 	text = token->text;
 	len = ft_strlen(text);
-	if (len >= 2 && ((text[0] == '"' && text[len - 1] == '"') ||
-		(text[0] == '\'' && text[len - 1] == '\'')))
+	if (len >= 2 && ((text[0] == '"' && text[len - 1] == '"')
+			|| (text[0] == '\'' && text[len - 1] == '\'')))
 	{
 		new_text = malloc(sizeof(char) * (len - 1));
 		if (!new_text)
@@ -36,7 +36,7 @@ void	remove_quotes_from_token(t_token *token)
 int	add_token(t_token **tokens, int index, char *start, int len, int qt_flag, int join_prev)
 {
 	char	*txt;
-	int j;
+	int		j;
 
 	txt = malloc(len + 1);
 	if (!txt)
@@ -56,8 +56,7 @@ int	add_token(t_token **tokens, int index, char *start, int len, int qt_flag, in
 	(*tokens)[index].text = txt;
 	(*tokens)[index].quot = qt_flag;
 	(*tokens)[index].join_prev = join_prev;
-	//remove_quotes_from_token(&(*tokens)[index]);
-	(*tokens)[index].type = determine_type((*tokens)[index].text, qt_flag);//
+	(*tokens)[index].type = determine_type((*tokens)[index].text, qt_flag);
 	return (0);
 }
 
@@ -74,7 +73,7 @@ void	free_tokens_partial(t_token *tokens, int count)
 	free (tokens);
 }
 
-void	lexing_input(t_lexer *lexer, char delim)
+void	lexing_input(t_lexer *lexer, char delim)//starting point of the issue
 {
 	if (lexer->tokens && lexer->token_count > 0)
 	{
@@ -82,7 +81,7 @@ void	lexing_input(t_lexer *lexer, char delim)
 		lexer->tokens = NULL;
 		lexer->token_count = 0;
 	}
-	if (!validate_quotes(lexer->input)) // validade_quotes retorna 1 se bem sucedida
+	if (!validate_quotes(lexer->input))
 	{
 		lexer->tokens = NULL;
 		lexer->token_count = 0;
@@ -105,15 +104,17 @@ char	*join_words(char *a, char *b)
 
 	if (!a && !b)
 		return (NULL);
-	la = a ? ft_strlen(a) : 0;
-	lb = b ? ft_strlen(b) : 0;
+	la = 0;
+	lb = 0;
+	if (a)
+		la = ft_strlen(a);
+	if (b)
+		lb = ft_strlen(b);
 	res = malloc(la + lb + 1);
 	if (!res)
 		return (NULL);
-	if (a)
-		ft_memcpy(res, a, la);
-	if (b)
-		ft_memcpy(res + la, b, lb);
+	ft_memcpy(res, a, la);
+	ft_memcpy(res + la, b, lb);
 	res[la + lb] = '\0';
 	if (a)
 		free(a);

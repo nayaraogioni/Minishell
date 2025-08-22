@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 17:58:10 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/21 21:32:21 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/22 14:50:11 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,7 +138,6 @@ int	ft_export(char **argv, t_env **env)
 			return (-1);
 		return add_export(argv[i], env, value);
 	}
-	// No '=' present: only add if not already in env
 	if (!ft_getenv(*env, argv[i]))
 		return replace_env_value(env, argv[i], "");
 	return (exit_code);

@@ -6,13 +6,13 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/20 16:38:23 by nayara            #+#    #+#             */
-/*   Updated: 2025/08/22 12:37:43 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/22 13:18:44 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char	*parse_variable_or_quote(char *s, char **start, 
+char	*parse_variable_or_quote(char *s, char **start, \
 	int *len, int *qt_flag)
 {
 	if (*s == '$' && *(s + 1))
@@ -30,7 +30,7 @@ char	*parse_variable_or_quote(char *s, char **start,
 	return (NULL);
 }
 
-char	*parse_operators_or_regular(char *s, char delim, char **start, 
+char	*parse_operators_or_regular(char *s, char delim, char **start, \
 	int *len)
 {
 	if (is_double_operator(s))
@@ -50,7 +50,7 @@ char	*parse_operators_or_regular(char *s, char delim, char **start,
 	}
 }
 
-char	*parse_token(char *s, char delim, char **start, 
+char	*parse_token(char *s, char delim, char **start, \
 	int *len, int *qt_flag)
 {
 	char	*result;
@@ -71,5 +71,7 @@ char	*skip_delimiters(char *s, char delim)
 
 int	should_join_prev(char *tok_begin, char *str, char delim)
 {
-	return ((tok_begin > str && *(tok_begin - 1) != delim) ? 1 : 0);
+	if (tok_begin > str && *(tok_begin - 1) != delim)
+		return (1);
+	return (0);
 }
