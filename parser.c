@@ -31,7 +31,6 @@ t_command *init_command(void)
 	cmd->path = NULL;
 	cmd->input_file = NULL;
 	cmd->output_file = NULL;
-	//cmd->filename = NULL;
 	cmd->pid_filename_output = 0;
 	cmd->command_count = 0;
 	cmd->commands = NULL;
@@ -352,7 +351,10 @@ t_command	*parse_sequence(t_lexer *lexer, t_env *my_env)
 
 t_command	*parse_function(t_lexer *lexer, t_env *my_env)
 {
-	if (has_variables(lexer))
+	int		flag;
+
+	flag = export_exception_flag(lexer);
+	if (has_variables(lexer) && flag != 1)
 	{
 		if (expand_variables(lexer, my_env) == -1)
 		{
