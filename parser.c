@@ -239,7 +239,6 @@ t_command	*parse_simple_command(t_lexer *lexer, t_env *env_list)
 
 t_command	*parse_pipeline(t_lexer *lexer, t_env *my_env)
 {
-	//printf("**** ENTER PARSE_PIPELINE ******\n");
 	t_command	*pipeline_cmd;
 	t_lexer		*sublexer;
 	int		start;
@@ -298,7 +297,6 @@ t_command	*parse_pipeline(t_lexer *lexer, t_env *my_env)
 
 t_command	*parse_sequence(t_lexer *lexer, t_env *my_env)
 {
-	//printf("**** ENTER PARSE_SEQUENCE ******\n");
 	t_command	*sequence_cmd;
 	t_lexer		*sublexer;
 	int		start;

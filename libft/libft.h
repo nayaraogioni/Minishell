@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/13 14:47:56 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/01 20:39:29 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/22 22:03:06 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ int		ft_isdigit(int i);
 int		ft_isalnum(int i);
 int		ft_isascii(int i);
 int		ft_isprint(int i);
+int		ft_isspace(int c);
 size_t	ft_strlen(const char *str);
 void	*ft_memset(void *str, int c, size_t n);
 void	ft_bzero(void *str, size_t n);

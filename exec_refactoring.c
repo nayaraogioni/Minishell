@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 23:53:08 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/07 23:53:14 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/22 20:51:43 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,7 +125,6 @@ int	exit_code(t_parse_data *pd, t_env **env, pid_t pids[MAX_ARGS])
 {
 	int		wstatus;
 	int		i;
-	char	*exit_str;
 
 	if (!pd || !env)
 		return (-1);
@@ -141,11 +140,7 @@ int	exit_code(t_parse_data *pd, t_env **env, pid_t pids[MAX_ARGS])
 		}
 		i++;
 	}
-	exit_str = ft_itoa(pd->pd_exit_status);
-	if (!exit_str)
-		return (-1);
-	i = replace_env_value(env, "?", exit_str);
-	free (exit_str);
+	i = exit_code_helper(pd, env);
 	if (i != 0)
 		return (-1);
 	return (0);

@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 01:10:10 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/22 13:14:27 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/22 21:13:58 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ typedef struct s_env
 
 static volatile sig_atomic_t	g_heredoc_sig = 0;
 //main.c
-void	cleanup_iter(t_lexer *lexer, t_parse_data *pd);
+void			cleanup_iter(t_lexer *lexer, t_parse_data *pd);
 //tokenizer.c
 t_token_type	determine_type(char *token_text, int qt_flag);
 int				token_counter(char *str, char delim);
@@ -70,7 +70,8 @@ int				validate_quotes(char *str);
 bool			bool_changer(bool key);
 //tokenizer_helper.c
 void			remove_quotes_from_token(t_token *token);
-int				add_token(t_token **tokens, int index, char *start, int len, int qt_flag, int join_prev);
+int				add_token(t_token **tokens, int index, char *start, \
+	int len, int qt_flag, int join_prev);
 void			free_tokens_partial(t_token *tokens, int count);
 void			lexing_input(t_lexer *lexer, char delim);
 char			*join_words(char *a, char *b);
@@ -78,7 +79,8 @@ char			*join_words(char *a, char *b);
 int				is_wordish(t_token *t);
 void			print_tokens(t_lexer *lexer);//FUNCTION FOR TESTING
 //split_token.c
-int				init_split_tokens(char *str, t_lexer *lexer, char **s, t_token **tokens);
+int				init_split_tokens(char *str, t_lexer *lexer, \
+	char **s, t_token **tokens);
 char			*handle_variable_token(char *s, int *len);
 char			*handle_double_quotes(char *s, int *len);
 char			*handle_single_quotes(char *s, char quote_char, int *len);
@@ -90,15 +92,21 @@ char			*handle_regular_token(char *s, char delim, int *len);
 int				is_double_operator(char *s);
 int				is_single_operator(char *s);
 //split_token_helper_2.c
-char			*parse_variable_or_quote(char *s, char **start, int *len, int *qt_flag);
-char			*parse_operators_or_regular(char *s, char delim, char **start, int *len);
-char			*parse_token(char *s, char delim, char **start, int *len, int *qt_flag);
+char			*parse_variable_or_quote(char *s, char **start, \
+	int *len, int *qt_flag);
+char			*parse_operators_or_regular(char *s, char delim, \
+	char **start, int *len);
+char			*parse_token(char *s, char delim, char **start, int *len, \
+	int *qt_flag);
 char			*skip_delimiters(char *s, char delim);
 int				should_join_prev(char *tok_begin, char *str, char delim);
 //split_token_helper_3.c
-t_token			*handle_add_token_error(t_token *tokens, int i, t_lexer *lexer);
-int				process_single_token(char **s, char *str, char delim, t_token **tokens, int i);
-t_token			*tokenize_loop(char *str, char delim, t_lexer *lexer, t_token *tokens);
+t_token			*handle_add_token_error(t_token *tokens, int i, \
+	t_lexer *lexer);
+int				process_single_token(char **s, char *str, char delim, \
+	t_token **tokens, int i);
+t_token			*tokenize_loop(char *str, char delim, t_lexer *lexer, \
+	t_token *tokens);
 t_token			*split_tokens(char *str, char delim, t_lexer *lexer);
 
 //parser.c
@@ -140,6 +148,7 @@ void			ft_setenv(t_env **env, char *key, char *value);
 void			ft_unsetenv(t_env **env, char *key);
 void			ft_env(t_env *env);
 int				ft_unset(char **argv, t_env **env);
+int				add_export(char *arg, t_env **env, char *value);
 int				ft_export(char **argv, t_env **env);
 //cleanup_env_list.c
 void			clean_env_list(t_env **env_list);
@@ -148,6 +157,7 @@ char			**env_to_array(t_env *env);
 int				list_lenght(t_env *env_list);
 //built_ins.c
 int				ft_cd(char **argv, t_env **env_list);
+int				ft_exit(char *input);
 int				run_parent_built(t_command *cmd, t_env **env_list);
 bool			is_parent_builtin(char *name);
 bool			is_any_builtin(char *name);
@@ -171,7 +181,14 @@ char			*hd_helper_append_char(char *out, char c);
 //exec_commands.c
 int				child_run(t_command *cmd, int fd, t_env **env, int c_pipe[2]);
 void			parent_run(t_command *cmd, int *fd, int pipe_var[2]);
-void			exec_parsed_cmds(t_parse_data *pd, t_env **myenv, t_lexer *lexer);
+void			exec_parsed_cmds(t_parse_data *pd, t_env **myenv, \
+	t_lexer *lexer);
+void			handle_child_process(t_command *cmd, int fd, t_env **env, \
+	int pipe[2]);
+void			handle_parent_process(t_command *cmd, int *fd, int pipe[2]);
+//exec_commands_helper.c
+int				spawn_processes(t_parse_data *pd, t_env **env, pid_t *pids);
+int				exit_code_helper(t_parse_data *pd, t_env **env);
 //exec_refactoring.c
 int				pre_exec_setups(t_command *cmd, int prev_fd);
 int				pre_exec_setups_2(t_command *cmd, int c_pipe[2], int has_pipe);
@@ -179,8 +196,8 @@ int				pos_exec_error_codes(char *cmd_name, int errno_code);
 int				pre_exec_prep(t_command *cmd, t_env **env, int n, int cp[2]);
 int				exit_code(t_parse_data *pd, t_env **env, pid_t pids[MAX_ARGS]);
 //expand_var_helpers.c
-int		append_char(char **dst, char c);
-char	*expand_word_text(t_env *env, t_token *t);
+int				append_char(char **dst, char c);
+char			*expand_word_text(t_env *env, t_token *t);
 //expand_var_helpers2.c
 int				backslash_helper(int i, char **out, char *src, int quot);
 int				process_backslash(int i, char **out, char *src, int quot);
@@ -188,5 +205,6 @@ char			*last_exit_expander(int last_status, char **out);
 //enviroment_functions_utils2.c
 char			*literal_argv_expander(char *eq, char **argv, int *i);
 int				export_exception_flag(t_lexer *lexer);
+int				export_helper(char *eq, char **argv, t_env **env);
 
 #endif

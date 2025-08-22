@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/20 16:31:44 by nayara            #+#    #+#             */
-/*   Updated: 2025/08/22 14:43:30 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/22 22:13:08 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,11 +37,9 @@ char	*handle_variable_token(char *s, int *len)
 char	*handle_double_quotes(char *s, int *len) //CHANGES HERE
 {
 	char	*start;
-	char	*p;//+
+	char	*p;
 	char	next;
 
-	//s++;
-	//start = s;
 	p = s + 1;
 	start = p;
 	while (*p)

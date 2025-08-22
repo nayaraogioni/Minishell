@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 17:58:10 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/22 14:50:11 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/22 18:42:11 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ void	ft_env(t_env *env)
 	}
 }
 
-static int	add_export(char *arg, t_env **env, char *value)
+int	add_export(char *arg, t_env **env, char *value)
 {
 	char	*eq;
 	size_t	klen;
@@ -110,13 +110,12 @@ int	ft_export(char **argv, t_env **env)
 	int		i;
 	char	*eq;
 	char	*trimmed;
-	char	*value;
 
 	if (!argv || !argv[1])
 		return (-1);
 	i = 1;
 	exit_code = 0;
-	eq = ft_strchr(argv[i], '=');//starting point
+	eq = ft_strchr(argv[i], '=');
 	if (!eq)
 		return (-1);
 	if (eq && *(eq + 1) != '\0' && (*(eq + 1) == '"' || *(eq + 1) == '\''))
@@ -126,19 +125,6 @@ int	ft_export(char **argv, t_env **env)
 			return (-1);
 		return (add_export(argv[1], env, trimmed));
 	}
-	if (argv[i][0] == '\0' || (eq && eq == argv[i]))
-	{
-		printf("minishell: export: '%s': not a valid identifier\n", argv[i]);
-		return (-1);
-	}
-	if (eq)
-	{
-		value = ft_strdup(eq + 1);
-		if (!value)
-			return (-1);
-		return add_export(argv[i], env, value);
-	}
-	if (!ft_getenv(*env, argv[i]))
-		return replace_env_value(env, argv[i], "");
+	exit_code = export_helper(eq, argv, env);
 	return (exit_code);
 }
