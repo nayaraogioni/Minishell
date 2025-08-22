@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 17:58:10 by dopereir          #+#    #+#             */
-/*   Updated: 2025/07/07 17:58:27 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/21 21:32:21 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,12 +80,11 @@ void	ft_env(t_env *env)
 	}
 }
 
-static int	add_export(char *arg, t_env **env)
+static int	add_export(char *arg, t_env **env, char *value)
 {
 	char	*eq;
 	size_t	klen;
 	char	*key;
-	char	*value;
 
 	eq = ft_strchr(arg, '=');
 	if (!eq)
@@ -94,9 +93,6 @@ static int	add_export(char *arg, t_env **env)
 	key = ft_strndup(arg, klen);
 	if (!key)
 		return (-1);
-	value = ft_strdup(eq + 1);
-	if (!value)
-		return (free(key), -1);
 	if (replace_env_value(env, key, value) != 0)
 	{
 		free(key);
@@ -113,28 +109,37 @@ int	ft_export(char **argv, t_env **env)
 	int		exit_code;
 	int		i;
 	char	*eq;
-	int		quote_flag;
+	char	*trimmed;
+	char	*value;
 
+	if (!argv || !argv[1])
+		return (-1);
 	i = 1;
-	quote_flag = -1;
 	exit_code = 0;
-	while (argv[i])
+	eq = ft_strchr(argv[i], '=');//starting point
+	if (!eq)
+		return (-1);
+	if (eq && *(eq + 1) != '\0' && (*(eq + 1) == '"' || *(eq + 1) == '\''))
 	{
-		eq = ft_strchr(argv[i], '=');
-		if (eq != NULL && *(eq + 1) != '\0' && (*(eq + 1) == '"' || *(eq + 1) == '\'')) // *****
-			quote_flag = 1; //FUNCTION WILL BE CALLED HERE
-		(void)quote_flag;
-		if (argv[i][0] == '\0' || eq == argv[i])
-		{
-			printf("minishell: export: '%s': not a valid identifier\n",
-				argv[i]);
-			exit_code = -1;
-		}
-		else if (eq)
-			exit_code = add_export(argv[i], env);
-		else if (!ft_getenv(*env, argv[i]))
-			exit_code = replace_env_value(env, argv[i], "");
-		i++;
+		trimmed = literal_argv_expander(eq, argv, &i);
+		if (!trimmed)
+			return (-1);
+		return (add_export(argv[1], env, trimmed));
 	}
+	if (argv[i][0] == '\0' || (eq && eq == argv[i]))
+	{
+		printf("minishell: export: '%s': not a valid identifier\n", argv[i]);
+		return (-1);
+	}
+	if (eq)
+	{
+		value = ft_strdup(eq + 1);
+		if (!value)
+			return (-1);
+		return add_export(argv[i], env, value);
+	}
+	// No '=' present: only add if not already in env
+	if (!ft_getenv(*env, argv[i]))
+		return replace_env_value(env, argv[i], "");
 	return (exit_code);
 }

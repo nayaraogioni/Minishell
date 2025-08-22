@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nayara <nayara@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:28:33 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/20 17:07:57 by nayara           ###   ########.fr       */
+/*   Updated: 2025/08/22 12:13:06 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ void	clear_token(t_token *tokens, int token_count)
 	free(tokens);
 }
 
-int token_counter(char *str, char delim)
+int	token_counter(char *str, char delim)
 {
 	char	*s;
 	int	token_count_res;
