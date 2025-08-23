@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/18 22:11:31 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/22 21:06:55 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/23 15:09:59 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ int	export_exception_flag(t_lexer *lexer)
 	return (flag);
 }
 
-int	export_helper(char *eq, char **argv, t_env **env)
+int	export_helper(char *eq, char **argv, t_env **env, t_parse_data *pd)
 {
 	char	*value;
 	int		i;
@@ -47,6 +47,7 @@ int	export_helper(char *eq, char **argv, t_env **env)
 	if (argv[i][0] == '\0' || (eq && eq == argv[i]))
 	{
 		printf("minishell: export: '%s': not a valid identifier\n", argv[i]);
+		pd->pd_exit_status = 1;
 		return (-1);
 	}
 	if (eq)

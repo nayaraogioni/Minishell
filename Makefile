@@ -8,6 +8,7 @@ LIBFT_DIR = libft
 LIBFT = $(LIBFT_DIR)/libft.a
 
 SOURCES =	main.c \
+			built_ins_2.c \
 			built_ins.c \
 			cleanup_env_list.c \
 			collect_commands.c \

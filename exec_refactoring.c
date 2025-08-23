@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 23:53:08 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/22 20:51:43 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/23 14:57:59 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ int	pos_exec_error_codes(char *cmd_name, int errno_code)
 // (0) caller continues the program
 // (1) -> caller calls exit(1)
 // (-1) -> caller breaks
-int	pre_exec_prep(t_command *cmd, t_env **env, int n, int cp[2])
+int	pre_exec_prep(t_command *cmd, t_env **env, t_parse_data *pd, int cp[2])
 {
 	bool		is_parent_bt;
 	int			saved_stdin;
@@ -101,13 +101,13 @@ int	pre_exec_prep(t_command *cmd, t_env **env, int n, int cp[2])
 	saved_stdin = dup(STDIN_FILENO);
 	saved_stdout = dup(STDOUT_FILENO);
 	is_parent_bt = is_parent_builtin(cmd->name);
-	if (is_parent_bt && n == 1)
+	if (is_parent_bt && pd->n_cmds == 1)
 	{
 		if (cmd->input_file)
 			set_input(cmd);
 		if (cmd->output_file)
 			set_output(cmd);
-		run_parent_built(cmd, env);
+		run_parent_built(cmd, env, pd);
 		dup2(saved_stdin, STDIN_FILENO);
 		dup2(saved_stdout, STDOUT_FILENO);
 		close(saved_stdin);
