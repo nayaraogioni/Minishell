@@ -11,6 +11,7 @@ SOURCES =	main.c \
 			built_ins_2.c \
 			built_ins.c \
 			cleanup_env_list.c \
+			cleanup_utils.c \
 			collect_commands.c \
 			environment_functions_utils.c \
 			environment_functions_utils2.c \
