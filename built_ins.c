@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 17:17:58 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/23 16:07:23 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/23 18:18:09 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ int	ft_cd(char **argv, t_env **env_list)
 	return (0);
 }
 
+///NOTE: if returns 1; the input is freed here
 int	ft_exit(char *input)
 {
 	char	*ptr;
