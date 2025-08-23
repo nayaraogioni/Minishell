@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 17:17:58 by dopereir          #+#    #+#             */
-/*   Updated: 2025/07/19 02:12:13 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/22 22:08:21 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,22 @@ int	ft_cd(char **argv, t_env **env_list)
 	return (0);
 }
 
+int	ft_exit(char *input)
+{
+	char	*ptr;
+
+	ptr = input;
+	while (*ptr && ft_isspace((unsigned char)*ptr))
+		ptr++;
+	if (ft_strncmp(ptr, "exit", 4) == 0 && (ptr[4] == '\0' \
+		|| ft_isspace((unsigned char)ptr[4])))
+	{
+		free (input);
+		return (1);
+	}
+	return (0);
+}
+
 int	run_parent_built(t_command *cmd, t_env **env_list)
 {
 	if (!ft_strcmp(cmd->name, "cd"))
@@ -51,8 +67,6 @@ int	run_parent_built(t_command *cmd, t_env **env_list)
 		return (ft_export(cmd->argv, env_list));
 	else if (!ft_strcmp(cmd->name, "unset"))
 		return (ft_unset(cmd->argv, env_list));
-	else if (!ft_strcmp(cmd->name, "exit"))
-		printf("implement ft_exit\n");
 	else if (!ft_strcmp(cmd->name, "env"))
 		return (ft_env(*env_list), 0);
 	return (0);

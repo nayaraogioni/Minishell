@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 23:15:37 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/14 09:47:25 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/22 22:08:48 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,13 +80,10 @@ int main(int argc, char **argv, char **envp)
 	{
 		input = readline("MINISHELL>$ ");
 
-		if (!input) //CTRL-D EOF
+		if (!input)
 			break;
-		if (ft_strcmp(input, "exit") == 0)
-		{
-			free(input);
-			break;
-		}
+		if (ft_exit(input))
+			break ;
 		if (ft_strlen(input) == 0)
 		{
 			free(input);

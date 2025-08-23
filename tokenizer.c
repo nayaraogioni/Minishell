@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:28:33 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/22 12:13:06 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/22 14:45:32 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,14 +24,13 @@ bool	bool_changer(bool key)
 // func para validar se todas as aspas estão fechadas
 int	validate_quotes(char *str)
 {
-	bool in_single_quote;
-	bool in_double_quote;
-	char *s;
+	bool	in_single_quote;
+	bool	in_double_quote;
+	char	*s;
 
 	in_single_quote = false;
 	in_double_quote = false;
 	s = str;
-
 	while (*s)
 	{
 		if (*s == '\'' && !in_double_quote)
@@ -39,7 +38,8 @@ int	validate_quotes(char *str)
 		else if (*s == '"' && !in_single_quote)
 			in_double_quote = bool_changer(in_double_quote);
 		s++;
-	}	if (in_single_quote)
+	}
+	if (in_single_quote)
 	{
 		printf("minishell: syntax error: unclosed single quote\n");
 		return (0);
@@ -49,7 +49,7 @@ int	validate_quotes(char *str)
 		printf("minishell: syntax error: unclosed double quote\n");
 		return (0);
 	}
-	return (1); // tds as aspas estão fechadas
+	return (1);
 }
 
 void	clear_token(t_token *tokens, int token_count)
@@ -71,45 +71,47 @@ void	clear_token(t_token *tokens, int token_count)
 int	token_counter(char *str, char delim)
 {
 	char	*s;
-	int	token_count_res;
+	int		token_count_res;
 	char	quote_char;
 
 	s = str;
 	token_count_res = 0;
-	while (*s) // loop dentro da string de input
+	while (*s)
 	{
-		while (*s && *s == delim) // ingora espaços
+		while (*s && *s == delim)
 			s++;
-		if (*s == '\0') // se chegou ao fim quebra
-			break;
-		token_count_res++; // encontrou o inicio de um token
-		if (*s == '"' || *s == '\'') // se for uma quote
+		if (*s == '\0')
+			break ;
+		token_count_res++;
+		if (*s == '"' || *s == '\'')
 		{
-			quote_char = *s; // sinaliza onde esta na string a abertura da quote
+			quote_char = *s;
 			s++;
-			while (*s && *s != quote_char) // itera sobre a string dentro da quote
+			while (*s && *s != quote_char)
 				s++;
-			if (*s == quote_char) // itera sobre a quote de fechamento
+			if (*s == quote_char)
 				s++;
 		}
-		else if ((*s && *(s + 1)) && ((*s == '>' && *(s + 1) == '>') ||
-			(*s == '<' && *(s + 1) == '<') || (*s == '&' && *(s + 1) == '&'))) // verifica se é token duplo >> << &&
+		else if ((*s && *(s + 1)) && ((*s == '>' && *(s + 1) == '>') \
+				|| (*s == '<' && *(s + 1) == '<') \
+				|| (*s == '&' && *(s + 1) == '&')))
 			s += 2;
-		else if (*s == '|' || *s == '>' || *s == '<') // verifica se é token unico
+		else if (*s == '|' || *s == '>' || *s == '<')
 			s++;
 		else
 		{
-			 while (*s && *s != delim && *s != '|' && *s != '>' && *s != '<' && *s != '&') // itera enquanto nao for token ate chegar no proximo
-			 	s++;
+			while (*s && *s != delim && *s != '|' && *s != '>' \
+				&& *s != '<' && *s != '&')
+				s++;
 		}
 	}
-	return (token_count_res); // numero de tokens na string
+	return (token_count_res);
 }
-
 
 t_token_type	determine_type(char *token_text, int qt_flag)
 {
 	int	i;
+
 	if (!token_text || !*token_text)
 		return (T_WORD);
 	if (ft_strcmp(token_text, "|") == 0)
@@ -135,4 +137,3 @@ t_token_type	determine_type(char *token_text, int qt_flag)
 	}
 	return (T_WORD);
 }
-

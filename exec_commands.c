@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 22:48:16 by dopereir          #+#    #+#             */
-/*   Updated: 2025/07/19 02:13:33 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/22 21:08:48 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,42 +56,7 @@ void	parent_run(t_command *cmd, int *fd, int pipe_var[2])
 		*fd = -1;
 }
 
-/*void	exec_parsed_cmds(t_parse_data *pd, t_env **env, t_lexer *lexer)
-{
-	pid_t		pids[MAX_ARGS];
-	t_exec_data	ctx;
-	int			rc;
-
-	(void)lexer;
-	ctx.fd = -1;
-	ctx.i = 0;
-	pd->n_spawn_pids = 0;
-	while (ctx.i < pd->n_cmds)
-	{
-		ctx.rc = pre_exec_prep(pd->commands[ctx.i], env, pd->n_cmds, ctx.pipe);
-		if (ctx.rc == -1)
-			break ;
-		if (ctx.rc == 1)
-			exit (1);
-		pids[ctx.i] = fork();
-		if (pids[ctx.i] < 0)
-			exit(1);
-		if (pids[ctx.i] == 0)
-		{
-			rc = child_run(pd->commands[ctx.i], ctx.fd, env, ctx.pipe);
-			clean_env_list(env);
-			exit (rc);
-		}
-		parent_run(pd->commands[ctx.i], &ctx.fd, ctx.pipe);
-		ctx.i++;
-		pd->n_spawn_pids++;
-	}
-	if (ctx.fd != -1)
-		close(ctx.fd);
-	exit_code(pd, env, pids);
-}*/
-
-static void	handle_child_process(t_command *cmd, int fd, t_env **env, \
+void	handle_child_process(t_command *cmd, int fd, t_env **env, \
 	int pipe[2])
 {
 	int	rc;
@@ -101,42 +66,9 @@ static void	handle_child_process(t_command *cmd, int fd, t_env **env, \
 	_exit(rc);
 }
 
-static void	handle_parent_process(t_command *cmd, int *fd, int pipe[2])
+void	handle_parent_process(t_command *cmd, int *fd, int pipe[2])
 {
 	parent_run(cmd, fd, pipe);
-}
-
-static int	spawn_processes(t_parse_data *pd, t_env **env, pid_t *pids)
-{
-	t_exec_data	ctx;
-
-	ctx.fd = -1;
-	ctx.i = 0;
-	ctx.pipe[0] = -1;
-	ctx.pipe[1] = -1;
-	pd->n_spawn_pids = 0;
-	while (ctx.i < pd->n_cmds)
-	{
-		ctx.rc = pre_exec_prep(pd->commands[ctx.i], env, pd->n_cmds, ctx.pipe);
-		if (ctx.rc == -1)
-		{
-			parent_run(pd->commands[ctx.i], &ctx.fd, ctx.pipe);
-			break ;
-		}
-		if (ctx.rc == 1)
-			exit(1);
-		pids[ctx.i] = fork();
-		if (pids[ctx.i] < 0)
-			exit(1);
-		if (pids[ctx.i] == 0)
-			handle_child_process(pd->commands[ctx.i], ctx.fd, env, ctx.pipe);
-		handle_parent_process(pd->commands[ctx.i], &ctx.fd, ctx.pipe);
-		ctx.i++;
-		pd->n_spawn_pids++;
-	}
-	if (ctx.fd != -1)
-		close(ctx.fd);
-	return (0);
 }
 
 void	exec_parsed_cmds(t_parse_data *pd, t_env **env, t_lexer *lexer)
@@ -146,8 +78,6 @@ void	exec_parsed_cmds(t_parse_data *pd, t_env **env, t_lexer *lexer)
 
 	(void)lexer;
 	rc = spawn_processes(pd, env, pids);
-	if (rc == -1)
-		printf("SPAWN_PROCESS %d\n", rc);
 	if (rc == 0)
 		exit_code(pd, env, pids);
 }

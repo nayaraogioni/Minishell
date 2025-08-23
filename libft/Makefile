@@ -6,7 +6,7 @@
 #    By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/04/10 20:59:32 by dopereir          #+#    #+#              #
-#    Updated: 2025/08/01 20:39:53 by dopereir         ###   ########.fr        #
+#    Updated: 2025/08/22 22:03:18 by dopereir         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,6 +22,7 @@ Sources = calculate_padding_bonus.c \
 		ft_isascii.c \
 		ft_isdigit.c \
 		ft_isprint.c \
+		ft_isspace.c \
 		ft_itoa.c \
 		ft_itoa_custombase.c \
 		ft_lstadd_back.c \

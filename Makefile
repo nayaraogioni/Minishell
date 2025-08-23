@@ -16,6 +16,7 @@ SOURCES =	main.c \
 			environment_functions.c \
 			error_handlers.c \
 			exec_commands.c \
+			exec_commands_helper.c \
 			exec_refactoring.c \
 			execute_helpers.c \
 			expand_var_helpers.c \
