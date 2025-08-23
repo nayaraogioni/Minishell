@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 17:17:58 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/22 22:08:21 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/23 16:07:23 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,16 +59,20 @@ int	ft_exit(char *input)
 	return (0);
 }
 
-int	run_parent_built(t_command *cmd, t_env **env_list)
+int	run_parent_built(t_command *cmd, t_env **env_list, t_parse_data *pd)
 {
 	if (!ft_strcmp(cmd->name, "cd"))
 		return (ft_cd(cmd->argv, env_list));
 	else if (!ft_strcmp(cmd->name, "export"))
-		return (ft_export(cmd->argv, env_list));
+		return (ft_export(cmd->argv, env_list, pd));
 	else if (!ft_strcmp(cmd->name, "unset"))
 		return (ft_unset(cmd->argv, env_list));
+	else if (!ft_strcmp(cmd->name, "pwd"))
+		return (ft_pwd(env_list, pd, cmd));
 	else if (!ft_strcmp(cmd->name, "env"))
 		return (ft_env(*env_list), 0);
+	else if (!ft_strcmp(cmd->name, "echo"))
+		return (ft_echo(pd, env_list, cmd));
 	return (0);
 }
 
@@ -76,10 +80,21 @@ bool	is_parent_builtin(char *name)
 {
 	return (!ft_strcmp(name, "cd") || !ft_strcmp(name, "export")
 		|| !ft_strcmp(name, "unset") || !ft_strcmp(name, "exit")
-		|| !ft_strcmp(name, "env"));
+		|| !ft_strcmp(name, "env") || !ft_strcmp(name, "pwd")
+		|| !ft_strcmp(name, "echo"));
 }
 
-bool	is_any_builtin(char *name)
+int	ft_pwd(t_env **env, t_parse_data *pd, t_command *cmd)
 {
-	return (!ft_strcmp(name, "echo") || !ft_strcmp(name, "pwd"));
+	char	*pwd;
+
+	(void)cmd;
+	pwd = ft_getenv(*env, "PWD");
+	if (pwd)
+	{
+		write(STDOUT_FILENO, pwd, ft_strlen(pwd));
+		write(STDOUT_FILENO, "\n", 1);
+		pd->pd_exit_status = 0;
+	}
+	return (1);
 }

@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 01:10:10 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/22 21:13:58 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/23 16:06:44 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,7 +149,7 @@ void			ft_unsetenv(t_env **env, char *key);
 void			ft_env(t_env *env);
 int				ft_unset(char **argv, t_env **env);
 int				add_export(char *arg, t_env **env, char *value);
-int				ft_export(char **argv, t_env **env);
+int				ft_export(char **argv, t_env **env, t_parse_data *pd);
 //cleanup_env_list.c
 void			clean_env_list(t_env **env_list);
 void			free_env_array(char **arr, int count);
@@ -158,9 +158,9 @@ int				list_lenght(t_env *env_list);
 //built_ins.c
 int				ft_cd(char **argv, t_env **env_list);
 int				ft_exit(char *input);
-int				run_parent_built(t_command *cmd, t_env **env_list);
+int				run_parent_built(t_command *cmd, t_env **env_list, t_parse_data *pd);
 bool			is_parent_builtin(char *name);
-bool			is_any_builtin(char *name);
+int				ft_pwd(t_env **env, t_parse_data *pd, t_command *cmd);
 //error_handlers.c
 char			*cmd_type_str(t_token_type type);
 void			argument_redirs_error(t_token_type type);
@@ -193,7 +193,7 @@ int				exit_code_helper(t_parse_data *pd, t_env **env);
 int				pre_exec_setups(t_command *cmd, int prev_fd);
 int				pre_exec_setups_2(t_command *cmd, int c_pipe[2], int has_pipe);
 int				pos_exec_error_codes(char *cmd_name, int errno_code);
-int				pre_exec_prep(t_command *cmd, t_env **env, int n, int cp[2]);
+int				pre_exec_prep(t_command *cmd, t_env **env, t_parse_data *pd, int cp[2]);
 int				exit_code(t_parse_data *pd, t_env **env, pid_t pids[MAX_ARGS]);
 //expand_var_helpers.c
 int				append_char(char **dst, char c);
@@ -205,6 +205,9 @@ char			*last_exit_expander(int last_status, char **out);
 //enviroment_functions_utils2.c
 char			*literal_argv_expander(char *eq, char **argv, int *i);
 int				export_exception_flag(t_lexer *lexer);
-int				export_helper(char *eq, char **argv, t_env **env);
+int				export_helper(char *eq, char **argv, t_env **env, t_parse_data *pd);
+//built_ins_2.c
+int				ft_echo(t_parse_data *pd, t_env **env, t_command *cmd);
+
 
 #endif
