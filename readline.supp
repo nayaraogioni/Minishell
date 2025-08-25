@@ -1,7 +1,0 @@
-{
-	readline
-	Memcheck:Leak
-	fun:malloc
-	fun:xmalloc
-	fun:rl_initialize
-}

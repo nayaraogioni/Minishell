@@ -26,6 +26,9 @@ SOURCES =	main.c \
 			expand_var_heredoc_helper.c \
 			expand_var.c \
 			heredoc_utils.c \
+			parser_helper1.c \
+			parser_helper2.c \
+			parser_helper3.c \
 			parser_utils.c \
 			parser.c \
 			redirections_utils.c \
