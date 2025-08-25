@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "lexer.h"
 #include "libft/libft.h"
 #include "minishell.h"
 
@@ -193,7 +194,8 @@ t_lexer	*create_sublexer(t_lexer *lexer, int start, int end)
 	sublexer = malloc(sizeof(t_lexer));
 	if (!sublexer)
 		return (NULL);
-	sublexer->input = lexer->input; // assume que o input eh o mesmo
+	ft_memset(sublexer, 0, sizeof(t_lexer));
+	sublexer->input = lexer->input;
 	sublexer->token_count = end - start;
 	if (sublexer->token_count <= 0)
 	{
@@ -206,6 +208,7 @@ t_lexer	*create_sublexer(t_lexer *lexer, int start, int end)
 		free(sublexer);
 		return (NULL);
 	}
+	ft_memset(sublexer->tokens, 0, sizeof(t_token) * sublexer->token_count);
 	j = 0;
 	i = start;
 	while (i < end)
