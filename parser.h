@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 23:08:53 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/25 21:48:36 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/26 22:33:13 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,5 +53,20 @@ typedef struct s_pipe_data
 	t_lexer		*sublexer;
 	t_command	*leaf;
 }			t_pipe_data;
+
+typedef struct s_seq_data
+{
+	int		start;
+	int		op_pos;
+	int		i;
+	t_lexer	*sublexer;
+}			t_seq_data;
+
+typedef struct s_sub_data
+{
+	t_lexer	*sublexer;
+	int		i;
+	int		j;
+}			t_sub_data;
 
 #endif

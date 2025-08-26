@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:28:33 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/22 14:45:32 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/26 21:57:51 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,10 +40,7 @@ int	validate_quotes(char *str)
 		s++;
 	}
 	if (in_single_quote)
-	{
-		printf("minishell: syntax error: unclosed single quote\n");
-		return (0);
-	}
+		return(printf("minishell: syntax error: unclosed single quote\n"), 0);
 	if (in_double_quote)
 	{
 		printf("minishell: syntax error: unclosed double quote\n");

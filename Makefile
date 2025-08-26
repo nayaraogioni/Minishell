@@ -29,7 +29,10 @@ SOURCES =	main.c \
 			parser_helper1.c \
 			parser_helper2.c \
 			parser_helper3.c \
+			parser_helper4.c \
 			parser_utils.c \
+			parser_utils2.c \
+			parser_utils3.c \
 			parser.c \
 			redirections_utils.c \
 			signal_handlers.c \

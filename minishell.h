@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 01:10:10 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/25 22:09:12 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/26 23:02:05 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ typedef struct s_exec_data
 	int		fd;
 	int		i;
 	int		rc;
+	int		seq_mode;
 }			t_exec_data;
 
 typedef struct s_env
@@ -70,8 +71,8 @@ int				validate_quotes(char *str);
 bool			bool_changer(bool key);
 //tokenizer_helper.c
 void			remove_quotes_from_token(t_token *token);
-int				add_token(t_token **tokens, int index, char *start, \
-	int len, int qt_flag, int join_prev);
+int				add_token(t_token **tokens, int index, char *start,
+					int len, int qt_flag, int join_prev);
 void			free_tokens_partial(t_token *tokens, int count);
 void			lexing_input(t_lexer *lexer, char delim);
 char			*join_words(char *a, char *b);
@@ -79,8 +80,8 @@ char			*join_words(char *a, char *b);
 int				is_wordish(t_token *t);
 void			print_tokens(t_lexer *lexer);//FUNCTION FOR TESTING
 //split_token.c
-int				init_split_tokens(char *str, t_lexer *lexer, \
-	char **s, t_token **tokens);
+int				init_split_tokens(char *str, t_lexer *lexer,
+					char **s, t_token **tokens);
 char			*handle_variable_token(char *s, int *len);
 char			*handle_double_quotes(char *s, int *len);
 char			*handle_single_quotes(char *s, char quote_char, int *len);
@@ -92,39 +93,22 @@ char			*handle_regular_token(char *s, char delim, int *len);
 int				is_double_operator(char *s);
 int				is_single_operator(char *s);
 //split_token_helper_2.c
-char			*parse_variable_or_quote(char *s, char **start, \
-	int *len, int *qt_flag);
-char			*parse_operators_or_regular(char *s, char delim, \
-	char **start, int *len);
-char			*parse_token(char *s, char delim, char **start, int *len, \
-	int *qt_flag);
+char			*parse_variable_or_quote(char *s, char **start,
+					int *len, int *qt_flag);
+char			*parse_operators_or_regular(char *s, char delim,
+					char **start, int *len);
+char			*parse_token(char *s, char delim, char **start, int *len,
+					int *qt_flag);
 char			*skip_delimiters(char *s, char delim);
 int				should_join_prev(char *tok_begin, char *str, char delim);
 //split_token_helper_3.c
-t_token			*handle_add_token_error(t_token *tokens, int i, \
-	t_lexer *lexer);
-int				process_single_token(char **s, char *str, char delim, \
-	t_token **tokens, int i);
-t_token			*tokenize_loop(char *str, char delim, t_lexer *lexer, \
-	t_token *tokens);
+t_token			*handle_add_token_error(t_token *tokens, int i,
+					t_lexer *lexer);
+int				process_single_token(char **s, char *str, char delim,
+					t_token **tokens, int i);
+t_token			*tokenize_loop(char *str, char delim, t_lexer *lexer,
+					t_token *tokens);
 t_token			*split_tokens(char *str, char delim, t_lexer *lexer);
-
-//parser.c
-t_command		*init_command(void);
-t_command		*parse_function(t_lexer *lexer, t_env *my_env);
-t_command		*parse_sequence(t_lexer *lexer, t_env *my_env);
-t_command		*parse_pipeline(t_lexer *lexer, t_env *my_env);
-t_command		*parse_simple_command(t_lexer *lexer, t_env *env_list);
-//parser_utils.c
-int				has_pipes(t_lexer *lexer);
-int				has_variables(t_lexer *lexer);
-int				has_logical_operators(t_lexer *lexer);
-int				count_args(t_lexer *lexer);
-void			free_command(t_command *cmd);
-int				find_next_pipe(t_lexer *lexer, int start);
-int				find_next_logical_operator(t_lexer *lexer, int start);
-t_lexer			*create_sublexer(t_lexer *lexer, int start, int end);
-void			free_sublexer(t_lexer *sublexer);
 //collect_commands.c
 void			free_parsed_data(t_parse_data *parsed_data);
 t_parse_data	format_parsed_data(t_lexer *lexer, t_env *my_env);
@@ -160,8 +144,8 @@ void			cleanup_iter(t_lexer *lexer, t_parse_data *pd);
 //built_ins.c
 int				ft_cd(char **argv, t_env **env_list);
 int				ft_exit(char *input);
-int				run_parent_built(t_command *cmd, t_env **env_list, \
-	t_parse_data *pd);
+int				run_parent_built(t_command *cmd, t_env **env_list,
+					t_parse_data *pd);
 bool			is_parent_builtin(char *name);
 int				ft_pwd(t_env **env, t_parse_data *pd, t_command *cmd);
 //error_handlers.c
@@ -184,10 +168,10 @@ char			*hd_helper_append_char(char *out, char c);
 //exec_commands.c
 int				child_run(t_command *cmd, int fd, t_env **env, int c_pipe[2]);
 void			parent_run(t_command *cmd, int *fd, int pipe_var[2]);
-void			exec_parsed_cmds(t_parse_data *pd, t_env **myenv, \
-	t_lexer *lexer);
-void			handle_child_process(t_command *cmd, int fd, t_env **env, \
-	int pipe[2]);
+void			exec_parsed_cmds(t_parse_data *pd, t_env **myenv,
+					t_lexer *lexer);
+void			handle_child_process(t_command *cmd, int fd, t_env **env,
+					int pipe[2]);
 void			handle_parent_process(t_command *cmd, int *fd, int pipe[2]);
 //exec_commands_helper.c
 int				spawn_processes(t_parse_data *pd, t_env **env, pid_t *pids);
@@ -213,20 +197,53 @@ int				export_helper(char *eq, char **argv, t_env **env,
 					t_parse_data *pd);
 //built_ins_2.c
 int				ft_echo(t_parse_data *pd, t_command *cmd);
+//parser.c
+t_command		*init_command(void);
+t_command		*parse_function(t_lexer *lexer, t_env *my_env);
+t_command		*parse_sequence(t_lexer *lexer, t_env *my_env);
+t_command		*parse_pipeline(t_lexer *lexer, t_env *my_env);
+t_command		*parse_simple_command(t_lexer *lexer, t_env *env_list);
+//parser_utils.c
+int				has_pipes(t_lexer *lexer);
+int				has_variables(t_lexer *lexer);
+int				has_logical_operators(t_lexer *lexer);
+int				count_args(t_lexer *lexer);
+int				find_next_pipe(t_lexer *lexer, int start);
 //parser_helper1.c
-int			is_wordish_module(t_command *cmd, t_lexer *lexer, t_pbuilder *pb);
-char		*parse_next_argument(t_lexer *lexer, int *i);
-int			redir_in_module(t_command *cmd, t_lexer *lexer, t_pbuilder *pb);
-int			redir_out_module(t_command *cmd, t_lexer *lexer, t_pbuilder *pb);
+int				is_wordish_module(t_command *cmd, t_lexer *lexer,
+					t_pbuilder *pb);
+char			*parse_next_argument(t_lexer *lexer, int *i);
+int				redir_in_module(t_command *cmd, t_lexer *lexer, t_pbuilder *pb);
+int				redir_out_module(t_command *cmd, t_lexer *lexer,
+					t_pbuilder *pb);
 //parser_helper2.c
-int			redir_heredoc_module(t_command *cmd, t_lexer *lexer, t_pbuilder *pb);
-int			acc_module(t_command *cmd, t_pbuilder *pb);
-int			parse_section1(t_command *cmd, t_lexer *lexer, t_pbuilder *pb);
-int			finalize_command(t_command *cmd, t_pbuilder *pb);
+int				redir_heredoc_module(t_command *cmd, t_lexer *lexer,
+					t_pbuilder *pb);
+int				acc_module(t_command *cmd, t_pbuilder *pb);
+int				parse_section1(t_command *cmd, t_lexer *lexer, t_pbuilder *pb);
+int				finalize_command(t_command *cmd, t_pbuilder *pb);
 //parser_helper3.c
-t_command	*finalize_and_return(t_command *cmd, t_pbuilder *pb);
-int			pre_pipe_parse(t_pipe_data *pipe_data, t_command **pipeline_cmd);
-int			process_sublexer(t_pipe_data *pd, t_lexer *lexer, t_command *pipeline_cmd);
-int			process_leaf(t_pipe_data *pp, t_command *pipeline_cmd, t_env *env, t_lexer *lexer);
+t_command		*finalize_and_return(t_command *cmd, t_pbuilder *pb);
+int				pre_pipe_parse(t_pipe_data *pipe_data,
+					t_command **pipeline_cmd);
+int				process_sublexer(t_pipe_data *pd, t_lexer *lexer,
+					t_command *pipeline_cmd);
+int				process_leaf(t_pipe_data *pp, t_command *pipeline_cmd,
+					t_env *env, t_lexer *lexer);
+int				pre_seq_parse(t_seq_data *sd, t_command **sequence_cmd);
+//parser_helper4.c
+int				process_sequence_segment(t_seq_data *sd,
+					t_command *sequence_cmd, t_lexer *lexer, t_env *env);
+//parser_utils2.c
+void			free_and_null(char **ptr);
+void			free_string_array(char **arr, int max);
+void			free_command_array(t_command **arr, int count, int max);
+void			free_command_ptr(t_command **ptr);
+void			free_command(t_command *cmd);
+//parser_utils3.c
+void			free_sublexer(t_lexer *sublexer);
+int				find_next_logical_operator(t_lexer *lexer, int start);
+t_lexer			*create_sublexer(t_lexer *lexer, int start, int end);
+void			setup_command_defaults(t_command *cmd);
 
 #endif
