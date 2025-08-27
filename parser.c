@@ -19,7 +19,6 @@
 t_command	*init_command(void)
 {
 	t_command	*cmd;
-	int			i;
 
 	cmd = malloc(sizeof(t_command));
 	if (!cmd)

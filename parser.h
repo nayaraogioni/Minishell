@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 23:08:53 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/26 22:33:13 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/27 21:46:04 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,5 +68,30 @@ typedef struct s_sub_data
 	int		i;
 	int		j;
 }			t_sub_data;
+
+//struct to use in token_counter function
+typedef struct s_token_counter
+{
+	char	*s;
+	int		res;
+	char	quote_char;
+}			t_token_counter;
+
+//struct to use in process_single_token() function
+typedef struct s_proc_token
+{
+	char	*start;
+	char	*tok_begin;
+	int		len;
+	int		qt_flag;
+	int		join_prev;
+}			t_proc_token;
+
+typedef struct s_token_loop
+{
+	char	*s;
+	int		i;
+	int		rc;
+}			t_token_loop;
 
 #endif

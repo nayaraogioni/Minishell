@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/18 22:11:31 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/23 15:09:59 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/27 20:44:59 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ int	export_exception_flag(t_lexer *lexer)
 	int		flag;
 
 	flag = 0;
-	if (lexer->token_count > 0 && lexer->tokens[0].text \
+	if (lexer->token_count > 0 && lexer->tokens[0].text
 		&& ft_strcmp(lexer->tokens[0].text, "export") == 0)
 	{
 		if (lexer->token_count > 1 && lexer->tokens[1].text)

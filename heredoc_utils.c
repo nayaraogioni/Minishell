@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   redirections.c                                     :+:      :+:    :+:   */
+/*   heredoc_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/08 11:56:17 by dopereir          #+#    #+#             */
-/*   Updated: 2025/06/09 22:14:42 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/27 20:41:33 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ static void	heredoc_loop_helper(t_command *cmd, int pipefd[2], t_env *env)
 		line = readline("> ");
 		if (!line)
 		{
-			printf("minishell: warning: here-document delimited by "\
+			printf("minishell: warning: here-document delimited by "
 				"end-of-file (wanted '%s')\n", cmd->hd_delim);
 			break ;
 		}

@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 01:10:10 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/26 23:02:05 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/27 22:00:22 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,19 +66,19 @@ void			cleanup_iter(t_lexer *lexer, t_parse_data *pd);
 //tokenizer.c
 t_token_type	determine_type(char *token_text, int qt_flag);
 int				token_counter(char *str, char delim);
-void			clear_token(t_token *tokens, int token_count);
 int				validate_quotes(char *str);
-bool			bool_changer(bool key);
 //tokenizer_helper.c
 void			remove_quotes_from_token(t_token *token);
-int				add_token(t_token **tokens, int index, char *start,
-					int len, int qt_flag, int join_prev);
+int				add_token(t_token **tokens, int index, t_proc_token *pt);
 void			free_tokens_partial(t_token *tokens, int count);
 void			lexing_input(t_lexer *lexer, char delim);
 char			*join_words(char *a, char *b);
 //tokenizer_helper_2.c
 int				is_wordish(t_token *t);
 void			print_tokens(t_lexer *lexer);//FUNCTION FOR TESTING
+bool			bool_changer(bool key);
+void			clear_token(t_token *tokens, int token_count);
+t_token_type	determine_type_helper(char *token_text);
 //split_token.c
 int				init_split_tokens(char *str, t_lexer *lexer,
 					char **s, t_token **tokens);
@@ -97,15 +97,14 @@ char			*parse_variable_or_quote(char *s, char **start,
 					int *len, int *qt_flag);
 char			*parse_operators_or_regular(char *s, char delim,
 					char **start, int *len);
-char			*parse_token(char *s, char delim, char **start, int *len,
-					int *qt_flag);
+char			*parse_token(char *s, char delim, t_proc_token *pt);
 char			*skip_delimiters(char *s, char delim);
 int				should_join_prev(char *tok_begin, char *str, char delim);
 //split_token_helper_3.c
 t_token			*handle_add_token_error(t_token *tokens, int i,
 					t_lexer *lexer);
-int				process_single_token(char **s, char *str, char delim,
-					t_token **tokens, int i);
+int				process_single_token(t_token_loop *loop, char *str, char delim,
+					t_token **tokens);
 t_token			*tokenize_loop(char *str, char delim, t_lexer *lexer,
 					t_token *tokens);
 t_token			*split_tokens(char *str, char delim, t_lexer *lexer);
