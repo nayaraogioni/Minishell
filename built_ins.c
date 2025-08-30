@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 17:17:58 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/23 20:52:19 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/27 20:48:48 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,8 +51,8 @@ int	ft_exit(char *input)
 	ptr = input;
 	while (*ptr && ft_isspace((unsigned char)*ptr))
 		ptr++;
-	if (ft_strncmp(ptr, "exit", 4) == 0 && (ptr[4] == '\0' \
-		|| ft_isspace((unsigned char)ptr[4])))
+	if (ft_strncmp(ptr, "exit", 4) == 0 && (ptr[4] == '\0'
+			|| ft_isspace((unsigned char)ptr[4])))
 	{
 		free (input);
 		return (1);

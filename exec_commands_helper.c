@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 19:57:46 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/23 14:56:08 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/27 21:41:58 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@ static int	spawn_helper(t_exec_data *ctx, t_parse_data *pd, t_env **env)
 	return (res);
 }
 
-static void	spawn_fork(t_exec_data *ctx, t_parse_data *pd, \
-			t_env **env, pid_t *pids)
+static void	spawn_fork(t_exec_data *ctx, t_parse_data *pd,
+						t_env **env, pid_t *pids)
 {
 	pids[ctx->i] = fork();
 	if (pids[ctx->i] < 0)

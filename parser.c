@@ -19,31 +19,11 @@
 t_command	*init_command(void)
 {
 	t_command	*cmd;
-	int			i;
 
 	cmd = malloc(sizeof(t_command));
 	if (!cmd)
 		return (NULL);
-	cmd->type = T_WORD;
-	cmd->name = NULL;
-	cmd->path = NULL;
-	cmd->input_file = NULL;
-	cmd->output_file = NULL;
-	cmd->pid_filename_output = 0;
-	cmd->command_count = 0;
-	cmd->commands = NULL;
-	cmd->left = NULL;
-	cmd->right = NULL;
-	cmd->next_is_pipe = 0;
-	cmd->next_is_and = 0;
-	cmd->hd_delim = NULL;
-	cmd->heredoc_fd = -1;
-	i = 0;
-	while (i < MAX_ARGS)
-	{
-		cmd->argv[i] = NULL;
-		i++;
-	}
+	setup_command_defaults(cmd);
 	return (cmd);
 }
 
@@ -74,7 +54,6 @@ t_command	*parse_simple_command(t_lexer *lexer, t_env *env_list)
 	return (finalize_and_return(cmd, &pb));
 }
 
-
 t_command	*parse_pipeline(t_lexer *lexer, t_env *my_env)
 {
 	t_pipe_data	pipe_data;
@@ -98,52 +77,19 @@ t_command	*parse_pipeline(t_lexer *lexer, t_env *my_env)
 
 t_command	*parse_sequence(t_lexer *lexer, t_env *my_env)
 {
+	t_seq_data	sd;
 	t_command	*sequence_cmd;
-	t_lexer		*sublexer;
-	int		start;
-	int		and_pos;
-	int		i;
 
-	sequence_cmd = init_command();
-	if (!sequence_cmd)
-		return NULL;
-	sequence_cmd->type = T_AND;
-	sequence_cmd->commands = malloc(sizeof(t_command *) * MAX_ARGS);
-	if (!sequence_cmd->commands)
+	ft_memset(&sd, 0, sizeof(sd));
+	if (pre_seq_parse(&sd, &sequence_cmd) == -1)
+		return (NULL);
+	while (sd.start < lexer->token_count)
 	{
-		free_command(sequence_cmd);
-		return NULL;
-	}
-	i = 0;
-	while (i < MAX_ARGS)
-	{
-		sequence_cmd->argv[i] = NULL;
-		i++;
-	}
-	start = 0;
-	while (start < lexer->token_count)
-	{
-		and_pos = find_next_logical_operator(lexer, start);
-		if (and_pos == -1)
-			and_pos = lexer->token_count; // se nao encontrar pega o final
-		sublexer = create_sublexer(lexer, start, and_pos);
-		if (!sublexer)
-		{
-			free_command(sequence_cmd);
-			return NULL;
-		}
-		sequence_cmd->commands[sequence_cmd->command_count] = parse_function(sublexer, my_env);
-		if (!sequence_cmd->commands[sequence_cmd->command_count])
-		{
-			free_sublexer(sublexer);
-			free_command(sequence_cmd);
-			return NULL;
-		}
-		sequence_cmd->command_count++;
-		free_sublexer(sublexer);
-		if (and_pos == lexer->token_count)
-			break; // se for o ultimo comando sai do loop
-		start = and_pos + 1; // pula o operador logico para o proximo
+		if (process_sequence_segment(&sd, sequence_cmd, lexer, my_env) == -1)
+			return (NULL);
+		if (sd.op_pos == lexer->token_count)
+			break ;
+		sd.start = sd.op_pos + 1;
 	}
 	return (sequence_cmd);
 }
@@ -158,13 +104,13 @@ t_command	*parse_function(t_lexer *lexer, t_env *my_env)
 		if (expand_variables(lexer, my_env) == -1)
 		{
 			printf("minishell: error expanding variables\n");
-			return NULL;
+			return (NULL);
 		}
 	}
 	if (has_logical_operators(lexer))
-		return parse_sequence(lexer, my_env);
+		return (parse_sequence(lexer, my_env));
 	if (has_pipes(lexer))
-		return parse_pipeline(lexer, my_env);
+		return (parse_pipeline(lexer, my_env));
 	else
-		return parse_simple_command(lexer, my_env);
+		return (parse_simple_command(lexer, my_env));
 }

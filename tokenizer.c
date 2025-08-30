@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:28:33 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/22 14:45:32 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/27 22:04:48 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,6 @@
 #include "minishell.h"
 #include <stddef.h>
 #include <time.h>
-
-bool	bool_changer(bool key)
-{
-	return (!key);
-}
 
 // func para validar se todas as aspas estão fechadas
 int	validate_quotes(char *str)
@@ -40,10 +35,7 @@ int	validate_quotes(char *str)
 		s++;
 	}
 	if (in_single_quote)
-	{
-		printf("minishell: syntax error: unclosed single quote\n");
-		return (0);
-	}
+		return (printf("minishell: syntax error: unclosed single quote\n"), 0);
 	if (in_double_quote)
 	{
 		printf("minishell: syntax error: unclosed double quote\n");
@@ -52,80 +44,66 @@ int	validate_quotes(char *str)
 	return (1);
 }
 
-void	clear_token(t_token *tokens, int token_count)
+static void	token_counter_quoted(t_token_counter *tc)
 {
-	int	i;
+	tc->quote_char = *(tc->s);
+	tc->s++;
+	while (*(tc->s) && *(tc->s) != tc->quote_char)
+		tc->s++;
+	if (*(tc->s) == tc->quote_char)
+		tc->s++;
+}
 
-	i = 0;
-	if (!tokens)
-		return ;
-	while (i < token_count)
+static void	token_counter_unquoted(t_token_counter *tc, char delim)
+{
+	if ((*(tc->s) && *(tc->s + 1))
+		&& ((*(tc->s) == '>' && *(tc->s + 1) == '>')
+			|| (*(tc->s) == '<' && *(tc->s + 1) == '<')
+			|| (*(tc->s) == '&' && *(tc->s + 1) == '&')))
 	{
-		if (tokens[i].text)
-			free(tokens[i].text);
-		i++;
+		tc->s += 2;
 	}
-	free(tokens);
+	else if (*(tc->s) == '|' || *(tc->s) == '>' || *(tc->s) == '<')
+		tc->s++;
+	else
+	{
+		while (*(tc->s) && *(tc->s) != delim && *(tc->s) != '|'
+			&& *(tc->s) != '>' && *(tc->s) != '<' && *(tc->s) != '&')
+			tc->s++;
+	}
 }
 
 int	token_counter(char *str, char delim)
 {
-	char	*s;
-	int		token_count_res;
-	char	quote_char;
+	t_token_counter	tc;
 
-	s = str;
-	token_count_res = 0;
-	while (*s)
+	tc.s = str;
+	tc.res = 0;
+	while (*(tc.s))
 	{
-		while (*s && *s == delim)
-			s++;
-		if (*s == '\0')
+		while (*(tc.s) && *(tc.s) == delim)
+			tc.s++;
+		if (*(tc.s) == '\0')
 			break ;
-		token_count_res++;
-		if (*s == '"' || *s == '\'')
-		{
-			quote_char = *s;
-			s++;
-			while (*s && *s != quote_char)
-				s++;
-			if (*s == quote_char)
-				s++;
-		}
-		else if ((*s && *(s + 1)) && ((*s == '>' && *(s + 1) == '>') \
-				|| (*s == '<' && *(s + 1) == '<') \
-				|| (*s == '&' && *(s + 1) == '&')))
-			s += 2;
-		else if (*s == '|' || *s == '>' || *s == '<')
-			s++;
+		tc.res++;
+		if (*(tc.s) == '"' || *(tc.s) == '\'')
+			token_counter_quoted(&tc);
 		else
-		{
-			while (*s && *s != delim && *s != '|' && *s != '>' \
-				&& *s != '<' && *s != '&')
-				s++;
-		}
+			token_counter_unquoted(&tc, delim);
 	}
-	return (token_count_res);
+	return (tc.res);
 }
 
 t_token_type	determine_type(char *token_text, int qt_flag)
 {
-	int	i;
+	t_token_type	type;
+	int				i;
 
 	if (!token_text || !*token_text)
 		return (T_WORD);
-	if (ft_strcmp(token_text, "|") == 0)
-		return (T_PIPE);
-	else if (ft_strcmp(token_text, "<") == 0)
-		return (T_REDIR_IN);
-	else if (ft_strcmp(token_text, ">") == 0)
-		return (T_REDIR_OUT);
-	else if (ft_strcmp(token_text, ">>") == 0)
-		return (T_REDIR_APPEND);
-	else if (ft_strcmp(token_text, "<<") == 0)
-		return (T_REDIR_HEREDOC);
-	else if (ft_strcmp(token_text, "&&") == 0)
-		return (T_AND);
+	type = determine_type_helper(token_text);
+	if (type != T_WORD)
+		return (type);
 	if (qt_flag == 1)
 		return (T_WORD);
 	i = 0;

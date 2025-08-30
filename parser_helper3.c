@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "parser.h"
 
 t_command	*finalize_and_return(t_command *cmd, t_pbuilder *pb)
 {
@@ -79,5 +80,29 @@ int	process_leaf(t_pipe_data *pp, t_command *pipeline_cmd, t_env *env,
 		pp->leaf->next_is_pipe = 1;
 	pipeline_cmd->commands[pipeline_cmd->command_count++] = pp->leaf;
 	free_sublexer(pp->sublexer);
+	return (0);
+}
+
+//Return -1 on failure
+//Return 0 on sucess
+int	pre_seq_parse(t_seq_data *sd, t_command **sequence_cmd)
+{
+	*sequence_cmd = init_command();
+	if (!*sequence_cmd)
+		return (-1);
+	(*sequence_cmd)->type = T_AND;
+	(*sequence_cmd)->commands = malloc(sizeof(t_command *) * MAX_ARGS);
+	if (!(*sequence_cmd)->commands)
+	{
+		free_command(*sequence_cmd);
+		return (-1);
+	}
+	sd->i = 0;
+	while (sd->i < MAX_ARGS)
+	{
+		(*sequence_cmd)->argv[sd->i] = NULL;
+		sd->i++;
+	}
+	sd->start = 0;
 	return (0);
 }
