@@ -65,3 +65,23 @@ t_token	*split_tokens(char *str, char delim, t_lexer *lexer)
 		return (NULL);
 	return (tokenize_loop(str, delim, lexer, tokens));
 }
+
+//return 2 indicate continue, advance two
+//return 0 indicate break
+//return 1 indicate normal flow, advance one
+int	handle_doub_quot_helper(char *p, char *s)
+{
+	char	next;
+
+	(void)s;
+	if (*p == '\\')
+	{
+		next = p[1];
+		if (next == '"' || next == '\\' || next == '$' || next == '`'
+			|| next == '\n')
+			return (2);
+		if (*p == '"')
+			return (0);
+	}
+	return (1);
+}

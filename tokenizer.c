@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: nayara <nayara@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 09:28:33 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/27 22:04:48 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/30 11:23:11 by nayara           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,8 @@ static void	token_counter_unquoted(t_token_counter *tc, char delim)
 	else
 	{
 		while (*(tc->s) && *(tc->s) != delim && *(tc->s) != '|'
-			&& *(tc->s) != '>' && *(tc->s) != '<' && *(tc->s) != '&')
+			&& *(tc->s) != '>' && *(tc->s) != '<' && *(tc->s) != '&'
+			&& *(tc->s) != '"' && *(tc->s) != '\'')
 			tc->s++;
 	}
 }

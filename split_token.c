@@ -34,29 +34,20 @@ char	*handle_variable_token(char *s, int *len)
 	return (s);
 }
 
-char	*handle_double_quotes(char *s, int *len) //CHANGES HERE
+char	*handle_double_quotes(char *s, int *len)
 {
 	char	*start;
 	char	*p;
-	char	next;
+	int		adv;
 
 	p = s + 1;
 	start = p;
 	while (*p)
 	{
-		if (*p == '\\')
-		{
-			next = p[1];
-			if (next == '"' || next == '\\' || next == '$' || next == '`'
-				|| next == '\n')
-			{
-				s += 2;
-				continue ;
-			}
-		}
-		if (*p == '"')
+		adv = handle_doub_quot_helper(p, s);
+		if (adv == 0)
 			break ;
-		p++;
+		p += adv;
 	}
 	*len = p - start;
 	if (*p == '"')

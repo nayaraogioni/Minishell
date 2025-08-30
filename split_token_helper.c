@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   split_token_helper.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: nayara <nayara@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/20 16:33:44 by nayara            #+#    #+#             */
-/*   Updated: 2025/08/27 20:48:32 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/30 11:27:28 by nayara           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,23 +24,14 @@ char	*handle_single_operators(char *s, int *len)
 	return (s + 1);
 }
 
-char	*handle_regular_token(char *s, char delim, int *len)//CHANGES HERE
+char	*handle_regular_token(char *s, char delim, int *len)
 {
 	char	*start;
-	int		dummy_len;
 
 	start = s;
 	while (*s && *s != delim && *s != '|' && *s != '>'
-		&& *s != '<' && *s != '&')
+		&& *s != '<' && *s != '&' && *s != '"' && *s != '\'')
 	{
-		if (*s == '"' || *s == '\'')
-		{
-			if (*s == '"')
-				s = handle_double_quotes(s, &dummy_len);
-			else
-				s = handle_single_quotes(s, *s, &dummy_len);
-			continue ;
-		}
 		s++;
 	}
 	*len = s - start;
