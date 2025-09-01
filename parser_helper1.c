@@ -3,19 +3,31 @@
 /*                                                        :::      ::::::::   */
 /*   parser_helper1.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: nayara <nayara@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 20:14:30 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/25 20:24:24 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/01 11:37:45 by nayara           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+static void	redir_fd_helper(t_command *cmd)
+{
+	int	fd;
+
+	fd = open(cmd->output_file, O_CREAT | O_WRONLY | O_TRUNC, 0644);
+	if (fd >= 0)
+		close(fd);
+}
+
 static int	redir_out_helper(t_command *cmd, t_lexer *lexer, t_pbuilder *pb)
 {
 	if (cmd->output_file)
+	{
+		redir_fd_helper(cmd);
 		free(cmd->output_file);
+	}
 	if (!lexer->tokens[pb->i].text)
 	{
 		free(pb->acc);
@@ -112,33 +124,4 @@ int	is_wordish_module(t_command *cmd, t_lexer *lexer, t_pbuilder *pb)
 	else
 		free(arg);
 	return (1);
-}
-
-// Returns NULL on error or if no argument found
-char	*parse_next_argument(t_lexer *lexer, int *i)
-{
-	char	*acc;
-	char	*tmp;
-	t_token	*t;
-
-	acc = NULL;
-	while (*i < lexer->token_count && is_wordish(&lexer->tokens[*i]))
-	{
-		t = &lexer->tokens[*i];
-		if (acc && t->join_prev == 0)
-			break ;
-		tmp = join_words(acc, t->text);
-		if (!tmp)
-		{
-			free (acc);
-			return (NULL);
-		}
-		acc = tmp;
-		(*i)++;
-		if (*i >= lexer->token_count
-			|| !is_wordish(&lexer->tokens[*i])
-			|| lexer->tokens[*i].join_prev == 0)
-			break ;
-	}
-	return (acc);
 }
