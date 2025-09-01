@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 23:15:37 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/26 21:55:31 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/01 18:02:38 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,13 @@
 
 int	main_loop_helper(char *input, t_lexer *lexer)
 {
+	int	rc;
+
 	if (!input)
 		return (2);
-	if (ft_exit(input) == 1)
-		return (2);
+	rc = ft_exit(input);
+	if (rc != 0)
+		return (rc);
 	if (ft_strlen(input) == 0)
 	{
 		free(input);
@@ -117,12 +120,12 @@ int	main(int argc, char **argv, char **envp)
 	while (1)
 	{
 		rc = main_loop(my_env, lexer, &pd);
-		if (rc == 2)
+		if (rc != 0)
 			break ;
 		else if (rc == 1)
 			continue ;
 	}
 	free(lexer);
 	clean_env_list(&my_env);
-	return (0);
+	return (rc);
 }
