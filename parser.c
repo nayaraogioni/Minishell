@@ -16,7 +16,6 @@
 #include <stdio.h>
 #include <time.h>
 
-
 t_command	*init_command(void)
 {
 	t_command	*cmd;
@@ -55,7 +54,7 @@ t_command	*parse_simple_command(t_lexer *lexer, t_env *env_list)
 	return (finalize_and_return(cmd, &pb));
 }
 
-void	init_commands_array(t_command **commands)
+t_command	*parse_pipeline(t_lexer *lexer, t_env *my_env)
 {
 	t_pipe_data	pipe_data;
 	t_command	*pipeline_cmd;
@@ -76,7 +75,7 @@ void	init_commands_array(t_command **commands)
 	return (pipeline_cmd);
 }
 
-t_command	*process_pipe_command(t_lexer *lexer, int start, int pipe_pos)
+t_command	*parse_sequence(t_lexer *lexer, t_env *my_env)
 {
 	t_seq_data	sd;
 	t_command	*sequence_cmd;

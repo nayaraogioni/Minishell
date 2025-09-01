@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/28 17:22:24 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/23 13:23:05 by nayara           ###   ########.fr       */
+/*   Updated: 2025/08/26 22:54:18 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ int	has_pipes(t_lexer *lexer)
 	return (0);
 }
 
+//check if has T_VAR type, 1 if has, 0 if don't
 int	has_variables(t_lexer *lexer)
 {
 	int	i;
@@ -56,6 +57,7 @@ int	has_logical_operators(t_lexer *lexer)
 	return (0);
 }
 
+// conta quantos argumentos sao palavras (T_WORD) e nao redirecionamentos
 int	count_args(t_lexer *lexer)
 {
 	int	i;

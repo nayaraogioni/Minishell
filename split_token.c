@@ -38,16 +38,25 @@ char	*handle_double_quotes(char *s, int *len)
 {
 	char	*start;
 	char	*p;
-	int		adv;
+	char	next;
 
 	p = s + 1;
 	start = p;
 	while (*p)
 	{
-		adv = handle_doub_quot_helper(p, s);
-		if (adv == 0)
+		if (*p == '\\')
+		{
+			next = p[1];
+			if (next == '"' || next == '\\' || next == '$' || next == '`'
+				|| next == '\n')
+			{
+				s += 2;
+				continue ;
+			}
+		}
+		if (*p == '"')
 			break ;
-		p += adv;
+		p++;
 	}
 	*len = p - start;
 	if (*p == '"')
