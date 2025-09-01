@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nayara <nayara@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 01:10:10 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/23 13:06:16 by nayara           ###   ########.fr       */
+/*   Updated: 2025/08/27 22:00:22 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,6 @@ int				process_single_token(t_token_loop *loop, char *str, char delim,
 t_token			*tokenize_loop(char *str, char delim, t_lexer *lexer,
 					t_token *tokens);
 t_token			*split_tokens(char *str, char delim, t_lexer *lexer);
-int				handle_doub_quot_helper(char *p, char *s);
 //collect_commands.c
 void			free_parsed_data(t_parse_data *parsed_data);
 t_parse_data	format_parsed_data(t_lexer *lexer, t_env *my_env);
