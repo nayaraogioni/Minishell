@@ -6,14 +6,14 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/20 16:38:23 by nayara            #+#    #+#             */
-/*   Updated: 2025/08/22 13:18:44 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/27 21:59:07 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char	*parse_variable_or_quote(char *s, char **start, \
-	int *len, int *qt_flag)
+char	*parse_variable_or_quote(char *s, char **start,
+			int *len, int *qt_flag)
 {
 	if (*s == '$' && *(s + 1))
 	{
@@ -30,8 +30,8 @@ char	*parse_variable_or_quote(char *s, char **start, \
 	return (NULL);
 }
 
-char	*parse_operators_or_regular(char *s, char delim, char **start, \
-	int *len)
+char	*parse_operators_or_regular(char *s, char delim, char **start,
+			int *len)
 {
 	if (is_double_operator(s))
 	{
@@ -50,16 +50,15 @@ char	*parse_operators_or_regular(char *s, char delim, char **start, \
 	}
 }
 
-char	*parse_token(char *s, char delim, char **start, \
-	int *len, int *qt_flag)
+char	*parse_token(char *s, char delim, t_proc_token *pt)
 {
 	char	*result;
 
-	*qt_flag = 0;
-	result = parse_variable_or_quote(s, start, len, qt_flag);
+	pt->qt_flag = 0;
+	result = parse_variable_or_quote(s, &pt->start, &pt->len, &pt->qt_flag);
 	if (result)
 		return (result);
-	return (parse_operators_or_regular(s, delim, start, len));
+	return (parse_operators_or_regular(s, delim, &pt->start, &pt->len));
 }
 
 char	*skip_delimiters(char *s, char delim)

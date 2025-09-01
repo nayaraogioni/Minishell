@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/20 16:30:41 by nayara            #+#    #+#             */
-/*   Updated: 2025/08/22 14:37:08 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/27 22:02:05 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,12 +33,12 @@ void	remove_quotes_from_token(t_token *token)
 	}
 }
 
-int	add_token(t_token **tokens, int index, char *start, int len, int qt_flag, int join_prev)
+int	add_token(t_token **tokens, int index, t_proc_token *pt)
 {
 	char	*txt;
 	int		j;
 
-	txt = malloc(len + 1);
+	txt = malloc(pt->len + 1);
 	if (!txt)
 	{
 		j = 0;
@@ -51,12 +51,12 @@ int	add_token(t_token **tokens, int index, char *start, int len, int qt_flag, in
 		*tokens = NULL;
 		return (-1);
 	}
-	ft_strncpy(txt, start, len);
-	txt[len] = '\0';
+	ft_strncpy(txt, pt->start, pt->len);
+	txt[pt->len] = '\0';
 	(*tokens)[index].text = txt;
-	(*tokens)[index].quot = qt_flag;
-	(*tokens)[index].join_prev = join_prev;
-	(*tokens)[index].type = determine_type((*tokens)[index].text, qt_flag);
+	(*tokens)[index].quot = pt->qt_flag;
+	(*tokens)[index].join_prev = pt->join_prev;
+	(*tokens)[index].type = determine_type((*tokens)[index].text, pt->qt_flag);
 	return (0);
 }
 

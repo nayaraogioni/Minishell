@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 19:57:46 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/22 20:50:46 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/27 21:41:58 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,14 @@ static int	spawn_helper(t_exec_data *ctx, t_parse_data *pd, t_env **env)
 {
 	int	res;
 
-	res = pre_exec_prep(pd->commands[ctx->i], env, pd->n_cmds, ctx->pipe);
+	res = pre_exec_prep(pd->commands[ctx->i], env, pd, ctx->pipe);
 	if (res == -1)
 		parent_run(pd->commands[ctx->i], &ctx->fd, ctx->pipe);
 	return (res);
 }
 
-static void	spawn_fork(t_exec_data *ctx, t_parse_data *pd, \
-			t_env **env, pid_t *pids)
+static void	spawn_fork(t_exec_data *ctx, t_parse_data *pd,
+						t_env **env, pid_t *pids)
 {
 	pids[ctx->i] = fork();
 	if (pids[ctx->i] < 0)

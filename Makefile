@@ -8,8 +8,10 @@ LIBFT_DIR = libft
 LIBFT = $(LIBFT_DIR)/libft.a
 
 SOURCES =	main.c \
+			built_ins_2.c \
 			built_ins.c \
 			cleanup_env_list.c \
+			cleanup_utils.c \
 			collect_commands.c \
 			environment_functions_utils.c \
 			environment_functions_utils2.c \
@@ -24,7 +26,13 @@ SOURCES =	main.c \
 			expand_var_heredoc_helper.c \
 			expand_var.c \
 			heredoc_utils.c \
+			parser_helper1.c \
+			parser_helper2.c \
+			parser_helper3.c \
+			parser_helper4.c \
 			parser_utils.c \
+			parser_utils2.c \
+			parser_utils3.c \
 			parser.c \
 			redirections_utils.c \
 			signal_handlers.c \

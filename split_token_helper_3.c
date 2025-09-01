@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/20 16:39:30 by nayara            #+#    #+#             */
-/*   Updated: 2025/08/22 14:45:39 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/27 21:59:44 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,43 +20,38 @@ t_token	*handle_add_token_error(t_token *tokens, int i, t_lexer *lexer)
 	return (NULL);
 }
 
-int	process_single_token(char **s, char *str, char delim,
-	t_token **tokens, int i)
+int	process_single_token(t_token_loop *loop, char *str, char delim,
+	t_token **tokens)
 {
-	char	*start;
-	char	*tok_begin;
-	int		len;
-	int		qt_flag;
-	int		join_prev;
+	t_proc_token	pt;
 
-	*s = skip_delimiters(*s, delim);
-	if (**s == '\0')
+	ft_memset(&pt, 0, sizeof(t_proc_token));
+	loop->s = skip_delimiters(loop->s, delim);
+	if (*(loop->s) == '\0')
 		return (-1);
-	tok_begin = *s;
-	join_prev = should_join_prev(tok_begin, str, delim);
-	*s = parse_token(*s, delim, &start, &len, &qt_flag);
-	return (add_token(tokens, i, start, len, qt_flag, join_prev));
+	pt.tok_begin = loop->s;
+	pt.join_prev = should_join_prev(pt.tok_begin, str, delim);
+	loop->s = parse_token(loop->s, delim, &pt);
+	return (add_token(tokens, loop->i, &pt));
 }
 
 t_token	*tokenize_loop(char *str, char delim, t_lexer *lexer,
 	t_token *tokens)
 {
-	char	*s;
-	int		i;
-	int		rc;
+	t_token_loop	loop;
 
-	s = str;
-	i = 0;
-	while (*s && i < lexer->token_count)
+	loop.s = str;
+	loop.i = 0;
+	while (*(loop.s) && loop.i < lexer->token_count)
 	{
-		rc = process_single_token(&s, str, delim, &tokens, i);
-		if (rc == -1)
+		loop.rc = process_single_token(&loop, str, delim, &tokens);
+		if (loop.rc == -1)
 			break ;
-		if (rc < 0)
-			return (handle_add_token_error(tokens, i, lexer));
-		i++;
+		if (loop.rc < 0)
+			return (handle_add_token_error(tokens, loop.i, lexer));
+		loop.i++;
 	}
-	lexer->token_count = i;
+	lexer->token_count = loop.i;
 	lexer->tokens = tokens;
 	return (tokens);
 }
@@ -69,4 +64,24 @@ t_token	*split_tokens(char *str, char delim, t_lexer *lexer)
 	if (!init_split_tokens(str, lexer, &s, &tokens))
 		return (NULL);
 	return (tokenize_loop(str, delim, lexer, tokens));
+}
+
+//return 2 indicate continue, advance two
+//return 0 indicate break
+//return 1 indicate normal flow, advance one
+int	handle_doub_quot_helper(char *p, char *s)
+{
+	char	next;
+
+	(void)s;
+	if (*p == '\\')
+	{
+		next = p[1];
+		if (next == '"' || next == '\\' || next == '$' || next == '`'
+			|| next == '\n')
+			return (2);
+		if (*p == '"')
+			return (0);
+	}
+	return (1);
 }

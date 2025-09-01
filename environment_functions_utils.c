@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 17:58:10 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/22 18:42:11 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/23 15:09:32 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,9 +104,8 @@ int	add_export(char *arg, t_env **env, char *value)
 	return (0);
 }
 
-int	ft_export(char **argv, t_env **env)
+int	ft_export(char **argv, t_env **env, t_parse_data *pd)
 {
-	int		exit_code;
 	int		i;
 	char	*eq;
 	char	*trimmed;
@@ -114,10 +113,12 @@ int	ft_export(char **argv, t_env **env)
 	if (!argv || !argv[1])
 		return (-1);
 	i = 1;
-	exit_code = 0;
 	eq = ft_strchr(argv[i], '=');
 	if (!eq)
+	{
+		pd->pd_exit_status = 1;
 		return (-1);
+	}
 	if (eq && *(eq + 1) != '\0' && (*(eq + 1) == '"' || *(eq + 1) == '\''))
 	{
 		trimmed = literal_argv_expander(eq, argv, &i);
@@ -125,6 +126,5 @@ int	ft_export(char **argv, t_env **env)
 			return (-1);
 		return (add_export(argv[1], env, trimmed));
 	}
-	exit_code = export_helper(eq, argv, env);
-	return (exit_code);
+	return (export_helper(eq, argv, env, pd));
 }

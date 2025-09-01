@@ -3,13 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   parser_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nayara <nayara@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/28 17:22:24 by dopereir          #+#    #+#             */
 /*   Updated: 2025/08/23 13:23:05 by nayara           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "lexer.h"
 #include "libft/libft.h"
 #include "minishell.h"
 
@@ -84,15 +85,16 @@ int	count_args(t_lexer *lexer)
 	return (count);
 }
 
-void	free_argv(t_command *cmd)
+int	find_next_pipe(t_lexer *lexer, int start)
 {
 	int	i;
 
-	i = 0;
-	while (i < MAX_ARGS && cmd->argv[i])
+	i = start;
+	while (i < lexer->token_count)
 	{
-		free(cmd->argv[i]);
-		cmd->argv[i] = NULL;
+		if (lexer->tokens[i].type == T_PIPE)
+			return (i);
 		i++;
 	}
+	return (-1);
 }

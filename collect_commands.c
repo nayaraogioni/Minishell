@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 08:48:55 by dopereir          #+#    #+#             */
-/*   Updated: 2025/07/19 01:48:27 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/27 20:44:06 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,7 +121,7 @@ t_parse_data	format_parsed_data(t_lexer *lexer, t_env *my_env)
 
 /* ------------ TESTING FUNCTIONS -------------*/
 
-static const char	*type_to_string(t_token_type type)
+/*static const char	*type_to_string(t_token_type type)
 {
 	switch (type) {
 		case T_WORD:			return "WORD";
@@ -169,4 +169,4 @@ void	print_parsed_data(const t_parse_data *pd)
 		}
 		printf("\n");
 	}
-	}
+	}*/

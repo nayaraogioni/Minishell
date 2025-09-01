@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 22:48:16 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/22 21:08:48 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/27 21:41:13 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,8 @@ void	parent_run(t_command *cmd, int *fd, int pipe_var[2])
 		*fd = -1;
 }
 
-void	handle_child_process(t_command *cmd, int fd, t_env **env, \
-	int pipe[2])
+void	handle_child_process(t_command *cmd, int fd, t_env **env,
+			int pipe[2])
 {
 	int	rc;
 

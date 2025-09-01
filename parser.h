@@ -35,13 +35,64 @@ typedef struct s_command
 	int					next_is_and;
 }			t_command;
 
-typedef struct s_parse_state
+
+typedef struct s_pbuilder
 {
-	t_lexer		*lexer;
-	t_command	*cmd;
-	char		*acc;
 	int			i;
 	int			arg_index;
-}	t_parse_state;
+	char		*acc;
+	int			was_append;
+	int			args_count;
+	int			res;
+}			t_pbuilder;
+
+typedef struct s_pipe_data
+{
+	int			start;
+	int			pipe_pos;
+	int			i;
+	t_lexer		*sublexer;
+	t_command	*leaf;
+}			t_pipe_data;
+
+typedef struct s_seq_data
+{
+	int		start;
+	int		op_pos;
+	int		i;
+	t_lexer	*sublexer;
+}			t_seq_data;
+
+typedef struct s_sub_data
+{
+	t_lexer	*sublexer;
+	int		i;
+	int		j;
+}			t_sub_data;
+
+//struct to use in token_counter function
+typedef struct s_token_counter
+{
+	char	*s;
+	int		res;
+	char	quote_char;
+}			t_token_counter;
+
+//struct to use in process_single_token() function
+typedef struct s_proc_token
+{
+	char	*start;
+	char	*tok_begin;
+	int		len;
+	int		qt_flag;
+	int		join_prev;
+}			t_proc_token;
+
+typedef struct s_token_loop
+{
+	char	*s;
+	int		i;
+	int		rc;
+}			t_token_loop;
 
 #endif
