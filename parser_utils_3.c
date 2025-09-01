@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_utils_3.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nayara <nayara@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 11:22:25 by nayara            #+#    #+#             */
-/*   Updated: 2025/08/23 14:55:15 by nayara           ###   ########.fr       */
+/*   Updated: 2025/09/01 23:24:23 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ t_lexer	*create_sublexer(t_lexer *lexer, int start, int end)
 		free(sublexer);
 		return (NULL);
 	}
-	cloning_lexer(lexer, start, end); 
+	cloning_lexer(lexer, start, end);
 	return (sublexer);
 }
 
