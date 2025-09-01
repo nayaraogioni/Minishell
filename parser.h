@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: nayara <nayara@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 23:08:53 by dopereir          #+#    #+#             */
-/*   Updated: 2025/06/28 17:26:58 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/23 13:15:21 by nayara           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,5 +34,14 @@ typedef struct s_command
 	int					next_is_pipe;
 	int					next_is_and;
 }			t_command;
+
+typedef struct s_parse_state
+{
+	t_lexer		*lexer;
+	t_command	*cmd;
+	char		*acc;
+	int			i;
+	int			arg_index;
+}	t_parse_state;
 
 #endif

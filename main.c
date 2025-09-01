@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: nayara <nayara@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 23:15:37 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/22 22:08:48 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/23 13:12:16 by nayara           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,13 +43,14 @@ void	cleanup_iter(t_lexer *lexer, t_parse_data *pd)
 	}
 }
 
-int main(int argc, char **argv, char **envp)
+int	main(int argc, char **argv, char **envp)
 {
-	t_lexer			*lexer;
+	t_lexer	*lexer;
 	t_parse_data	pd;
-	t_env			*my_env;
-	char			*input;
-	struct sigaction	sa_int = {0}, sa_quit = {0};
+	t_env	*my_env;
+	char	*input;
+	struct sigaction	sa_int = {0};
+	struct sigaction	sa_quit = {0};
 	//static	int		main_exit_status = 0;
 
 	sa_int.sa_handler = sigint_handler;

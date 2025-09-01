@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: nayara <nayara@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 01:10:10 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/22 21:13:58 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/08/23 13:06:16 by nayara           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,19 +110,42 @@ t_token			*tokenize_loop(char *str, char delim, t_lexer *lexer, \
 t_token			*split_tokens(char *str, char delim, t_lexer *lexer);
 
 //parser.c
+void		init_cmd_argv(t_command *cmd);
 t_command		*init_command(void);
+t_command		*parse_simple_command(t_lexer *lexer, t_env *env_list);
+void		init_commands_array(t_command **commands);
+t_command		*process_pipe_command(t_lexer *lexer, int start, int pipe_pos);
+//parser_helper.c
+int				handle_wordish_helper(t_parse_state *st, t_token *t);
+int				handle_wordish(t_parse_state *st);
+int				handle_redirs_helper(t_parse_state *st);
+int				handle_redirs(t_parse_state *st);
+t_command				*finalize_command(t_parse_state *st);
+//parser_helper_2.c
+t_command		*init_pipeline_cmd(void);
+int		process_pipeline_loop(t_command *pipeline_cmd, t_lexer *lexer);
+t_command		*parse_pipeline(t_lexer *lexer, t_env *my_env);
+void		init_argv_array(char **argv);
+t_command		*process_sequence_command(t_lexer *lexer, int start, int and_pos);
+//parser_helper_3.c
+t_command		*init_sequence_cmd(void);
+int		process_sequence_loop(t_command *sequence_cmd, t_lexer *lexer);
 t_command		*parse_function(t_lexer *lexer, t_env *my_env);
 t_command		*parse_sequence(t_lexer *lexer, t_env *my_env);
-t_command		*parse_pipeline(t_lexer *lexer, t_env *my_env);
-t_command		*parse_simple_command(t_lexer *lexer, t_env *env_list);
 //parser_utils.c
 int				has_pipes(t_lexer *lexer);
 int				has_variables(t_lexer *lexer);
 int				has_logical_operators(t_lexer *lexer);
 int				count_args(t_lexer *lexer);
+void				free_argv(t_command *cmd);
+//parser_utils_2.c
+void			free_arrays(t_command *cmd);
+void			free_cmds_strings(t_command *cmd);
 void			free_command(t_command *cmd);
 int				find_next_pipe(t_lexer *lexer, int start);
 int				find_next_logical_operator(t_lexer *lexer, int start);
+//parser_utils_3.c
+t_lexer			*cloning_lexer(t_lexer *lexer, int start, int end);
 t_lexer			*create_sublexer(t_lexer *lexer, int start, int end);
 void			free_sublexer(t_lexer *sublexer);
 //collect_commands.c
