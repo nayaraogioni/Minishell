@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_helper4.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: nayara <nayara@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 20:35:03 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/26 20:46:26 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/01 11:32:48 by nayara           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,4 +35,33 @@ int	process_sequence_segment(t_seq_data *sd, t_command *sequence_cmd,
 	sequence_cmd->command_count++;
 	free_sublexer(sd->sublexer);
 	return (0);
+}
+
+// Returns NULL on error or if no argument found
+char	*parse_next_argument(t_lexer *lexer, int *i)
+{
+	char	*acc;
+	char	*tmp;
+	t_token	*t;
+
+	acc = NULL;
+	while (*i < lexer->token_count && is_wordish(&lexer->tokens[*i]))
+	{
+		t = &lexer->tokens[*i];
+		if (acc && t->join_prev == 0)
+			break ;
+		tmp = join_words(acc, t->text);
+		if (!tmp)
+		{
+			free (acc);
+			return (NULL);
+		}
+		acc = tmp;
+		(*i)++;
+		if (*i >= lexer->token_count
+			|| !is_wordish(&lexer->tokens[*i])
+			|| lexer->tokens[*i].join_prev == 0)
+			break ;
+	}
+	return (acc);
 }
