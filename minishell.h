@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 01:10:10 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/27 22:00:22 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/01 23:03:59 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,6 +196,7 @@ int				export_helper(char *eq, char **argv, t_env **env,
 					t_parse_data *pd);
 //built_ins_2.c
 int				ft_echo(t_parse_data *pd, t_command *cmd);
+int				ft_exit_helper(char *ptr);
 //parser.c
 t_command		*init_command(void);
 t_command		*parse_function(t_lexer *lexer, t_env *my_env);
