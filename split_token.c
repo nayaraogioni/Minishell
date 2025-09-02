@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/20 16:31:44 by nayara            #+#    #+#             */
-/*   Updated: 2025/08/27 21:41:29 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/02 15:11:15 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ char	*handle_quoted_token(char *s, int *len, int *qt_flag)
 	char	quote_char;
 
 	quote_char = *s;
-	if ((quote_char == '\''))
+	if (quote_char == '\'')
 		*qt_flag = 1;
 	else
 		*qt_flag = 2;

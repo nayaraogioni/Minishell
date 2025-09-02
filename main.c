@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 23:15:37 by dopereir          #+#    #+#             */
-/*   Updated: 2025/09/01 18:02:38 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/02 15:42:46 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,6 @@ int	main_loop_helper(char *input, t_lexer *lexer)
 	lexer->tokens = NULL;
 	lexer->token_count = 0;
 	lexing_input(lexer, ' ');
-	//printf("*********LEXER ***********\n");
-	//print_tokens(lexer);
 	return (0);
 }
 
@@ -52,8 +50,6 @@ int	main_loop(t_env *my_env, t_lexer *lexer, t_parse_data *pd)
 	if (rc != 0)
 		return (rc);
 	*pd = format_parsed_data(lexer, my_env);
-	//printf("******PARSING*********\n");
-	//print_parsed_data(pd);
 	if (handle_all_heredocs(pd, my_env) < 0)
 	{
 		add_history(input);

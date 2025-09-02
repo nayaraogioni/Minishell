@@ -68,6 +68,7 @@ Sources = calculate_padding_bonus.c \
 		ft_strrchr.c \
 		ft_strspn.c \
 		ft_strtok.c \
+		ft_strtol.c \
 		ft_strtrim.c \
 		ft_substr.c \
 		ft_tolower.c \

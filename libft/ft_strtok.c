@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/29 19:34:28 by dopereir          #+#    #+#             */
-/*   Updated: 2025/06/04 22:51:09 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/02 16:29:16 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,15 @@ static void	helper(char **base, char **cursor, char *str)
 		free(*base);
 	*base = ft_strdup(str);
 	*cursor = *base;
+}
+
+long	check_overflow(long *r, int d, int b, int s)
+{
+	if (s == 1 && *r > (LONG_MAX - d) / b)
+		return (LONG_MAX);
+	if (s == -1 && (unsigned long)*r > ((unsigned long)LONG_MAX + 1 - d) / b)
+		return (LONG_MIN);
+	return (0);
 }
 
 char	*ft_strtok(char *str, char *sep)
