@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/20 16:31:44 by nayara            #+#    #+#             */
-/*   Updated: 2025/09/02 15:11:15 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/02 17:57:22 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,21 +38,15 @@ char	*handle_double_quotes(char *s, int *len)
 {
 	char	*start;
 	char	*p;
-	char	next;
 
 	p = s + 1;
 	start = p;
 	while (*p)
 	{
-		if (*p == '\\')
+		if (*p == '\\' && is_escaped_special_char(*(p + 1)))
 		{
-			next = p[1];
-			if (next == '"' || next == '\\' || next == '$' || next == '`'
-				|| next == '\n')
-			{
-				s += 2;
-				continue ;
-			}
+			p += 2;
+			continue ;
 		}
 		if (*p == '"')
 			break ;

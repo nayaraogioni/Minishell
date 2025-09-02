@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 01:10:10 by dopereir          #+#    #+#             */
-/*   Updated: 2025/09/01 23:03:59 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/02 16:51:44 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,6 +108,7 @@ int				process_single_token(t_token_loop *loop, char *str, char delim,
 t_token			*tokenize_loop(char *str, char delim, t_lexer *lexer,
 					t_token *tokens);
 t_token			*split_tokens(char *str, char delim, t_lexer *lexer);
+int				is_escaped_special_char(char next);
 //collect_commands.c
 void			free_parsed_data(t_parse_data *parsed_data);
 t_parse_data	format_parsed_data(t_lexer *lexer, t_env *my_env);

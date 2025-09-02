@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 17:17:58 by dopereir          #+#    #+#             */
-/*   Updated: 2025/09/01 23:16:41 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/02 17:36:20 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ int	ft_exit(char *input)
 			exit_code = ft_exit_helper(ptr);
 		free (input);
 		if (exit_code == 0)
-			return (1);
+			return (2);
 		else
 			return (exit_code);
 	}

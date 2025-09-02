@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/20 16:39:30 by nayara            #+#    #+#             */
-/*   Updated: 2025/08/27 21:59:44 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/02 16:52:24 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,4 +64,10 @@ t_token	*split_tokens(char *str, char delim, t_lexer *lexer)
 	if (!init_split_tokens(str, lexer, &s, &tokens))
 		return (NULL);
 	return (tokenize_loop(str, delim, lexer, tokens));
+}
+
+int	is_escaped_special_char(char next)
+{
+	return (next == '"' || next == '\\'
+		|| next == '$' || next == '`' || next == '\n');
 }

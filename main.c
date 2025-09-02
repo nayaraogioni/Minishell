@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 23:15:37 by dopereir          #+#    #+#             */
-/*   Updated: 2025/09/02 15:42:46 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/02 17:51:00 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,10 +116,10 @@ int	main(int argc, char **argv, char **envp)
 	while (1)
 	{
 		rc = main_loop(my_env, lexer, &pd);
-		if (rc != 0)
-			break ;
-		else if (rc == 1)
+		if (rc == 1)
 			continue ;
+		else if (rc != 0)
+			break ;
 	}
 	free(lexer);
 	clean_env_list(&my_env);
