@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 15:49:02 by dopereir          #+#    #+#             */
-/*   Updated: 2025/09/02 18:05:44 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/02 18:09:42 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ int	ft_exit_helper(char *ptr)
 	char	*endptr;
 	long	val;
 
-	ptr = normalize_exit_argument(ptr);
+	ptr = norm_exit_arg(ptr);
 	val = ft_strtol(ptr, &endptr, 10);
 	while (*endptr && ft_isspace((unsigned char)*endptr))
 		endptr++;
