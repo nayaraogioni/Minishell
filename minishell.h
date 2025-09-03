@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 01:10:10 by dopereir          #+#    #+#             */
-/*   Updated: 2025/09/02 16:51:44 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/03 02:16:06 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ typedef struct s_exec_data
 	int		i;
 	int		rc;
 	int		seq_mode;
+	t_lexer	*lexer_ref;
 }			t_exec_data;
 
 typedef struct s_env
@@ -141,6 +142,7 @@ char			**env_to_array(t_env *env);
 int				list_lenght(t_env *env_list);
 //cleanup_utils.c
 void			cleanup_iter(t_lexer *lexer, t_parse_data *pd);
+void			free_lexer_tokens(t_lexer *lexer);
 //built_ins.c
 int				ft_cd(char **argv, t_env **env_list);
 int				ft_exit(char *input);
@@ -166,15 +168,16 @@ char			*hd_helper_getvalue(char *key, t_env *env);
 char			*hd_helper_exp_varname(char *out, char *key, t_env *env);
 char			*hd_helper_append_char(char *out, char c);
 //exec_commands.c
-int				child_run(t_command *cmd, int fd, t_env **env, int c_pipe[2]);
+int				child_run(t_command *cmd, t_exec_data *ctx, t_env **env);
 void			parent_run(t_command *cmd, int *fd, int pipe_var[2]);
 void			exec_parsed_cmds(t_parse_data *pd, t_env **myenv,
 					t_lexer *lexer);
-void			handle_child_process(t_command *cmd, int fd, t_env **env,
-					int pipe[2]);
+void			handle_child_process(t_command *cmd, t_exec_data *ctx,
+					t_env **env);
 void			handle_parent_process(t_command *cmd, int *fd, int pipe[2]);
 //exec_commands_helper.c
-int				spawn_processes(t_parse_data *pd, t_env **env, pid_t *pids);
+int				spawn_processes(t_parse_data *pd, t_env **env, pid_t *pids,
+					t_lexer *lexer);
 int				exit_code_helper(t_parse_data *pd, t_env **env);
 //exec_refactoring.c
 int				pre_exec_setups(t_command *cmd, int prev_fd);

@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 19:57:46 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/27 21:41:58 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/03 02:00:17 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ static void	spawn_fork(t_exec_data *ctx, t_parse_data *pd,
 	if (pids[ctx->i] < 0)
 		exit(1);
 	if (pids[ctx->i] == 0)
-		handle_child_process(pd->commands[ctx->i], ctx->fd, env, ctx->pipe);
+		handle_child_process(pd->commands[ctx->i], ctx, env);
 	handle_parent_process(pd->commands[ctx->i], &ctx->fd, ctx->pipe);
 }
 
@@ -49,7 +49,7 @@ int	exit_code_helper(t_parse_data *pd, t_env **env)
 	return (rc);
 }
 
-int	spawn_processes(t_parse_data *pd, t_env **env, pid_t *pids)
+int	spawn_processes(t_parse_data *pd, t_env **env, pid_t *pids, t_lexer *lexer)
 {
 	t_exec_data	ctx;
 
@@ -57,6 +57,7 @@ int	spawn_processes(t_parse_data *pd, t_env **env, pid_t *pids)
 	ctx.i = 0;
 	ctx.pipe[0] = -1;
 	ctx.pipe[1] = -1;
+	ctx.lexer_ref = lexer;
 	pd->n_spawn_pids = 0;
 	while (ctx.i < pd->n_cmds)
 	{

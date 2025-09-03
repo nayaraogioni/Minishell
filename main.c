@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 23:15:37 by dopereir          #+#    #+#             */
-/*   Updated: 2025/09/02 17:51:00 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/03 01:05:54 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,5 +123,6 @@ int	main(int argc, char **argv, char **envp)
 	}
 	free(lexer);
 	clean_env_list(&my_env);
+	clear_history();
 	return (rc);
 }
