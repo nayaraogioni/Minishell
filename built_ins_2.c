@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 15:49:02 by dopereir          #+#    #+#             */
-/*   Updated: 2025/09/02 18:09:42 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/04 00:07:43 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,16 +65,37 @@ static char	*norm_exit_arg(char *ptr)
 	return (ptr);
 }
 
+int	check_second_argument(char *ptr)
+{
+	while (*ptr && isspace((unsigned char)*ptr))
+		ptr++;
+	while (*ptr && !isspace((unsigned char)*ptr))
+		ptr++;
+	while (*ptr && isspace((unsigned char)*ptr))
+		ptr++;
+	if (*ptr != '\0')
+	{
+		printf("exit\nminishell: exit: too many arguments\n");
+		return (1);
+	}
+	return (0);
+}
+
 int	ft_exit_helper(char *ptr)
 {
 	char	*endptr;
 	long	val;
 
+	if (check_second_argument(ptr) == 1)
+		return (1);
 	ptr = norm_exit_arg(ptr);
 	val = ft_strtol(ptr, &endptr, 10);
 	while (*endptr && ft_isspace((unsigned char)*endptr))
 		endptr++;
 	if (*endptr != '\0')
+	{
+		printf("minishell: exit: %s: numeric argument required\n", ptr);
 		return (2);
+	}
 	return ((int)(val % 256));
 }

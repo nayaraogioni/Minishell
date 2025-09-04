@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 23:15:37 by dopereir          #+#    #+#             */
-/*   Updated: 2025/09/03 01:05:54 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/04 10:56:37 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,19 +46,18 @@ int	main_loop(t_env *my_env, t_lexer *lexer, t_parse_data *pd)
 	int		rc;
 
 	input = readline("MINISHELL>$ ");
+	add_history(input);
 	rc = main_loop_helper(input, lexer);
 	if (rc != 0)
 		return (rc);
 	*pd = format_parsed_data(lexer, my_env);
 	if (handle_all_heredocs(pd, my_env) < 0)
 	{
-		add_history(input);
 		cleanup_iter(lexer, pd);
 		free (input);
 		return (1);
 	}
 	exec_parsed_cmds(pd, &my_env, lexer);
-	add_history(input);
 	if (ft_getenv(my_env, "?"))
 		lexer->exit_status = ft_atoi(ft_getenv(my_env, "?"));
 	else
@@ -73,8 +72,8 @@ static void	setup_init_signals(void)
 	struct sigaction	sa_int;
 	struct sigaction	sa_quit;
 
-	memset(&sa_int, 0, sizeof(sa_int));
-	memset(&sa_quit, 0, sizeof(sa_quit));
+	ft_memset(&sa_int, 0, sizeof(sa_int));
+	ft_memset(&sa_quit, 0, sizeof(sa_quit));
 	sa_int.sa_handler = sigint_handler;
 	sigemptyset(&sa_int.sa_mask);
 	sa_int.sa_flags = SA_RESTART;
@@ -123,6 +122,6 @@ int	main(int argc, char **argv, char **envp)
 	}
 	free(lexer);
 	clean_env_list(&my_env);
-	clear_history();
+	rl_clear_history();
 	return (rc);
 }
