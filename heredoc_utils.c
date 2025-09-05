@@ -6,28 +6,27 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/08 11:56:17 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/27 20:41:33 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/05 22:46:58 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft/libft.h"
 #include "minishell.h"
 #include "parser.h"
-#include <asm-generic/ioctls.h>
 #include <readline/readline.h>
-#include <signal.h>
-#include <stdlib.h>
-#include <time.h>
-#include <unistd.h>
 
-void	heredoc_sig_handler(int ignore)
+void	heredoc_sig_handler(int signo)
 {
-	(void)ignore;
-	g_heredoc_sig = 1;
-	rl_on_new_line();
+	char			nl;
+
+	(void)signo;
+	nl = '\n';
+	g_heredoc_sig = SIGINT;
+	printf("> %s^C\n", rl_line_buffer);
 	rl_replace_line("", 0);
-	rl_redisplay();
+	rl_on_new_line();
 	rl_done = 1;
+	ioctl(STDIN_FILENO, TIOCSTI, &nl);
 }
 
 static void	heredoc_loop_helper(t_command *cmd, int pipefd[2], t_env *env)
@@ -35,20 +34,15 @@ static void	heredoc_loop_helper(t_command *cmd, int pipefd[2], t_env *env)
 	char	*line;
 	char	*expanded_line;
 
-	while (!g_heredoc_sig)
+	while (1)
 	{
 		line = readline("> ");
+		if (g_heredoc_sig == SIGINT)
+			return (heredoc_loop_err_helper(line, env, cmd, SIGINT));
 		if (!line)
-		{
-			printf("minishell: warning: here-document delimited by "
-				"end-of-file (wanted '%s')\n", cmd->hd_delim);
-			break ;
-		}
+			return (heredoc_loop_err_helper(line, env, cmd, -1));
 		if (ft_strcmp(line, cmd->hd_delim) == 0)
-		{
-			free(line);
-			break ;
-		}
+			return (heredoc_loop_err_helper(line, env, cmd, -2));
 		expanded_line = expand_heredoc_line(line, env);
 		free(line);
 		write(pipefd[1], expanded_line, ft_strlen(expanded_line));
@@ -57,14 +51,14 @@ static void	heredoc_loop_helper(t_command *cmd, int pipefd[2], t_env *env)
 	}
 }
 
-static void	heredoc_setup_signal_helper(struct sigaction *orig_int)
+static void	heredoc_setup_signal_helper(struct sigaction *sig)
 {
 	struct sigaction	sa;
 
 	sa.sa_handler = heredoc_sig_handler;
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = 0;
-	sigaction(SIGINT, &sa, orig_int);
+	sigaction(SIGINT, &sa, sig);
 }
 
 static int	process_heredoc(t_command *cmd, t_env *env)
@@ -77,7 +71,7 @@ static int	process_heredoc(t_command *cmd, t_env *env)
 	g_heredoc_sig = 0;
 	heredoc_loop_helper(cmd, pipefd, env);
 	close(pipefd[1]);
-	if (g_heredoc_sig)
+	if (g_heredoc_sig == SIGINT)
 	{
 		close(cmd->heredoc_fd);
 		return (-1);
@@ -87,12 +81,11 @@ static int	process_heredoc(t_command *cmd, t_env *env)
 
 int	handle_all_heredocs(t_parse_data *pd, t_env *env)
 {
-	struct sigaction	orig_int;
 	t_command			*cmd;
 	int					i;
 
 	i = 0;
-	heredoc_setup_signal_helper(&orig_int);
+	heredoc_setup_signal_helper(&pd->sig_catcher);
 	while (i < pd->n_cmds)
 	{
 		cmd = pd->commands[i];
@@ -103,11 +96,11 @@ int	handle_all_heredocs(t_parse_data *pd, t_env *env)
 		}
 		if (process_heredoc(cmd, env) < 0)
 		{
-			sigaction(SIGINT, &orig_int, NULL);
+			sigaction(SIGINT, &pd->sig_catcher, NULL);
 			return (-1);
 		}
 		i++;
 	}
-	sigaction(SIGINT, &orig_int, NULL);
+	sigaction(SIGINT, &pd->sig_catcher, NULL);
 	return (0);
 }
