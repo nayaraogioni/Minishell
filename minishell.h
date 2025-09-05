@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 01:10:10 by dopereir          #+#    #+#             */
-/*   Updated: 2025/09/03 02:16:06 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/05 22:57:18 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,19 +28,21 @@
 # include <sys/ioctl.h>
 # include <termios.h>
 # include <fcntl.h>
-# include <errno.h> //to use errno extern
+# include <errno.h>
 # include <asm-generic/errno-base.h>
+# include <asm-generic/ioctls.h>
 # include "libft/libft.h"
 # include "lexer.h"
 # include "parser.h"
 
 typedef struct s_parsephase_data
 {
-	t_command		*commands[MAX_ARGS];
-	//t_command		*root;//
-	int				n_cmds;
-	int				n_spawn_pids;
-	int				pd_exit_status;
+	t_command			*commands[MAX_ARGS];
+	int					n_cmds;
+	int					n_spawn_pids;
+	int					pd_exit_status;
+	int					controller;
+	struct sigaction	sig_catcher;
 }			t_parse_data;
 
 //helper structure to helper the exec_parsed_cmds context
@@ -61,7 +63,7 @@ typedef struct s_env
 	struct s_env	*next;
 }			t_env;
 
-static volatile sig_atomic_t	g_heredoc_sig = 0;
+extern volatile sig_atomic_t	g_heredoc_sig;
 //main.c
 void			cleanup_iter(t_lexer *lexer, t_parse_data *pd);
 //tokenizer.c
@@ -156,6 +158,10 @@ void			argument_redirs_error(t_token_type type);
 int				set_heredoc(char *delim);
 //signal_handlers.c
 void			sigint_handler(int signo);
+int				set_and_get_exit_code(int value);
+void			heredoc_loop_err_helper(char *line, t_env *env,
+					t_command *cmd, int flag);
+void			signal_err_set(t_env *env, t_lexer *lexer);
 //expand_var.c
 int				expand_variables(t_lexer *lexer, t_env *my_env);
 char			*get_special_var(char *var_name, t_lexer *lexer);

@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 23:15:37 by dopereir          #+#    #+#             */
-/*   Updated: 2025/09/04 10:56:37 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/05 22:57:49 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 #include <readline/history.h>
 #include <stdlib.h>
 #include <time.h>
+
+volatile sig_atomic_t	g_heredoc_sig = 0;
 
 int	main_loop_helper(char *input, t_lexer *lexer)
 {
@@ -46,6 +48,8 @@ int	main_loop(t_env *my_env, t_lexer *lexer, t_parse_data *pd)
 	int		rc;
 
 	input = readline("MINISHELL>$ ");
+	if (g_heredoc_sig == SIGINT)
+		signal_err_set(my_env, lexer);
 	add_history(input);
 	rc = main_loop_helper(input, lexer);
 	if (rc != 0)
@@ -72,8 +76,6 @@ static void	setup_init_signals(void)
 	struct sigaction	sa_int;
 	struct sigaction	sa_quit;
 
-	ft_memset(&sa_int, 0, sizeof(sa_int));
-	ft_memset(&sa_quit, 0, sizeof(sa_quit));
 	sa_int.sa_handler = sigint_handler;
 	sigemptyset(&sa_int.sa_mask);
 	sa_int.sa_flags = SA_RESTART;
