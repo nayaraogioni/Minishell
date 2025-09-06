@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cleanup_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: nogioni- <nogioni-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 19:04:00 by dopereir          #+#    #+#             */
-/*   Updated: 2025/09/06 11:57:47 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/06 11:51:35 by nogioni-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,5 +57,5 @@ void	free_lexer_tokens(t_lexer *lexer)
 		lexer->token_count = 0;
 		lexer->input = NULL;
 	}
-	free (lexer);
+	free(lexer);
 }
