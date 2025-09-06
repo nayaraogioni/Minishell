@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_refactoring.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: nogioni- <nogioni-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 23:53:08 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/23 14:57:59 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/06 12:36:27 by nogioni-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,8 @@ int	pos_exec_error_codes(char *cmd_name, int errno_code)
 	if (errno_code == ENOENT)
 	{
 		printf("Command '%s' not found.\n", cmd_name);
-		free (cmd_name);
+		if (cmd_name)
+			free (cmd_name);
 		return (127);
 	}
 	else if (errno_code == EACCES)
