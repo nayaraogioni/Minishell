@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/08 11:56:17 by dopereir          #+#    #+#             */
-/*   Updated: 2025/09/05 22:46:58 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/06 09:05:46 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	heredoc_sig_handler(int signo)
 	char			nl;
 
 	(void)signo;
-	nl = '\n';
+	nl = ' ';
 	g_heredoc_sig = SIGINT;
 	printf("> %s^C\n", rl_line_buffer);
 	rl_replace_line("", 0);
