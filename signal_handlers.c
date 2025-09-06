@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 10:43:53 by dopereir          #+#    #+#             */
-/*   Updated: 2025/09/06 12:03:30 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/05 22:56:56 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void	sigint_handler(int signo)
 	(void)signo;
 	nl = ' ';
 	g_heredoc_sig = SIGINT;
-	//printf("MINISHELL>$ %s^C\n", rl_line_buffer);
+	printf("MINISHELL>$ %s^C\n", rl_line_buffer);
 	rl_replace_line("", 0);
 	rl_on_new_line();
 	rl_redisplay();
