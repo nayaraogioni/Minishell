@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_commands.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nogioni- <nogioni-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 22:48:16 by dopereir          #+#    #+#             */
-/*   Updated: 2025/09/06 12:49:33 by nogioni-         ###   ########.fr       */
+/*   Updated: 2025/09/07 00:52:20 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,8 @@
 // 0 for sucess
 // 1 for general error
 // another codes depending of the error type
-int	child_run(t_command *cmd, t_exec_data *ctx, t_env **env)
+int	child_run(t_command *cmd, t_exec_data *ctx, t_env **env,
+		t_parse_data *pd)
 {
 	char	**child_env;
 	char	*tmp_cmd_name;
@@ -40,10 +41,11 @@ int	child_run(t_command *cmd, t_exec_data *ctx, t_env **env)
 	{
 		free_env_array(child_env, list_lenght(*env));
 		child_env = NULL;
-		free_command(cmd);
+		//free_command(cmd);
+		free_parsed_data(pd);
 		free_lexer_tokens(ctx->lexer_ref);
 		return (pos_exec_error_codes(tmp_cmd_name, ENOENT));
-		//tmp_cmd_name = NULL;
+		//tmp_cmd_name = NULL; NEED TO NULLIFY THIS(?)
 	}
 	cmd->path = ft_strdup(tmp_path);
 	execve(cmd->path, cmd->argv, child_env);
@@ -51,11 +53,16 @@ int	child_run(t_command *cmd, t_exec_data *ctx, t_env **env)
 	child_env = NULL;
 	return_code = (pos_exec_error_codes(tmp_cmd_name, errno));
 	tmp_cmd_name = NULL;
-	free_command(cmd);
+	//free_command(cmd);
+	free_parsed_data(pd);
 	free_lexer_tokens(ctx->lexer_ref);
 	return (return_code);
 }
 
+//PROBABLY ISSUE, WE CLEAN THE CURRENT COMMAND,
+//IN THE CASE IS THE LAST CMD IN THE PIPE,
+//AND WE FREE IT, BUT NOT FREE THE PREVIOUS,
+//WE NEED TO RECEIVE THE WHOLE PD AND CLEAN THE WHOLE PD
 void	parent_run(t_command *cmd, int *fd, int pipe_var[2])
 {
 	if (cmd->next_is_pipe)
@@ -68,11 +75,12 @@ void	parent_run(t_command *cmd, int *fd, int pipe_var[2])
 		*fd = -1;
 }
 
-void	handle_child_process(t_command *cmd, t_exec_data *ctx, t_env **env)
+void	handle_child_process(t_command *cmd, t_exec_data *ctx, t_env **env,
+			t_parse_data *pd)
 {
 	int	rc;
 
-	rc = child_run(cmd, ctx, env);
+	rc = child_run(cmd, ctx, env, pd);
 	clean_env_list(env);
 	_exit(rc);
 }
