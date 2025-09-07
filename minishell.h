@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 01:10:10 by dopereir          #+#    #+#             */
-/*   Updated: 2025/09/07 00:38:46 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/07 19:35:08 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@
 # include <errno.h>
 # include <asm-generic/errno-base.h>
 # include <asm-generic/ioctls.h>
+# include <termios.h>
 # include "libft/libft.h"
 # include "lexer.h"
 # include "parser.h"
@@ -158,7 +159,7 @@ void			argument_redirs_error(t_token_type type);
 int				set_heredoc(char *delim);
 //signal_handlers.c
 void			sigint_handler(int signo);
-int				set_and_get_exit_code(int value);
+void			sigquit_handler(int signo);
 void			heredoc_loop_err_helper(char *line, t_env *env,
 					t_command *cmd, int flag);
 void			signal_err_set(t_env *env, t_lexer *lexer);
@@ -186,6 +187,8 @@ void			handle_parent_process(t_command *cmd, int *fd, int pipe[2]);
 int				spawn_processes(t_parse_data *pd, t_env **env, pid_t *pids,
 					t_lexer *lexer);
 int				exit_code_helper(t_parse_data *pd, t_env **env);
+void			exec_err_cleaner(char **child_env, t_parse_data *pd,
+					t_exec_data *ctx, t_env **env);
 //exec_refactoring.c
 int				pre_exec_setups(t_command *cmd, int prev_fd);
 int				pre_exec_setups_2(t_command *cmd, int c_pipe[2], int has_pipe);
@@ -256,5 +259,7 @@ void			free_sublexer(t_lexer *sublexer);
 int				find_next_logical_operator(t_lexer *lexer, int start);
 t_lexer			*create_sublexer(t_lexer *lexer, int start, int end);
 void			setup_command_defaults(t_command *cmd);
+//write_error.c
+void			write_error_case(char *cmd_name, int errno_code);
 
 #endif
