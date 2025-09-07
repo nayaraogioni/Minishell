@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 19:57:46 by dopereir          #+#    #+#             */
-/*   Updated: 2025/09/07 00:34:46 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/07 19:10:54 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,4 +73,13 @@ int	spawn_processes(t_parse_data *pd, t_env **env, pid_t *pids, t_lexer *lexer)
 	if (ctx.fd != -1)
 		close(ctx.fd);
 	return (0);
+}
+
+void	exec_err_cleaner(char **child_env, t_parse_data *pd,
+	t_exec_data *ctx, t_env **env)
+{
+	free_env_array(child_env, list_lenght(*env));
+	child_env = NULL;
+	free_parsed_data(pd);
+	free_lexer_tokens(ctx->lexer_ref);
 }

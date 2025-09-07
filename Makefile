@@ -43,6 +43,7 @@ SOURCES =	main.c \
 			tokenizer_helper.c \
 			tokenizer_helper_2.c \
 			tokenizer.c \
+			write_error.c \
 
 OBJ = $(SOURCES:.c=.o)
 
