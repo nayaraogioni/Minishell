@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 19:57:46 by dopereir          #+#    #+#             */
-/*   Updated: 2025/09/03 02:00:17 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/07 00:34:46 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ static void	spawn_fork(t_exec_data *ctx, t_parse_data *pd,
 	if (pids[ctx->i] < 0)
 		exit(1);
 	if (pids[ctx->i] == 0)
-		handle_child_process(pd->commands[ctx->i], ctx, env);
+		handle_child_process(pd->commands[ctx->i], ctx, env, pd);
 	handle_parent_process(pd->commands[ctx->i], &ctx->fd, ctx->pipe);
 }
 

@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 01:10:10 by dopereir          #+#    #+#             */
-/*   Updated: 2025/09/05 22:57:18 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/07 00:38:46 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,12 +174,13 @@ char			*hd_helper_getvalue(char *key, t_env *env);
 char			*hd_helper_exp_varname(char *out, char *key, t_env *env);
 char			*hd_helper_append_char(char *out, char c);
 //exec_commands.c
-int				child_run(t_command *cmd, t_exec_data *ctx, t_env **env);
+int				child_run(t_command *cmd, t_exec_data *ctx, t_env **env,
+					t_parse_data *pd);
 void			parent_run(t_command *cmd, int *fd, int pipe_var[2]);
 void			exec_parsed_cmds(t_parse_data *pd, t_env **myenv,
 					t_lexer *lexer);
 void			handle_child_process(t_command *cmd, t_exec_data *ctx,
-					t_env **env);
+					t_env **env, t_parse_data *pd);
 void			handle_parent_process(t_command *cmd, int *fd, int pipe[2]);
 //exec_commands_helper.c
 int				spawn_processes(t_parse_data *pd, t_env **env, pid_t *pids,
