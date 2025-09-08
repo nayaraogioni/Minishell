@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 01:10:10 by dopereir          #+#    #+#             */
-/*   Updated: 2025/09/08 19:27:36 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/08 23:38:20 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,7 +134,7 @@ char			*ft_getenv(t_env *env, char *key);
 void			ft_setenv(t_env **env, char *key, char *value);
 //enviroment_functions_utils.c
 void			ft_unsetenv(t_env **env, char *key);
-void			ft_env(t_env *env);
+void			ft_env(t_env *env, t_command *cmd);
 int				ft_unset(char **argv, t_env **env);
 int				add_export(char *arg, t_env **env, char *value);
 int				ft_export(char **argv, t_env **env, t_parse_data *pd);
@@ -167,21 +167,19 @@ void			signal_err_set(t_env *env, t_lexer *lexer);
 //expand_var.c
 int				expand_variables(t_lexer *lexer, t_env *my_env);
 char			*get_special_var(char *var_name, t_lexer *lexer);
-void			update_last_bg_pid(t_lexer *lexer, pid_t pid);
 char			*expand_heredoc_line(char *line, t_env *env);
 //export_utils.c
 void			sort_env_array(char **arr);
 char			**generate_export_array(t_env *env);
 void			free_export_array(char **arr);
-void			print_sorted_env(t_env *env);
 void			print_export_array(char **arr);
-int				add_to_export_env(char *key, t_parse_data *pd);
-
-
-
-
-
-
+//export_utils_2.c
+//int				add_to_export_env(char *key, t_parse_data *pd);
+void			print_identifier_error(const char *key);
+int				export_no_args(t_env **env, t_parse_data *pd);
+int				identifier_check(char *eq, char *argv, t_parse_data *pd);
+int				export_trimmed_value(char *eq, char **argv,
+					int *i, t_env **env);
 //expand_var_heredoc_helper.c -> exist to helpe the expand_var function
 // to expand env vars in the heredoc interactive mode
 char			*hd_helper_extract_key(char *line, int *i);
@@ -220,7 +218,7 @@ char			*last_exit_expander(int last_status, char **out);
 //enviroment_functions_utils2.c
 char			*literal_argv_expander(char *eq, char **argv, int *i);
 int				export_exception_flag(t_lexer *lexer);
-int				export_helper(char *eq, char **argv, t_env **env,
+int				export_helper(char *eq, char *argv, t_env **env,
 					t_parse_data *pd);
 //built_ins_2.c
 int				ft_echo(t_parse_data *pd, t_command *cmd);
@@ -275,5 +273,7 @@ t_lexer			*create_sublexer(t_lexer *lexer, int start, int end);
 void			setup_command_defaults(t_command *cmd);
 //write_error.c
 void			write_error_case(char *cmd_name, int errno_code);
+int				is_valid_identifier(const char *key);
+void			print_no_file_dir_error(char *name);
 
 #endif

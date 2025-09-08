@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 17:58:10 by dopereir          #+#    #+#             */
-/*   Updated: 2025/09/08 19:48:53 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/08 23:39:17 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,8 +65,13 @@ int	ft_unset(char **argv, t_env **env)
 }
 
 //prints our whole enviroment list USE AS ENV COMMAND
-void	ft_env(t_env *env)
+void	ft_env(t_env *env, t_command *cmd)
 {
+	if (cmd->argv[1])
+	{
+		print_no_file_dir_error(cmd->argv[1]);
+		return ;
+	}
 	while (env)
 	{
 		if (env->value)
@@ -111,33 +116,27 @@ int	ft_export(char **argv, t_env **env, t_parse_data *pd)
 	char	*trimmed;
 
 	if (!argv || !argv[1])
-	{
-		pd->export_env = generate_export_array(*env);
-		if (!pd->export_env)
-		{
-			pd->pd_exit_status = 1;
-			return (-1);
-		}
-		print_export_array(pd->export_env);
-		free_export_array(pd->export_env);
-		pd->export_env = NULL;
-		pd->pd_exit_status = 0;
-		return (0);
-	}
+		return (export_no_args(env, pd));
 	i = 1;
-	eq = ft_strchr(argv[i], '=');
-	if (!eq)
+	while (argv[i])
 	{
-		//add to export_
-		pd->pd_exit_status = 1;
-		return (-1);
+		eq = ft_strchr(argv[i], '=');
+		if (identifier_check(eq, argv[i++], pd) == 1)
+			continue ;
+		if (*(eq + 1) != '\0' && (*(eq + 1) == '"' || *(eq + 1) == '\''))
+		{
+			trimmed = literal_argv_expander(eq, argv, &i);
+			if (!trimmed)
+			{
+				pd->pd_exit_status = 1;
+				i++;
+				continue ;
+			}
+			add_export(argv[i], env, trimmed);
+		}
+		else
+			export_helper(eq, argv[i], env, pd);
+		i++;
 	}
-	if (eq && *(eq + 1) != '\0' && (*(eq + 1) == '"' || *(eq + 1) == '\''))
-	{
-		trimmed = literal_argv_expander(eq, argv, &i);
-		if (!trimmed)
-			return (-1);
-		return (add_export(argv[1], env, trimmed));
-	}
-	return (export_helper(eq, argv, env, pd));
+	return (0);
 }
