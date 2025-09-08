@@ -25,6 +25,7 @@ SOURCES =	main.c \
 			expand_var_helpers2.c \
 			expand_var_heredoc_helper.c \
 			expand_var.c \
+			export_utils.c \
 			heredoc_utils.c \
 			parser_helper1.c \
 			parser_helper2.c \

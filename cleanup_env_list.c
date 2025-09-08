@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 22:35:00 by dopereir          #+#    #+#             */
-/*   Updated: 2025/09/03 01:05:58 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/07 22:56:30 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,6 +109,3 @@ char	**env_to_array(t_env *env)
 		return (NULL);
 	return (arr);
 }
-
-/*fprintf(stderr, "[clean_env] free node %p key=%p '%s' value=%p '%s'\n",
-(void *)cur, (void *)cur->key, cur->key, (void *)cur->value, cur->value);*/

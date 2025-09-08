@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 23:15:37 by dopereir          #+#    #+#             */
-/*   Updated: 2025/09/07 18:55:55 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/08 19:04:45 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,13 +88,15 @@ static void	setup_init_signals(void)
 
 //returns 0 on sucess
 //return -1 on failure
-int	init_lexer_and_env(t_lexer *lexer, t_env **my_env, char **envp)
+int	init_lexer_and_env(t_lexer *lexer, t_env **my_env, char **envp,
+		t_parse_data *pd)
 {
 	lexer->input = NULL;
 	lexer->tokens = NULL;
 	lexer->token_count = 0;
 	lexer->exit_status = 0;
-	if (env_init(my_env, envp) != 0)
+	pd->export_env = NULL;
+	if (env_init(my_env, envp, pd) != 0)
 		return (-1);
 	return (0);
 }
@@ -112,7 +114,7 @@ int	main(int argc, char **argv, char **envp)
 	lexer = malloc(sizeof(t_lexer));
 	if (!lexer)
 		return (1);
-	if (init_lexer_and_env(lexer, &my_env, envp) != 0)
+	if (init_lexer_and_env(lexer, &my_env, envp, &pd) != 0)
 		return (free(lexer), 0);
 	while (1)
 	{

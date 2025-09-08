@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 01:10:10 by dopereir          #+#    #+#             */
-/*   Updated: 2025/09/07 19:35:08 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/08 19:27:36 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,8 @@ typedef struct s_parsephase_data
 	int					n_cmds;
 	int					n_spawn_pids;
 	int					pd_exit_status;
-	int					controller;
 	struct sigaction	sig_catcher;
+	char				**export_env;
 }			t_parse_data;
 
 //helper structure to helper the exec_parsed_cmds context
@@ -129,7 +129,7 @@ int				set_input(t_command *cmd);
 int				set_pipe(int *read_fd, int *write_fd);
 //environment_functions.c
 int				env_add(t_env **head, char *key, char *value);
-int				env_init(t_env **my_env, char **envp);
+int				env_init(t_env **my_env, char **envp, t_parse_data *pd);
 char			*ft_getenv(t_env *env, char *key);
 void			ft_setenv(t_env **env, char *key, char *value);
 //enviroment_functions_utils.c
@@ -146,6 +146,7 @@ int				list_lenght(t_env *env_list);
 //cleanup_utils.c
 void			cleanup_iter(t_lexer *lexer, t_parse_data *pd);
 void			free_lexer_tokens(t_lexer *lexer);
+void			free_export_env(t_parse_data *pd);
 //built_ins.c
 int				ft_cd(char **argv, t_env **env_list);
 int				ft_exit(char *input);
@@ -168,6 +169,19 @@ int				expand_variables(t_lexer *lexer, t_env *my_env);
 char			*get_special_var(char *var_name, t_lexer *lexer);
 void			update_last_bg_pid(t_lexer *lexer, pid_t pid);
 char			*expand_heredoc_line(char *line, t_env *env);
+//export_utils.c
+void			sort_env_array(char **arr);
+char			**generate_export_array(t_env *env);
+void			free_export_array(char **arr);
+void			print_sorted_env(t_env *env);
+void			print_export_array(char **arr);
+int				add_to_export_env(char *key, t_parse_data *pd);
+
+
+
+
+
+
 //expand_var_heredoc_helper.c -> exist to helpe the expand_var function
 // to expand env vars in the heredoc interactive mode
 char			*hd_helper_extract_key(char *line, int *i);
