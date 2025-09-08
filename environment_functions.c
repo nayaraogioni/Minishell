@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 20:26:58 by dopereir          #+#    #+#             */
-/*   Updated: 2025/09/08 18:52:36 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/08 21:37:22 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,6 @@ int	env_init(t_env **my_env, char **envp, t_parse_data *pd)
 		}
 		i++;
 	}
-	//pd->export_env = generate_export_array(*my_env);
 	return (0);
 }
 

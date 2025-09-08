@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 17:17:58 by dopereir          #+#    #+#             */
-/*   Updated: 2025/09/02 17:36:20 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/08 23:38:48 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ int	run_parent_built(t_command *cmd, t_env **env_list, t_parse_data *pd)
 	else if (!ft_strcmp(cmd->name, "pwd"))
 		return (ft_pwd(env_list, pd, cmd));
 	else if (!ft_strcmp(cmd->name, "env"))
-		return (ft_env(*env_list), 0);
+		return (ft_env(*env_list, cmd), 0);
 	else if (!ft_strcmp(cmd->name, "echo"))
 		return (ft_echo(pd, cmd));
 	return (0);

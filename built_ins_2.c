@@ -6,11 +6,27 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/23 15:49:02 by dopereir          #+#    #+#             */
-/*   Updated: 2025/09/04 00:07:43 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/08 21:30:38 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+static int	is_n_flag(char *arg)
+{
+	int	i;
+
+	if (!arg || arg[0] != '-' || arg[1] != 'n')
+		return (0);
+	i = 2;
+	while (arg[i])
+	{
+		if (arg[i] != 'n')
+			return (0);
+		i++;
+	}
+	return (1);
+}
 
 int	ft_echo(t_parse_data *pd, t_command *cmd)
 {
@@ -24,7 +40,7 @@ int	ft_echo(t_parse_data *pd, t_command *cmd)
 		pd->pd_exit_status = 0;
 		return (write(STDOUT_FILENO, "\n", 1));
 	}
-	if (ft_strcmp(cmd->argv[1], "-n") == 0)
+	while (cmd->argv[i] && is_n_flag(cmd->argv[i]))
 	{
 		i++;
 		newline_flag = 1;
