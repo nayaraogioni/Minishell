@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 17:58:10 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/23 15:09:32 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/08 19:48:53 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,11 +111,24 @@ int	ft_export(char **argv, t_env **env, t_parse_data *pd)
 	char	*trimmed;
 
 	if (!argv || !argv[1])
-		return (-1);
+	{
+		pd->export_env = generate_export_array(*env);
+		if (!pd->export_env)
+		{
+			pd->pd_exit_status = 1;
+			return (-1);
+		}
+		print_export_array(pd->export_env);
+		free_export_array(pd->export_env);
+		pd->export_env = NULL;
+		pd->pd_exit_status = 0;
+		return (0);
+	}
 	i = 1;
 	eq = ft_strchr(argv[i], '=');
 	if (!eq)
 	{
+		//add to export_
 		pd->pd_exit_status = 1;
 		return (-1);
 	}
