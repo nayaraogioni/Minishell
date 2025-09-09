@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: nayara <nayara@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 01:10:10 by dopereir          #+#    #+#             */
-/*   Updated: 2025/09/05 22:57:18 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/09 03:16:09 by nayara           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@
 # include <errno.h>
 # include <asm-generic/errno-base.h>
 # include <asm-generic/ioctls.h>
+# include <termios.h>
 # include "libft/libft.h"
 # include "lexer.h"
 # include "parser.h"
@@ -41,8 +42,8 @@ typedef struct s_parsephase_data
 	int					n_cmds;
 	int					n_spawn_pids;
 	int					pd_exit_status;
-	int					controller;
 	struct sigaction	sig_catcher;
+	char				**export_env;
 }			t_parse_data;
 
 //helper structure to helper the exec_parsed_cmds context
@@ -128,12 +129,12 @@ int				set_input(t_command *cmd);
 int				set_pipe(int *read_fd, int *write_fd);
 //environment_functions.c
 int				env_add(t_env **head, char *key, char *value);
-int				env_init(t_env **my_env, char **envp);
+int				env_init(t_env **my_env, char **envp, t_parse_data *pd);
 char			*ft_getenv(t_env *env, char *key);
 void			ft_setenv(t_env **env, char *key, char *value);
 //enviroment_functions_utils.c
 void			ft_unsetenv(t_env **env, char *key);
-void			ft_env(t_env *env);
+void			ft_env(t_env *env, t_command *cmd);
 int				ft_unset(char **argv, t_env **env);
 int				add_export(char *arg, t_env **env, char *value);
 int				ft_export(char **argv, t_env **env, t_parse_data *pd);
@@ -145,6 +146,7 @@ int				list_lenght(t_env *env_list);
 //cleanup_utils.c
 void			cleanup_iter(t_lexer *lexer, t_parse_data *pd);
 void			free_lexer_tokens(t_lexer *lexer);
+void			free_export_env(t_parse_data *pd);
 //built_ins.c
 int				ft_cd(char **argv, t_env **env_list);
 int				ft_exit(char *input);
@@ -158,15 +160,26 @@ void			argument_redirs_error(t_token_type type);
 int				set_heredoc(char *delim);
 //signal_handlers.c
 void			sigint_handler(int signo);
-int				set_and_get_exit_code(int value);
+void			sigquit_handler(int signo);
 void			heredoc_loop_err_helper(char *line, t_env *env,
 					t_command *cmd, int flag);
 void			signal_err_set(t_env *env, t_lexer *lexer);
 //expand_var.c
 int				expand_variables(t_lexer *lexer, t_env *my_env);
 char			*get_special_var(char *var_name, t_lexer *lexer);
-void			update_last_bg_pid(t_lexer *lexer, pid_t pid);
 char			*expand_heredoc_line(char *line, t_env *env);
+//export_utils.c
+void			sort_env_array(char **arr);
+char			**generate_export_array(t_env *env);
+void			free_export_array(char **arr);
+void			print_export_array(char **arr);
+//export_utils_2.c
+//int				add_to_export_env(char *key, t_parse_data *pd);
+void			print_identifier_error(const char *key);
+int				export_no_args(t_env **env, t_parse_data *pd);
+int				identifier_check(char *eq, char *argv, t_parse_data *pd);
+int				export_trimmed_value(char *eq, char **argv,
+					int *i, t_env **env);
 //expand_var_heredoc_helper.c -> exist to helpe the expand_var function
 // to expand env vars in the heredoc interactive mode
 char			*hd_helper_extract_key(char *line, int *i);
@@ -174,17 +187,20 @@ char			*hd_helper_getvalue(char *key, t_env *env);
 char			*hd_helper_exp_varname(char *out, char *key, t_env *env);
 char			*hd_helper_append_char(char *out, char c);
 //exec_commands.c
-int				child_run(t_command *cmd, t_exec_data *ctx, t_env **env);
+int				child_run(t_command *cmd, t_exec_data *ctx, t_env **env,
+					t_parse_data *pd);
 void			parent_run(t_command *cmd, int *fd, int pipe_var[2]);
 void			exec_parsed_cmds(t_parse_data *pd, t_env **myenv,
 					t_lexer *lexer);
 void			handle_child_process(t_command *cmd, t_exec_data *ctx,
-					t_env **env);
+					t_env **env, t_parse_data *pd);
 void			handle_parent_process(t_command *cmd, int *fd, int pipe[2]);
 //exec_commands_helper.c
 int				spawn_processes(t_parse_data *pd, t_env **env, pid_t *pids,
 					t_lexer *lexer);
 int				exit_code_helper(t_parse_data *pd, t_env **env);
+void			exec_err_cleaner(char **child_env, t_parse_data *pd,
+					t_exec_data *ctx, t_env **env);
 //exec_refactoring.c
 int				pre_exec_setups(t_command *cmd, int prev_fd);
 int				pre_exec_setups_2(t_command *cmd, int c_pipe[2], int has_pipe);
@@ -202,8 +218,10 @@ char			*last_exit_expander(int last_status, char **out);
 //enviroment_functions_utils2.c
 char			*literal_argv_expander(char *eq, char **argv, int *i);
 int				export_exception_flag(t_lexer *lexer);
-int				export_helper(char *eq, char **argv, t_env **env,
+int				export_helper(char *eq, char *argv, t_env **env,
 					t_parse_data *pd);
+//environment_functions_utils_3.c
+void			ft_export_loop(char **argv, t_env **env, t_parse_data *pd);
 //built_ins_2.c
 int				ft_echo(t_parse_data *pd, t_command *cmd);
 int				ft_exit_helper(char *ptr);
@@ -255,5 +273,9 @@ void			free_sublexer(t_lexer *sublexer);
 int				find_next_logical_operator(t_lexer *lexer, int start);
 t_lexer			*create_sublexer(t_lexer *lexer, int start, int end);
 void			setup_command_defaults(t_command *cmd);
+//write_error.c
+void			write_error_case(char *cmd_name, int errno_code);
+int				is_valid_identifier(const char *key);
+void			print_no_file_dir_error(char *name);
 
 #endif

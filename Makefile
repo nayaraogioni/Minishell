@@ -15,6 +15,7 @@ SOURCES =	main.c \
 			collect_commands.c \
 			environment_functions_utils.c \
 			environment_functions_utils2.c \
+			environment_functions_utils_3.c \
 			environment_functions.c \
 			error_handlers.c \
 			exec_commands.c \
@@ -25,6 +26,8 @@ SOURCES =	main.c \
 			expand_var_helpers2.c \
 			expand_var_heredoc_helper.c \
 			expand_var.c \
+			export_utils.c \
+			export_utils_2.c \
 			heredoc_utils.c \
 			parser_helper1.c \
 			parser_helper2.c \
@@ -43,6 +46,7 @@ SOURCES =	main.c \
 			tokenizer_helper.c \
 			tokenizer_helper_2.c \
 			tokenizer.c \
+			write_error.c \
 
 OBJ = $(SOURCES:.c=.o)
 
