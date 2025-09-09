@@ -15,6 +15,7 @@ SOURCES =	main.c \
 			collect_commands.c \
 			environment_functions_utils.c \
 			environment_functions_utils2.c \
+			environment_functions_utils_3.c \
 			environment_functions.c \
 			error_handlers.c \
 			exec_commands.c \

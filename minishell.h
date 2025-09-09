@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: nayara <nayara@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 01:10:10 by dopereir          #+#    #+#             */
-/*   Updated: 2025/09/08 23:38:20 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/09 03:16:09 by nayara           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,6 +220,8 @@ char			*literal_argv_expander(char *eq, char **argv, int *i);
 int				export_exception_flag(t_lexer *lexer);
 int				export_helper(char *eq, char *argv, t_env **env,
 					t_parse_data *pd);
+//environment_functions_utils_3.c
+void			ft_export_loop(char **argv, t_env **env, t_parse_data *pd);
 //built_ins_2.c
 int				ft_echo(t_parse_data *pd, t_command *cmd);
 int				ft_exit_helper(char *ptr);

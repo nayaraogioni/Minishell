@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   environment_functions_utils.c                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: nayara <nayara@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 17:58:10 by dopereir          #+#    #+#             */
-/*   Updated: 2025/09/08 23:39:17 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/09 02:18:26 by nayara           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,37 +106,5 @@ int	add_export(char *arg, t_env **env, char *value)
 	}
 	free(key);
 	free(value);
-	return (0);
-}
-
-int	ft_export(char **argv, t_env **env, t_parse_data *pd)
-{
-	int		i;
-	char	*eq;
-	char	*trimmed;
-
-	if (!argv || !argv[1])
-		return (export_no_args(env, pd));
-	i = 1;
-	while (argv[i])
-	{
-		eq = ft_strchr(argv[i], '=');
-		if (identifier_check(eq, argv[i++], pd) == 1)
-			continue ;
-		if (*(eq + 1) != '\0' && (*(eq + 1) == '"' || *(eq + 1) == '\''))
-		{
-			trimmed = literal_argv_expander(eq, argv, &i);
-			if (!trimmed)
-			{
-				pd->pd_exit_status = 1;
-				i++;
-				continue ;
-			}
-			add_export(argv[i], env, trimmed);
-		}
-		else
-			export_helper(eq, argv[i], env, pd);
-		i++;
-	}
 	return (0);
 }
