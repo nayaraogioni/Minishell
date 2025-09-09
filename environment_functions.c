@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 20:26:58 by dopereir          #+#    #+#             */
-/*   Updated: 2025/07/06 23:21:37 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/08 21:37:22 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,10 +56,11 @@ static int	env_init_helper(t_env **env, char *env_str)
 }
 
 //in case of failure already cleans the env_list
-int	env_init(t_env **my_env, char **envp)
+int	env_init(t_env **my_env, char **envp, t_parse_data *pd)
 {
 	int		i;
 
+	(void) pd;
 	if (!my_env)
 		return (-1);
 	*my_env = NULL;

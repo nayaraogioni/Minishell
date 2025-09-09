@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/22 19:57:46 by dopereir          #+#    #+#             */
-/*   Updated: 2025/09/03 02:00:17 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/08 21:37:11 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ static void	spawn_fork(t_exec_data *ctx, t_parse_data *pd,
 	if (pids[ctx->i] < 0)
 		exit(1);
 	if (pids[ctx->i] == 0)
-		handle_child_process(pd->commands[ctx->i], ctx, env);
+		handle_child_process(pd->commands[ctx->i], ctx, env, pd);
 	handle_parent_process(pd->commands[ctx->i], &ctx->fd, ctx->pipe);
 }
 
@@ -73,4 +73,13 @@ int	spawn_processes(t_parse_data *pd, t_env **env, pid_t *pids, t_lexer *lexer)
 	if (ctx.fd != -1)
 		close(ctx.fd);
 	return (0);
+}
+
+void	exec_err_cleaner(char **child_env, t_parse_data *pd,
+	t_exec_data *ctx, t_env **env)
+{
+	free_env_array(child_env, list_lenght(*env));
+	child_env = NULL;
+	free_parsed_data(pd);
+	free_lexer_tokens(ctx->lexer_ref);
 }

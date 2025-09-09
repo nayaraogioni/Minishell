@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/18 22:11:31 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/27 20:44:59 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/08 22:07:21 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,27 +38,20 @@ int	export_exception_flag(t_lexer *lexer)
 	return (flag);
 }
 
-int	export_helper(char *eq, char **argv, t_env **env, t_parse_data *pd)
+int	export_helper(char *eq, char *argv, t_env **env, t_parse_data *pd)
 {
 	char	*value;
-	int		i;
 
-	i = 1;
-	if (argv[i][0] == '\0' || (eq && eq == argv[i]))
-	{
-		printf("minishell: export: '%s': not a valid identifier\n", argv[i]);
-		pd->pd_exit_status = 1;
-		return (-1);
-	}
+	(void) pd;
 	if (eq)
 	{
 		value = ft_strdup(eq + 1);
 		if (!value)
 			return (-1);
-		return (add_export(argv[i], env, value));
+		return (add_export(argv, env, value));
 	}
-	if (!ft_getenv(*env, argv[i]))
-		return (replace_env_value(env, argv[i], ""));
+	if (!ft_getenv(*env, argv))
+		return (replace_env_value(env, argv, ""));
 	return (0);
 }
 
