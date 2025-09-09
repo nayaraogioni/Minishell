@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/20 16:30:41 by nayara            #+#    #+#             */
-/*   Updated: 2025/08/27 22:02:05 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/09 15:02:49 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ void	free_tokens_partial(t_token *tokens, int count)
 	free (tokens);
 }
 
-void	lexing_input(t_lexer *lexer, char delim)//starting point of the issue
+void	lexing_input(t_lexer *lexer, char delim)
 {
 	if (lexer->tokens && lexer->token_count > 0)
 	{

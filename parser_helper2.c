@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/24 23:45:43 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/25 20:18:13 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/09 15:32:51 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ int	redir_heredoc_module(t_command *cmd, t_lexer *lexer, t_pbuilder *pb)
 	pb->i++;
 	if (pb->i < lexer->token_count && lexer->tokens[pb->i].type == T_WORD)
 		return (redir_heredoc_helper(cmd, lexer, pb));
-	printf("minishell: syntax error near unexpected token `newline'\n");
+	printf("minishell: syntax error near unexpected token `newline01'\n");
 	free(pb->acc);
 	free_command(cmd);
 	return (-1);

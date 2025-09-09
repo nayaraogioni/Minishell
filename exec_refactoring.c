@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 23:53:08 by dopereir          #+#    #+#             */
-/*   Updated: 2025/09/07 19:54:08 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/09 14:47:45 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,7 @@ int	pos_exec_error_codes(char *cmd_name, int errno_code)
 // (0) caller continues the program
 // (1) -> caller calls exit(1)
 // (-1) -> caller breaks
+//cat Makefile | ls > test.txt < sort
 int	pre_exec_prep(t_command *cmd, t_env **env, t_parse_data *pd, int cp[2])
 {
 	bool		is_parent_bt;

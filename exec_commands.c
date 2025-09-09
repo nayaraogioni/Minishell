@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 22:48:16 by dopereir          #+#    #+#             */
-/*   Updated: 2025/09/08 21:37:01 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/09 15:36:34 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,9 @@ int	child_run(t_command *cmd, t_exec_data *ctx, t_env **env,
 	char	*tmp_path;
 
 	if (pre_exec_setups(cmd, ctx->fd) == 1)
-		return (1);
+		return (partial_exec_err_free(pd, ctx));
 	if (pre_exec_setups_2(cmd, ctx->pipe, cmd->next_is_pipe) == 1)
-		return (1);
+		return (partial_exec_err_free(pd, ctx));
 	child_env = env_to_array(*env);
 	tmp_cmd_name = ft_strdup(cmd->name);
 	tmp_path = cmd_path_generator(cmd->name, *env);
