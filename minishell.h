@@ -6,13 +6,14 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 01:10:10 by dopereir          #+#    #+#             */
-/*   Updated: 2025/09/09 14:57:13 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/09 16:03:45 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
 # define MAX_ARGS 1024
+# define EXIT_NO_ARG 610627566
 
 # include <signal.h>
 # include <unistd.h>
