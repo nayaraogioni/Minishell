@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nayara <nayara@student.42.fr>              +#+  +:+       +#+        */
+/*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 01:10:10 by dopereir          #+#    #+#             */
-/*   Updated: 2025/09/09 03:16:09 by nayara           ###   ########.fr       */
+/*   Updated: 2025/09/09 14:57:13 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,7 +157,7 @@ int				ft_pwd(t_env **env, t_parse_data *pd, t_command *cmd);
 //error_handlers.c
 char			*cmd_type_str(t_token_type type);
 void			argument_redirs_error(t_token_type type);
-int				set_heredoc(char *delim);
+int				partial_exec_err_free(t_parse_data *pd, t_exec_data *ctx);
 //signal_handlers.c
 void			sigint_handler(int signo);
 void			sigquit_handler(int signo);
