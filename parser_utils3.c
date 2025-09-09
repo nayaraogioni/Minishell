@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_utils3.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: nayara <nayara@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 22:16:44 by dopereir          #+#    #+#             */
-/*   Updated: 2025/08/26 23:01:58 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/09 16:40:25 by nayara           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,6 +114,7 @@ void	setup_command_defaults(t_command *cmd)
 	cmd->next_is_pipe = 0;
 	cmd->next_is_and = 0;
 	cmd->hd_delim = NULL;
+	cmd->hd_expand = 0;
 	cmd->heredoc_fd = -1;
 	i = 0;
 	while (i < MAX_ARGS)

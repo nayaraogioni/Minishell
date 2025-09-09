@@ -6,7 +6,11 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 01:10:10 by dopereir          #+#    #+#             */
+<<<<<<< HEAD
+/*   Updated: 2025/09/09 17:37:39 by nayara           ###   ########.fr       */
+=======
 /*   Updated: 2025/09/09 16:03:45 by dopereir         ###   ########.fr       */
+>>>>>>> 5fe75188209e5c772b3fc472f083b677515b9b15
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -278,5 +282,6 @@ void			setup_command_defaults(t_command *cmd);
 void			write_error_case(char *cmd_name, int errno_code);
 int				is_valid_identifier(const char *key);
 void			print_no_file_dir_error(char *name);
+int				set_and_get(int value);
 
 #endif

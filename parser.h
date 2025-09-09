@@ -3,10 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   parser.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: nayara <nayara@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 23:08:53 by dopereir          #+#    #+#             */
+<<<<<<< HEAD
+/*   Updated: 2025/09/09 17:24:47 by nayara           ###   ########.fr       */
+=======
 /*   Updated: 2025/09/09 14:57:29 by dopereir         ###   ########.fr       */
+>>>>>>> 5fe75188209e5c772b3fc472f083b677515b9b15
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +28,11 @@ typedef struct s_command
 	char				*output_file; // Output file for redirection
 	char				*argv[MAX_ARGS]; // Arguments for the command
 	char				*hd_delim; //delimiter to use on heredoc
+<<<<<<< HEAD
+	int					hd_expand; // flag 1 -> expand 0 -> n expande
+=======
 	int					hd_expand_flag;
+>>>>>>> 5fe75188209e5c772b3fc472f083b677515b9b15
 	int					heredoc_fd;
 	pid_t				pid_filename_output;
 	// para pipelines e sequencias parser phase
