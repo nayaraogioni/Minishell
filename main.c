@@ -6,7 +6,7 @@
 /*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 23:15:37 by dopereir          #+#    #+#             */
-/*   Updated: 2025/09/09 15:35:50 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/09 16:08:36 by dopereir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,11 @@ int	main_loop_helper(char *input, t_lexer *lexer)
 		return (2);
 	rc = ft_exit(input);
 	if (rc != 0)
+	{
+		if (rc == EXIT_NO_ARG)
+			return (EXIT_NO_ARG);
 		return (rc);
+	}
 	if (ft_strlen(input) == 0)
 	{
 		free(input);
@@ -71,11 +75,13 @@ int	main_loop(t_env *my_env, t_lexer *lexer, t_parse_data *pd)
 	return (0);
 }
 
-static void	setup_init_signals(void)
+static void	setup_init_signals(int argc, char **argv)
 {
 	struct sigaction	sa_int;
 	struct sigaction	sa_quit;
 
+	(void) argc;
+	(void) argv;
 	sa_int.sa_handler = sigint_handler;
 	sigemptyset(&sa_int.sa_mask);
 	sa_int.sa_flags = 0;
@@ -108,9 +114,7 @@ int	main(int argc, char **argv, char **envp)
 	t_env				*my_env;
 	int					rc;
 
-	(void)argc;
-	(void)argv;
-	setup_init_signals();
+	setup_init_signals(argc, argv);
 	lexer = malloc(sizeof(t_lexer));
 	if (!lexer)
 		return (1);
@@ -127,5 +131,7 @@ int	main(int argc, char **argv, char **envp)
 	free(lexer);
 	clean_env_list(&my_env);
 	rl_clear_history();
+	if (rc == EXIT_NO_ARG)
+		return (0);
 	return (rc);
 }
