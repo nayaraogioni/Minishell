@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: nayara <nayara@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/08 11:56:17 by dopereir          #+#    #+#             */
-/*   Updated: 2025/09/06 09:05:46 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/09 17:20:16 by nayara           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,18 +15,15 @@
 #include "parser.h"
 #include <readline/readline.h>
 
-void	heredoc_sig_handler(int signo)
+static void	hd_expand_helper(t_command *cmd, char *line, char *expanded_line,
+					int pipefd[2])
 {
-	char			nl;
-
-	(void)signo;
-	nl = ' ';
-	g_heredoc_sig = SIGINT;
-	printf("> %s^C\n", rl_line_buffer);
-	rl_replace_line("", 0);
-	rl_on_new_line();
-	rl_done = 1;
-	ioctl(STDIN_FILENO, TIOCSTI, &nl);
+	write(pipefd[1], expanded_line, ft_strlen(expanded_line));
+	write(pipefd[1], "\n", 1);
+	if (cmd->hd_expand)
+		free(expanded_line);
+	else
+		free(line);
 }
 
 static void	heredoc_loop_helper(t_command *cmd, int pipefd[2], t_env *env)
@@ -43,11 +40,15 @@ static void	heredoc_loop_helper(t_command *cmd, int pipefd[2], t_env *env)
 			return (heredoc_loop_err_helper(line, env, cmd, -1));
 		if (ft_strcmp(line, cmd->hd_delim) == 0)
 			return (heredoc_loop_err_helper(line, env, cmd, -2));
-		expanded_line = expand_heredoc_line(line, env);
-		free(line);
-		write(pipefd[1], expanded_line, ft_strlen(expanded_line));
-		write(pipefd[1], "\n", 1);
-		free(expanded_line);
+		cmd->hd_expand = set_and_get(-1);
+		if (cmd->hd_expand == 1)
+		{
+			expanded_line = expand_heredoc_line(line, env);
+			free(line);
+		}
+		else
+			expanded_line = line;
+		hd_expand_helper(cmd, line, expanded_line, pipefd);
 	}
 }
 

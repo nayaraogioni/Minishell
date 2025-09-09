@@ -278,5 +278,6 @@ void			setup_command_defaults(t_command *cmd);
 void			write_error_case(char *cmd_name, int errno_code);
 int				is_valid_identifier(const char *key);
 void			print_no_file_dir_error(char *name);
+int				set_and_get(int value);
 
 #endif

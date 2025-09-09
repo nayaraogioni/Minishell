@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signal_handlers.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: dopereir <dopereir@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: nayara <nayara@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/22 10:43:53 by dopereir          #+#    #+#             */
-/*   Updated: 2025/09/07 18:56:26 by dopereir         ###   ########.fr       */
+/*   Updated: 2025/09/09 17:05:43 by nayara           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,20 @@ void	signal_err_set(t_env *env, t_lexer *lexer)
 	replace_env_value(&env, "?", "130");
 	g_heredoc_sig = 0;
 	lexer->exit_status = 130;
+}
+
+void	heredoc_sig_handler(int signo)
+{
+	char			nl;
+
+	(void)signo;
+	nl = ' ';
+	g_heredoc_sig = SIGINT;
+	printf("> %s^C\n", rl_line_buffer);
+	rl_replace_line("", 0);
+	rl_on_new_line();
+	rl_done = 1;
+	ioctl(STDIN_FILENO, TIOCSTI, &nl);
 }
 
 //send -1 to get the last exit code (getter)
